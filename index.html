@@ -24,22 +24,12 @@
       line-height: 1.6;
     }
 
-    main {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem;
-    }
+    main { max-width: 980px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-    header {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
+    h1 { font-size: 2.6rem; font-weight: 600; text-align: center; }
+    p { color: var(--text-muted); text-align: center; }
 
-    h1 { font-size: 2.6rem; font-weight: 600; margin-bottom: 1rem; }
-
-    p { color: var(--text-muted); max-width: 720px; margin: 0 auto 1.2rem; }
-
-    .card {
+    .card { 
       background: var(--bg-card);
       border-radius: 16px;
       padding: 2rem;
@@ -47,89 +37,136 @@
       border: 1px solid var(--accent-soft);
     }
 
-    ul { list-style: none; padding: 0; margin: 1.2rem 0 0; }
+    .chat-shell {
+      background: #1a1f2b;
+      border-radius: 12px;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      border: 1px solid var(--accent-soft);
+    }
 
-    li { margin-bottom: 0.6rem; }
+    .chat-msg { margin: 0.4rem 0; }
+    .user { color: #e6c7ff; }
+    .app { color: #f5f6fa; }
 
-    .cta {
-      display: inline-block;
-      margin-top: 2.5rem;
-      padding: 0.9rem 2rem;
+    .chat-input {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--accent-soft);
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+
+    .chat-input button {
+      padding: 0.6rem 1rem;
       border-radius: 999px;
       background: var(--accent);
       color: #1a1a1a;
-      text-decoration: none;
-      font-weight: 500;
+      border: none;
+      cursor: pointer;
+    }
+
+    .companion {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #e6c7ff50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
     }
 
     footer {
       text-align: center;
-      margin-top: 5rem;
+      margin-top: 3rem;
       font-size: 0.85rem;
       color: var(--text-muted);
     }
 
-    footer a {
-      color: var(--text-muted);
-      text-decoration: none;
-      margin: 0 0.5rem;
-    }
+    footer a { color: var(--text-muted); text-decoration: none; margin: 0 0.5rem; }
   </style>
 </head>
+
 <body>
   <main>
-    <header>
-      <h1>Talk 2Me Nice</h1>
-      <p>Talk like a friend. Learn naturally. Feel safe.</p>
-      <a class="cta" href="#">Start Talking</a>
-    </header>
+    <h1>Talk 2Me Nice</h1>
+    <p>Talk like a friend. Learn naturally. Feel safe.</p>
 
     <section class="card">
-      <h2>What It Is</h2>
-      <p>
-        Talk 2Me Nice is a calm, conversation-first language companion.
-        There are no lessons, tests, or streaks — just everyday conversation,
-        support when you need it, and space to learn at your own pace.
-      </p>
+      <h2>Demo Chat</h2>
+      <div class="chat-shell" id="chat">
+        <div class="chat-msg app">Hi! I’m your Talk 2Me Nice companion. 💛</div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+      <p><em>This is a placeholder interface. AI & Nice+ features will come later.</em></p>
+    </section>
+
+    <section class="card">
+      <h2>Features</h2>
       <ul>
         <li>💬 Natural conversations</li>
         <li>🌍 Speak and listen in both languages</li>
-        <li>❓ Ask anytime: “How do you say…?”</li>
-        <li>📖 Built-in dictionary with tap & long-press</li>
+        <li>❓ Tap the question mark for dictionary & help</li>
+        <li>🧚 Gentle companions reacting to time & mood</li>
         <li>🔤 Alphabet & numbers spoken on demand</li>
-        <li>🧚 Gentle companions that react to time & mood</li>
+        <li>🎙️ Voice chat (coming soon)</li>
+        <li>🎭 Personality options (coming soon)</li>
       </ul>
     </section>
 
-    <section class="card">
-      <h2>Who It’s For</h2>
-      <ul>
-        <li>Students learning a new language</li>
-        <li>Families learning together</li>
-        <li>Educators looking for calm tools</li>
-        <li>Anyone who prefers conversation over drills</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Nice+ (Optional)</h2>
-      <p>Free works beautifully. Nice+ simply adds more room to explore.</p>
-      <ul>
-        <li>🎙️ Extended voice chat</li>
-        <li>🧚 All companions (whisp, star, puff)</li>
-        <li>🎭 Personality options</li>
-        <li>⚡ Adjustable response speed</li>
-        <li>📖 Unlimited tap-to-translate</li>
-      </ul>
-      <p>Monthly or yearly. Cancel anytime.</p>
-    </section>
-
-    <!-- Footer with functional links -->
     <footer>
       <a href="/privacy.html">Privacy</a> •
       <a href="/terms.html">Support</a>
       <p>© Talk 2Me Nice</p>
     </footer>
   </main>
+
+  <!-- Companion placeholder -->
+  <div class="companion">🧚</div>
+
+  <script>
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const msg = input.value.trim();
+      if(!msg) return;
+      const chat = document.getElementById('chat');
+
+      // Add user message
+      const userDiv = document.createElement('div');
+      userDiv.classList.add('chat-msg','user');
+      userDiv.textContent = msg;
+      chat.appendChild(userDiv);
+
+      // Placeholder app response
+      const appDiv = document.createElement('div');
+      appDiv.classList.add('chat-msg','app');
+      appDiv.textContent = "🤖 This is a placeholder response.";
+      chat.appendChild(appDiv);
+
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+    }
+  </script>
 </body>
 </html>
