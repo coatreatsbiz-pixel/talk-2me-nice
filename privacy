@@ -10,3 +10,8 @@
 <p>Talk 2Me Nice does not store personal data without consent.</p>
 </body>
 </html>
+<footer>
+  <a href="#">Privacy</a> •
+  <a href="#">Support</a>
+  <p>© Talk 2Me Nice</p>
+</footer>
