@@ -15,96 +15,38 @@
     }
 
     * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg-main); color: var(--text-main); line-height:1.6; }
+    main { max-width:980px; margin:0 auto; padding:2rem 1.5rem; }
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg-main);
-      color: var(--text-main);
-      line-height: 1.6;
-    }
+    h1 { font-size:2.6rem; font-weight:600; text-align:center; }
+    p { color:var(--text-muted); text-align:center; }
 
-    main { max-width: 980px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .card { background: var(--bg-card); border-radius:16px; padding:2rem; margin:2rem 0; border:1px solid var(--accent-soft); }
+    ul { list-style:none; padding:0; margin:1.2rem 0 0; }
+    li { margin-bottom:0.6rem; }
 
-    h1 { font-size: 2.6rem; font-weight: 600; text-align: center; }
-    p { color: var(--text-muted); text-align: center; }
+    .chat-shell { background:#1a1f2b; border-radius:12px; padding:1rem; height:300px; overflow-y:auto; margin-bottom:1rem; border:1px solid var(--accent-soft); }
+    .chat-msg { margin:0.4rem 0; }
+    .user { color:#e6c7ff; }
+    .app { color:#f5f6fa; }
 
-    .card { 
-      background: var(--bg-card);
-      border-radius: 16px;
-      padding: 2rem;
-      margin: 2rem 0;
-      border: 1px solid var(--accent-soft);
-    }
+    .chat-input { display:flex; gap:0.5rem; }
+    .chat-input input { flex:1; padding:0.6rem 1rem; border-radius:999px; border:1px solid var(--accent-soft); background: var(--bg-card); color: var(--text-main); }
+    .chat-input button { padding:0.6rem 1rem; border-radius:999px; background:var(--accent); color:#1a1a1a; border:none; cursor:pointer; }
 
-    .chat-shell {
-      background: #1a1f2b;
-      border-radius: 12px;
-      padding: 1rem;
-      height: 300px;
-      overflow-y: auto;
-      margin-bottom: 1rem;
-      border: 1px solid var(--accent-soft);
-    }
+    .companion { position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; border-radius:50%; background:#e6c7ff50; display:flex; align-items:center; justify-content:center; font-size:2rem; animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-    .chat-msg { margin: 0.4rem 0; }
-    .user { color: #e6c7ff; }
-    .app { color: #f5f6fa; }
+    /* Help panel */
+    #helpButton { position: fixed; bottom: 120px; right:20px; width:60px; height:60px; background:#e6c7ff; color:#1a1a1a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer; box-shadow:0 0 10px #e6c7ff70; }
+    #helpPanel { position: fixed; bottom:200px; right:20px; width:250px; max-height:300px; background:#1a1f2b; color:#f5f6fa; border-radius:16px; padding:1rem; display:none; overflow-y:auto; border:1px solid #2b2f3a; }
+    #letters button { padding:0.3rem 0.5rem; border-radius:6px; border:none; cursor:pointer; background:#2b2f3a; color:#e6c7ff; margin:2px; }
 
-    .chat-input {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      border-radius: 999px;
-      border: 1px solid var(--accent-soft);
-      background: var(--bg-card);
-      color: var(--text-main);
-    }
-
-    .chat-input button {
-      padding: 0.6rem 1rem;
-      border-radius: 999px;
-      background: var(--accent);
-      color: #1a1a1a;
-      border: none;
-      cursor: pointer;
-    }
-
-    .companion {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: #e6c7ff50;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    footer a { color: var(--text-muted); text-decoration: none; margin: 0 0.5rem; }
+    footer { text-align:center; margin-top:3rem; font-size:0.85rem; color:var(--text-muted); }
+    footer a { color:var(--text-muted); text-decoration:none; margin:0 0.5rem; }
+    footer a:hover { text-decoration:underline; }
   </style>
 </head>
-
 <body>
   <main>
     <h1>Talk 2Me Nice</h1>
@@ -142,106 +84,83 @@
     </footer>
   </main>
 
-  <!-- Companion placeholder -->
+  <!-- Companion -->
   <div class="companion">🧚</div>
 
+  <!-- Help / Dictionary -->
+  <div id="helpButton">?</div>
+  <div id="helpPanel">
+    <h3>Dictionary & Alphabet</h3>
+    <div id="letters"></div>
+    <label style="display:block; margin-top:0.5rem; font-size:0.8rem;">
+      <input type="checkbox" id="phoneticToggle"> Show phonetic breakdown
+    </label>
+    <p style="margin-top:0.5rem;"><a href="#" onclick="helpPanel.style.display='none'; return false;">Return to chat</a></p>
+  </div>
+
   <script>
+    const helpButton = document.getElementById('helpButton');
+    const helpPanel = document.getElementById('helpPanel');
+    const lettersDiv = document.getElementById('letters');
+    const phoneticToggle = document.getElementById('phoneticToggle');
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('userInput');
+
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+
+    // Populate letters and numbers
+    [...alphabet,...numbers].forEach(char => {
+      const btn = document.createElement('button');
+      btn.textContent = char;
+      btn.onclick = () => playSound(char);
+      lettersDiv.appendChild(btn);
+    });
+
+    // Toggle help panel
+    helpButton.onclick = () => {
+      helpPanel.style.display = helpPanel.style.display==='none'?'block':'none';
+    };
+
+    // Placeholder “play sound”
+    function playSound(char) {
+      const phonetic = phoneticToggle.checked ? ` (${char}-phonetic)` : '';
+      alert(`🔊 Playing sound for: ${char}${phonetic}`);
+    }
+
+    // Send chat message
     function sendMessage() {
-      const input = document.getElementById('userInput');
       const msg = input.value.trim();
       if(!msg) return;
-      const chat = document.getElementById('chat');
 
-      // Add user message
       const userDiv = document.createElement('div');
       userDiv.classList.add('chat-msg','user');
       userDiv.textContent = msg;
       chat.appendChild(userDiv);
 
-      // Placeholder app response
-      const appDiv = document.createElement('div');
-      appDiv.classList.add('chat-msg','app');
-      appDiv.textContent = "🤖 This is a placeholder response.";
-      chat.appendChild(appDiv);
+      // Check for “How do you say X?”
+      const match = msg.match(/how do you say (\w)/i);
+      if(match) {
+        const char = match[1].toUpperCase();
+        helpPanel.style.display='block';
+        [...lettersDiv.children].forEach(b => b.style.background='#2b2f3a');
+        const targetBtn = [...lettersDiv.children].find(b=>b.textContent===char);
+        if(targetBtn){ targetBtn.style.background='#e6c7ff'; playSound(char); }
+
+        const appDiv = document.createElement('div');
+        appDiv.classList.add('chat-msg','app');
+        appDiv.textContent = `I highlighted ${char} for you in the dictionary!`;
+        chat.appendChild(appDiv);
+      } else {
+        const appDiv = document.createElement('div');
+        appDiv.classList.add('chat-msg','app');
+        appDiv.textContent = "🤖 This is a placeholder response.";
+        chat.appendChild(appDiv);
+      }
 
       chat.scrollTop = chat.scrollHeight;
-      input.value = '';
+      input.value='';
     }
   </script>
 </body>
 </html>
-<!-- Floating dictionary button -->
-<div id="helpButton" style="
-  position: fixed;
-  bottom: 120px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  background: #e6c7ff;
-  color: #1a1a1a;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  cursor: pointer;
-  box-shadow: 0 0 10px #e6c7ff70;
-">?</div>
-
-<!-- Hidden dictionary panel -->
-<div id="helpPanel" style="
-  position: fixed;
-  bottom: 200px;
-  right: 20px;
-  width: 250px;
-  max-height: 300px;
-  background: #1a1f2b;
-  color: #f5f6fa;
-  border-radius: 16px;
-  padding: 1rem;
-  display: none;
-  overflow-y: auto;
-  border: 1px solid #2b2f3a;
-">
-  <h3 style="margin-top:0;">Dictionary & Alphabet</h3>
-  <p>Tap a letter or number to hear it:</p>
-  <div id="letters" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
-  <label style="display:block; margin-top:0.5rem; font-size:0.8rem;">
-    <input type="checkbox" id="phoneticToggle"> Show phonetic breakdown
-  </label>
-</div>
-
-<script>
-  const helpButton = document.getElementById('helpButton');
-  const helpPanel = document.getElementById('helpPanel');
-  const lettersDiv = document.getElementById('letters');
-  const phoneticToggle = document.getElementById('phoneticToggle');
-
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const numbers = '0123456789';
-
-  // Populate letters and numbers
-  [...alphabet, ...numbers].forEach(char => {
-    const btn = document.createElement('button');
-    btn.textContent = char;
-    btn.style.padding = '0.3rem 0.5rem';
-    btn.style.borderRadius = '6px';
-    btn.style.border = 'none';
-    btn.style.cursor = 'pointer';
-    btn.style.background = '#2b2f3a';
-    btn.style.color = '#e6c7ff';
-    btn.onclick = () => playSound(char);
-    lettersDiv.appendChild(btn);
-  });
-
-  // Toggle panel
-  helpButton.onclick = () => {
-    helpPanel.style.display = helpPanel.style.display === 'none' ? 'block' : 'none';
-  };
-
-  // Placeholder “play sound”
-  function playSound(char) {
-    const phonetic = phoneticToggle.checked ? ` (${char}-phonetic)` : '';
-    alert(`🔊 Playing sound for: ${char}${phonetic}`);
-  }
-</script>
