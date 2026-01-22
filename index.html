@@ -1,172 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Talk 2Me Nice</title>
-  <style>
-    :root {
-      --bg-main: #0f1218;
-      --bg-card: #1a1f2b;
-      --accent: #e6c7ff;
-      --accent-soft: #2b2f3a;
-      --text-main: #f5f6fa;
-      --text-muted: #b7bccb;
-    }
+<!-- Floating dictionary button -->
+<div id="helpButton" style="
+  position: fixed;
+  bottom: 120px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: #e6c7ff;
+  color: #1a1a1a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  box-shadow: 0 0 10px #e6c7ff70;
+">?</div>
 
-    * { box-sizing: border-box; }
+<!-- Hidden dictionary panel -->
+<div id="helpPanel" style="
+  position: fixed;
+  bottom: 200px;
+  right: 20px;
+  width: 250px;
+  max-height: 300px;
+  background: #1a1f2b;
+  color: #f5f6fa;
+  border-radius: 16px;
+  padding: 1rem;
+  display: none;
+  overflow-y: auto;
+  border: 1px solid #2b2f3a;
+">
+  <h3 style="margin-top:0;">Dictionary & Alphabet</h3>
+  <p>Tap a letter or number to hear it:</p>
+  <div id="letters" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
+  <label style="display:block; margin-top:0.5rem; font-size:0.8rem;">
+    <input type="checkbox" id="phoneticToggle"> Show phonetic breakdown
+  </label>
+</div>
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg-main);
-      color: var(--text-main);
-      line-height: 1.6;
-    }
+<script>
+  const helpButton = document.getElementById('helpButton');
+  const helpPanel = document.getElementById('helpPanel');
+  const lettersDiv = document.getElementById('letters');
+  const phoneticToggle = document.getElementById('phoneticToggle');
 
-    main { max-width: 980px; margin: 0 auto; padding: 2rem 1.5rem; }
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const numbers = '0123456789';
 
-    h1 { font-size: 2.6rem; font-weight: 600; text-align: center; }
-    p { color: var(--text-muted); text-align: center; }
+  // Populate letters and numbers
+  [...alphabet, ...numbers].forEach(char => {
+    const btn = document.createElement('button');
+    btn.textContent = char;
+    btn.style.padding = '0.3rem 0.5rem';
+    btn.style.borderRadius = '6px';
+    btn.style.border = 'none';
+    btn.style.cursor = 'pointer';
+    btn.style.background = '#2b2f3a';
+    btn.style.color = '#e6c7ff';
+    btn.onclick = () => playSound(char);
+    lettersDiv.appendChild(btn);
+  });
 
-    .card { 
-      background: var(--bg-card);
-      border-radius: 16px;
-      padding: 2rem;
-      margin: 2rem 0;
-      border: 1px solid var(--accent-soft);
-    }
+  // Toggle panel
+  helpButton.onclick = () => {
+    helpPanel.style.display = helpPanel.style.display === 'none' ? 'block' : 'none';
+  };
 
-    .chat-shell {
-      background: #1a1f2b;
-      border-radius: 12px;
-      padding: 1rem;
-      height: 300px;
-      overflow-y: auto;
-      margin-bottom: 1rem;
-      border: 1px solid var(--accent-soft);
-    }
-
-    .chat-msg { margin: 0.4rem 0; }
-    .user { color: #e6c7ff; }
-    .app { color: #f5f6fa; }
-
-    .chat-input {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      border-radius: 999px;
-      border: 1px solid var(--accent-soft);
-      background: var(--bg-card);
-      color: var(--text-main);
-    }
-
-    .chat-input button {
-      padding: 0.6rem 1rem;
-      border-radius: 999px;
-      background: var(--accent);
-      color: #1a1a1a;
-      border: none;
-      cursor: pointer;
-    }
-
-    .companion {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: #e6c7ff50;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    footer a { color: var(--text-muted); text-decoration: none; margin: 0 0.5rem; }
-  </style>
-</head>
-
-<body>
-  <main>
-    <h1>Talk 2Me Nice</h1>
-    <p>Talk like a friend. Learn naturally. Feel safe.</p>
-
-    <section class="card">
-      <h2>Demo Chat</h2>
-      <div class="chat-shell" id="chat">
-        <div class="chat-msg app">Hi! I’m your Talk 2Me Nice companion. 💛</div>
-      </div>
-      <div class="chat-input">
-        <input type="text" id="userInput" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
-      </div>
-      <p><em>This is a placeholder interface. AI & Nice+ features will come later.</em></p>
-    </section>
-
-    <section class="card">
-      <h2>Features</h2>
-      <ul>
-        <li>💬 Natural conversations</li>
-        <li>🌍 Speak and listen in both languages</li>
-        <li>❓ Tap the question mark for dictionary & help</li>
-        <li>🧚 Gentle companions reacting to time & mood</li>
-        <li>🔤 Alphabet & numbers spoken on demand</li>
-        <li>🎙️ Voice chat (coming soon)</li>
-        <li>🎭 Personality options (coming soon)</li>
-      </ul>
-    </section>
-
-    <footer>
-      <a href="/privacy.html">Privacy</a> •
-      <a href="/terms.html">Support</a>
-      <p>© Talk 2Me Nice</p>
-    </footer>
-  </main>
-
-  <!-- Companion placeholder -->
-  <div class="companion">🧚</div>
-
-  <script>
-    function sendMessage() {
-      const input = document.getElementById('userInput');
-      const msg = input.value.trim();
-      if(!msg) return;
-      const chat = document.getElementById('chat');
-
-      // Add user message
-      const userDiv = document.createElement('div');
-      userDiv.classList.add('chat-msg','user');
-      userDiv.textContent = msg;
-      chat.appendChild(userDiv);
-
-      // Placeholder app response
-      const appDiv = document.createElement('div');
-      appDiv.classList.add('chat-msg','app');
-      appDiv.textContent = "🤖 This is a placeholder response.";
-      chat.appendChild(appDiv);
-
-      chat.scrollTop = chat.scrollHeight;
-      input.value = '';
-    }
-  </script>
-</body>
-</html>
+  // Placeholder “play sound”
+  function playSound(char) {
+    const phonetic = phoneticToggle.checked ? ` (${char}-phonetic)` : '';
+    alert(`🔊 Playing sound for: ${char}${phonetic}`);
+  }
+</script>
