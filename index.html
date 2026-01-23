@@ -290,3 +290,351 @@ function toggleOptions(){
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talk 2Me Nice</title>
+<style>
+:root {
+  --bg-main:#1b1f27;
+  --bg-card:#242833;
+  --accent:#6fa8dc;
+  --text-main:#e1e4ea;
+  --text-muted:#a1a6b0;
+}
+
+body {
+  margin:0;
+  font-family:system-ui, sans-serif;
+  background:var(--bg-main);
+  color:var(--text-main);
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* Step 1 */
+#setupContainer {
+  max-width:500px;
+  margin:3rem auto;
+  padding:2rem;
+  background: var(--bg-card);
+  border-radius:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+  text-align:center;
+}
+
+/* Step 2 layout */
+#chatContainer {
+  display:none;
+  flex:1;
+  display:flex;
+  flex-direction:row;
+  max-width:900px;
+  margin:2rem auto;
+  gap:1rem;
+}
+
+/* Profile Sidebar */
+#profileSidebar {
+  width:220px;
+  padding:1rem;
+  background:var(--bg-card);
+  border-radius:16px;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  height:min-content;
+}
+#profileSidebar h3 { margin-bottom:0.5rem; }
+#profileSidebar label { font-size:0.85rem; margin-top:0.5rem; }
+#profileSidebar input, #profileSidebar select {
+  width:100%;
+  padding:0.4rem;
+  border-radius:8px;
+  border:1px solid var(--accent);
+  background:#1f232d;
+  color:var(--text-main);
+}
+
+/* Chat area */
+#chatArea {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+header {
+  text-align:center;
+  margin-bottom:0.5rem;
+}
+#chat {
+  flex:1;
+  padding:1rem;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  border-radius:16px;
+  background:var(--bg-card);
+}
+
+/* Messages */
+.message {
+  max-width:80%;
+  padding:0.7rem 1rem;
+  margin-bottom:0.7rem;
+  border-radius:16px;
+  line-height:1.4;
+}
+.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
+.bot { background:var(--bg-main); align-self:flex-start; }
+
+/* Chat Footer */
+#chatFooter {
+  display:flex;
+  padding:0.8rem;
+  gap:0.5rem;
+  border-top:1px solid #333;
+}
+#chatFooter input {
+  flex:1;
+  padding:0.6rem;
+  border-radius:12px;
+  border:none;
+  background:#1f232d;
+  color:var(--text-main);
+}
+#chatFooter button {
+  padding:0.6rem 1rem;
+  border-radius:999px;
+  border:none;
+  background:var(--accent);
+  cursor:pointer;
+}
+
+/* Gear & Options */
+#gear {
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:var(--bg-card);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:20px;
+}
+#options {
+  position:fixed;
+  bottom:150px;
+  right:20px;
+  background:var(--bg-card);
+  padding:1rem;
+  border-radius:16px;
+  width:260px;
+  display:none;
+}
+.grid { display:grid; grid-template-columns:repeat(6,1fr); gap:0.4rem; }
+.tile { background:#1f232d; padding:0.5rem; text-align:center; border-radius:8px; cursor:pointer; }
+.word { cursor:pointer; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<!-- Step 1 -->
+<div id="setupContainer">
+  <p style="font-size:0.85rem; color:#a1a6b0;">Step 1 of 2 · Setup</p>
+  <h1>Welcome to Talk 2Me Nice 💛</h1>
+  <p>Set up your account and get ready to learn naturally.</p>
+
+  <label for="nickname">Nickname:</label>
+  <input type="text" id="nickname" placeholder="Your nickname">
+
+  <label for="language">Choose Your Language (Free):</label>
+  <select id="language">
+    <option value="en-US">English ✔</option>
+    <option value="es-ES">Spanish ✔</option>
+    <option value="fr-FR">French ✔</option>
+    <option value="de-DE">German ✔</option>
+    <option value="zh-CN">Chinese ✔</option>
+    <option value="ja-JP" disabled>Japanese 🔒</option>
+    <option value="ko-KR" disabled>Korean 🔒</option>
+    <option value="it-IT" disabled>Italian 🔒</option>
+  </select>
+
+  <label for="companion">Choose a Companion:</label>
+  <select id="companion">
+    <option value="whisp">Whisp ✔</option>
+    <option value="star" disabled>Star 🔒</option>
+    <option value="puff" disabled>Puff 🔒</option>
+  </select>
+
+  <button onclick="completeSetup()">Continue →</button>
+</div>
+
+<!-- Step 2 -->
+<div id="chatContainer">
+  <!-- Profile Sidebar -->
+  <div id="profileSidebar">
+    <h3>Learner Profile</h3>
+    <label for="profileNameInput">Nickname</label>
+    <input id="profileNameInput" type="text">
+    <label for="profileLanguageSelect">Language</label>
+    <select id="profileLanguageSelect">
+      <option value="en-US">English</option>
+      <option value="es-ES">Spanish</option>
+      <option value="fr-FR">French</option>
+      <option value="de-DE">German</option>
+      <option value="zh-CN">Chinese</option>
+    </select>
+    <label for="profileCompanionSelect">Companion</label>
+    <select id="profileCompanionSelect">
+      <option value="whisp">Whisp</option>
+      <option value="star" disabled>Star 🔒</option>
+      <option value="puff" disabled>Puff 🔒</option>
+    </select>
+    <button onclick="updateProfile()">Update Profile</button>
+  </div>
+
+  <!-- Chat Area -->
+  <div id="chatArea">
+    <header>
+      <h2 id="greeting"></h2>
+      <p style="font-size:0.8rem;color:#a1a6b0;">Step 2 of 2 · Conversation</p>
+    </header>
+
+    <div id="chat"></div>
+
+    <div id="chatFooter">
+      <input id="userInput" placeholder="Type a word or phrase…" />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gear & Options -->
+<div id="gear" onclick="toggleOptions()">⚙️</div>
+<div id="options">
+  <label><input type="checkbox" id="phoneticToggle"> Pronunciation mode</label>
+  <p>Alphabet</p>
+  <div class="grid" id="alphabet"></div>
+  <p>Numbers</p>
+  <div class="grid" id="numbers"></div>
+</div>
+
+<script>
+// Load saved profile
+let nickname = localStorage.getItem("nickname");
+let language = localStorage.getItem("language");
+let companion = localStorage.getItem("companion");
+
+// Step 1 → Step 2
+if(nickname && language && companion){
+  document.getElementById("setupContainer").style.display="none";
+  document.getElementById("chatContainer").style.display="flex";
+  startChat();
+} else {
+  document.getElementById("setupContainer").style.display="block";
+  document.getElementById("chatContainer").style.display="none";
+}
+
+function completeSetup(){
+  nickname = document.getElementById("nickname").value || "Friend";
+  language = document.getElementById("language").value;
+  companion = document.getElementById("companion").value;
+
+  localStorage.setItem("nickname", nickname);
+  localStorage.setItem("language", language);
+  localStorage.setItem("companion", companion);
+
+  document.getElementById("setupContainer").style.display="none";
+  document.getElementById("chatContainer").style.display="flex";
+  startChat();
+}
+
+// Chat
+const chat = document.getElementById("chat");
+function startChat(){
+  document.getElementById("greeting").textContent = `Hi ${nickname} 🌱 I'm ${companion}.`;
+  addMessage("This is your calm space. Use the gear ⚙️ for help.","bot");
+
+  // Populate profile sidebar
+  document.getElementById("profileNameInput").value = nickname;
+  document.getElementById("profileLanguageSelect").value = language;
+  document.getElementById("profileCompanionSelect").value = companion;
+}
+
+function speak(text){
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = language;
+  speechSynthesis.speak(u);
+}
+
+function addMessage(text,sender){
+  const div=document.createElement("div");
+  div.className=`message ${sender}`;
+  if(sender==="bot" && document.getElementById("phoneticToggle")?.checked){
+    text.split(" ").forEach(w=>{
+      const span = document.createElement("span");
+      span.className="word";
+      span.textContent=w+" ";
+      span.onclick = ()=>speak(w);
+      div.appendChild(span);
+    });
+  } else { div.textContent=text; }
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function sendMessage(){
+  const i=document.getElementById("userInput");
+  if(!i.value.trim()) return;
+  addMessage(i.value,"user");
+  i.value="";
+  setTimeout(()=>addMessage("Try tapping a word if pronunciation mode is on 💛","bot"),500);
+}
+
+// Gear toggle
+function toggleOptions(){
+  const o=document.getElementById("options");
+  o.style.display = o.style.display==="block"?"none":"block";
+}
+
+// Alphabet & Numbers
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l=>{
+  const d=document.createElement("div");
+  d.className="tile";
+  d.textContent=l;
+  d.onclick=()=>speak(l);
+  document.getElementById("alphabet").appendChild(d);
+});
+"0123456789".split("").forEach(n=>{
+  const d=document.createElement("div");
+  d.className="tile";
+  d.textContent=n;
+  d.onclick=()=>speak(n);
+  document.getElementById("numbers").appendChild(d);
+});
+
+// Update profile
+function updateProfile(){
+  nickname = document.getElementById("profileNameInput").value || nickname;
+  language = document.getElementById("profileLanguageSelect").value;
+  companion = document.getElementById("profileCompanionSelect").value;
+
+  localStorage.setItem("nickname", nickname);
+  localStorage.setItem("language", language);
+  localStorage.setItem("companion", companion);
+
+  document.getElementById("greeting").textContent = `Hi ${nickname} 🌱 I'm ${companion}.`;
+  addMessage("Profile updated! 🌸","bot");
+}
+</script>
+</body>
+</html>
