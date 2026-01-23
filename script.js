@@ -152,4 +152,3 @@ function finishOnboarding(){
 // ---------- Privacy/Support ----------
 function showPrivacy(){ alert("Privacy page placeholder"); }
 function showSupport(){ alert("Support page placeholder"); }
-
