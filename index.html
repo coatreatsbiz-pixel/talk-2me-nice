@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Talk 2Me Nice — Daily Chat</title>
+<title>Talk 2Me Nice — Conversation</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -13,26 +13,31 @@
   --text-main: #e1e4ea;
   --text-muted: #a1a6b0;
 }
+
 body {
   margin:0;
-  font-family:'Montserrat', system-ui,sans-serif;
+  font-family:'Montserrat', system-ui, sans-serif;
   background: var(--bg-main);
   color: var(--text-main);
   display:flex;
   flex-direction:column;
   min-height:100vh;
 }
+
+/* Chat layout */
 #chatContainer {
   display:flex;
   max-width:900px;
   margin:2rem auto;
   gap:1rem;
-  flex:1;
+  animation: fadeIn 0.8s ease-out;
 }
+
+/* Sidebar for profile + packs */
 #profileSidebar {
   width:220px;
   padding:1rem;
-  background:var(--bg-card);
+  background: var(--bg-card);
   border-radius:16px;
   flex-shrink:0;
   display:flex;
@@ -40,27 +45,39 @@ body {
   gap:1rem;
   box-shadow:0 6px 16px rgba(0,0,0,0.3);
 }
-#packs { display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem; }
-.packButton {
-  background:#1f232d;
-  color:var(--text-main);
-  border:1px solid var(--accent);
-  padding:0.5rem 0.8rem;
+
+/* Pack buttons */
+.packBtn {
+  padding:0.6rem;
   border-radius:12px;
+  border:none;
+  background: var(--accent);
+  color:#1b1f27;
   cursor:pointer;
-  transition:0.2s;
-  font-size:0.9rem;
+  font-weight:500;
+  transition: all 0.3s ease;
 }
-.packButton:hover { background:var(--accent); color:#1b1f27; transform:scale(1.03); }
-#chatArea {
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  background:#242833;
+.packBtn:hover { background:#ff9f40; transform:scale(1.03); }
+
+/* Profile info */
+.profileInfo p {
+  font-size:0.85rem;
+  color:var(--text-muted);
+  margin:0.2rem 0;
+}
+
+/* Chat area */
+#chatArea { 
+  flex:1; 
+  display:flex; 
+  flex-direction:column; 
+  background: var(--bg-card);
   border-radius:16px;
   padding:1rem;
-  overflow-y:auto;
+  box-shadow:0 6px 16px rgba(0,0,0,0.25);
 }
+
+/* Messages */
 .message {
   max-width:75%;
   padding:0.8rem 1.2rem;
@@ -70,151 +87,149 @@ body {
   opacity:0;
   animation: fadeInMessage 0.5s forwards;
 }
-.user { background:var(--accent); color:#1b1f27; align-self:flex-end; cursor:text; }
-.bot { background:var(--bg-card); align-self:flex-start; cursor:pointer; }
-.message span.word { text-decoration:underline; cursor:pointer; }
-#inputArea { display:flex; padding:0.8rem; gap:0.5rem; }
-#userInput { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main);}
-button.sendBtn { padding:0.6rem 1rem; border-radius:999px; border:none; background:var(--accent); cursor:pointer; transition:all 0.3s ease;}
-button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
-#nextPhrase { margin-top:0.5rem; padding:0.5rem 1rem; border-radius:999px; border:none; background:#6fa8dc; color:#1b1f27; cursor:pointer; display:none; }
-#nextPhrase:hover { background:#5b90c7; }
-@keyframes fadeInMessage { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
-#gear { position:fixed; bottom:90px; right:20px; width:44px; height:44px; border-radius:50%; background:var(--bg-card); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:20px; box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-#options { position:fixed; bottom:150px; right:20px; background:var(--bg-card); padding:1rem; border-radius:16px; width:260px; display:none; }
-#options label { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; }
+.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
+.bot { background:var(--bg-card); align-self:flex-start; }
+
+/* Starter phrase box */
+#starterBox {
+  margin:1rem 0;
+  padding:0.8rem;
+  background:#1f232d;
+  border-radius:12px;
+  cursor:pointer;
+  transition: transform 0.2s;
+}
+#starterBox:hover { transform:scale(1.03); }
+
+/* Footer input */
+footer {
+  display:flex;
+  padding:0.8rem;
+  gap:0.5rem;
+}
+footer input {
+  flex:1;
+  padding:0.6rem;
+  border-radius:12px;
+  border:none;
+  background:#1f232d;
+  color:var(--text-main);
+}
+footer button {
+  padding:0.6rem 1rem;
+  border-radius:999px;
+  border:none;
+  background: var(--accent);
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+footer button:hover { transform: scale(1.05); background:#ff9f40; }
+
+/* Animations */
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes fadeInMessage { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+
 </style>
 </head>
 <body>
 
 <div id="chatContainer">
+
+  <!-- Sidebar -->
   <div id="profileSidebar">
-    <h3 id="profileName"></h3>
-    <p id="profileLanguage"></p>
-    <p id="profileCompanion"></p>
-    <div id="packs"></div>
-    <button id="nextPhrase" onclick="nextPhrase()">Next Phrase →</button>
+    <div class="profileInfo">
+      <p>👤 <strong id="profileName"></strong></p>
+      <p>🌍 <span id="profileLanguage"></span></p>
+      <p>🧚 <span id="profileCompanion"></span></p>
+    </div>
+    <hr>
+    <p style="margin:0.5rem 0; font-weight:500;">Pick a conversation pack:</p>
+    <button class="packBtn" onclick="showStarter('Workplace')">Workplace</button>
+    <button class="packBtn" onclick="showStarter('Dating & Social')">Dating & Social</button>
+    <button class="packBtn" onclick="showStarter('Travel')">Travel</button>
+    <button class="packBtn" onclick="showStarter('Advanced Small Talk')">Advanced Small Talk</button>
   </div>
-  <div id="chatArea"></div>
+
+  <!-- Chat Area -->
+  <div id="chatArea">
+    <div id="starterBox" style="display:none;"></div>
+    <div id="chat"></div>
+  </div>
+
 </div>
 
-<div id="inputArea">
+<footer>
   <input id="userInput" placeholder="Type a word or phrase…" />
-  <button class="sendBtn" onclick="sendMessage()">Send</button>
-</div>
-
-<div id="gear" onclick="toggleOptions()">⚙️</div>
-<div id="options">
-  <label><input type="checkbox" id="phoneticToggle"/> Pronunciation mode</label>
-</div>
+  <button onclick="sendMessage()">Send</button>
+</footer>
 
 <script>
+/* Load profile from Step 1 */
 const nickname = localStorage.getItem("nickname") || "Friend";
 const language = localStorage.getItem("language") || "en-US";
 const companion = localStorage.getItem("companion") || "Whisp";
 
 document.getElementById("profileName").textContent = nickname;
-document.getElementById("profileLanguage").textContent = `Language: ${language}`;
-document.getElementById("profileCompanion").textContent = `Companion: ${companion}`;
+document.getElementById("profileLanguage").textContent = language;
+document.getElementById("profileCompanion").textContent = companion;
 
-const chatArea = document.getElementById("chatArea");
-const packsDiv = document.getElementById("packs");
-const nextBtn = document.getElementById("nextPhrase");
-
-const conversationPresets = {
-  "Workplace Conversations": [
-    "Hello, how are you?",
-    "Good morning!",
-    "Let's schedule a meeting."
+/* Starter phrases by pack, with time context */
+const conversationStarters = {
+  "Workplace":[
+    { phrase: "Good morning! How's your day starting?", context:"morning" },
+    { phrase: "Hi! Did you catch the latest project update?", context:"afternoon" },
+    { phrase: "Evening! Ready to wrap things up?", context:"evening" }
   ],
-  "Dating & Social": [
-    "Hi! How was your day?",
-    "Do you want to grab coffee?",
-    "I like your smile!"
+  "Dating & Social":[
+    { phrase:"Hi there! Would you like to grab coffee?", context:"morning" },
+    { phrase:"Hey! Want to take a walk this afternoon?", context:"afternoon" },
+    { phrase:"Hello! How was your day today?", context:"evening" }
   ],
-  "Travel": [
-    "Where is the nearest hotel?",
-    "Can you recommend a restaurant?",
-    "What time does the train leave?"
+  "Travel":[
+    { phrase:"Hi! Where is the nearest train station?", context:"any" }
   ],
-  "Advanced Small Talk": [
-    "Nice weather today, isn't it?",
-    "Did you watch the game last night?",
-    "Any plans for the weekend?"
+  "Advanced Small Talk":[
+    { phrase:"Hello! Did you see the game yesterday?", context:"any" }
   ]
 };
 
-function getDailyPreset() {
-  const keys = Object.keys(conversationPresets);
-  const today = new Date().getDate();
-  const index = today % keys.length;
-  const packName = keys[index];
-  const phrases = conversationPresets[packName];
-  const phraseIndex = today % phrases.length;
-  return { packName, phrases, phraseIndex };
+/* Determine time of day */
+function getTimeContext(){
+  const hour = new Date().getHours();
+  if(hour>=5 && hour<12) return "morning";
+  if(hour>=12 && hour<18) return "afternoon";
+  return "evening";
 }
 
-let daily = getDailyPreset();
-let currentIndex = daily.phraseIndex;
-let currentPack = daily.packName;
-
-// Only show one starter
-packsDiv.innerHTML = `<div class="packButton" onclick="startDaily()">${daily.packName} → ${daily.phrases[currentIndex]}</div>`;
-
-function startDaily() {
-  chatArea.innerHTML = "";
-  addBotMessage(daily.phrases[currentIndex]);
-  nextBtn.style.display = "inline-block";
+/* Show one starter phrase per pack */
+function showStarter(pack){
+  const starters = conversationStarters[pack];
+  const timeCtx = getTimeContext();
+  let starter = starters.find(s=>s.context===timeCtx) || starters[0];
+  const starterBox = document.getElementById("starterBox");
+  starterBox.textContent = starter.phrase;
+  starterBox.style.display="block";
+  starterBox.onclick = ()=> addMessage(starter.phrase,"bot");
 }
 
-function nextPhrase(){
-  currentIndex++;
-  if(currentIndex >= daily.phrases.length){
-    addBotMessage("You've finished all phrases for today! 🎉");
-    nextBtn.style.display = "none";
-    return;
-  }
-  addBotMessage(daily.phrases[currentIndex]);
-}
+/* Chat logic */
+const chat = document.getElementById("chat");
 
-function addBotMessage(text){
-  const div=document.createElement("div");
-  div.className="message bot";
-  
-  // Split into words for clickable pronunciation
-  text.split(" ").forEach(word=>{
-    const span=document.createElement("span");
-    span.className="word";
-    span.textContent = word + " ";
-    span.onclick = ()=> speakWord(word);
-    div.appendChild(span);
-  });
-
-  chatArea.appendChild(div);
-  chatArea.scrollTop = chatArea.scrollHeight;
+function addMessage(text,sender){
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
 function sendMessage(){
   const input = document.getElementById("userInput");
   if(!input.value.trim()) return;
-  const div = document.createElement("div");
-  div.className="message user";
-  div.textContent = input.value;
-  chatArea.appendChild(div);
+  addMessage(input.value,"user");
   input.value="";
-  chatArea.scrollTop = chatArea.scrollHeight;
-}
-
-function speakWord(word){
-  const u = new SpeechSynthesisUtterance(word);
-  u.lang = language;
-  speechSynthesis.speak(u);
-}
-
-function toggleOptions(){
-  const options = document.getElementById("options");
-  options.style.display = options.style.display==="block"?"none":"block";
 }
 </script>
+
 </body>
 </html>
