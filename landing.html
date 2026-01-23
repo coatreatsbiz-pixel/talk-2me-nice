@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talk 2Me Nice — Welcome</title>
+
+  <style>
+    :root {
+      --bg-main: #1b1f27;
+      --bg-card: #242833;
+      --accent: #6fa8dc;
+      --text-main: #e1e4ea;
+      --text-muted: #a1a6b0;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: var(--bg-card);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    label {
+      display: block;
+      margin-top: 1.2rem;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 10px;
+      border: 1px solid var(--accent);
+      background: #1f232d;
+      color: var(--text-main);
+      font-size: 1rem;
+    }
+
+    select option:disabled {
+      color: #777;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.9rem;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #1b1f27;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin: 0 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Welcome to Talk 2Me Nice 💛</h1>
+    <p>Learn gently. Speak naturally.</p>
+
+    <label for="nickname">Nickname</label>
+    <input id="nickname" type="text" placeholder="Friend" />
+
+    <label for="language">Choose a Language (Free)</label>
+    <select id="language">
+      <option value="en-US">English ✔</option>
+      <option value="es-ES">Spanish ✔</option>
+      <option value="fr-FR">French ✔</option>
+      <option value="de-DE">German ✔</option>
+      <option value="zh-CN">Chinese ✔</option>
+
+      <option value="ja-JP" disabled>Japanese 🔒 Nice+</option>
+      <option value="ko-KR" disabled>Korean 🔒 Nice+</option>
+      <option value="it-IT" disabled>Italian 🔒 Nice+</option>
+    </select>
+
+    <label for="companion">Companion</label>
+    <select id="companion">
+      <option value="whisp">Whisp ✔</option>
+      <option value="star" disabled>Star 🔒 Nice+</option>
+      <option value="puff" disabled>Puff 🔒 Nice+</option>
+    </select>
+
+    <button onclick="startApp()">Start Talking</button>
+
+    <footer>
+      <a href="/privacy.html">Privacy</a> •
+      <a href="/terms.html">Support</a>
+    </footer>
+  </div>
+
+  <script>
+    function startApp() {
+      const nickname = document.getElementById("nickname").value || "Friend";
+      const language = document.getElementById("language").value;
+      const companion = document.getElementById("companion").value;
+
+      localStorage.setItem("nickname", nickname);
+      localStorage.setItem("language", language);
+      localStorage.setItem("companion", companion);
+
+      window.location.href = "/index.html";
+    }
+  </script>
+
+</body>
+</html>
