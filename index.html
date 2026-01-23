@@ -1,3 +1,13 @@
+<p style="font-size:0.8rem; color:#a1a6b0;">
+  Learner Profile
+</p>
+<p style="font-size:0.9rem;">
+  👤 <strong id="profileName"></strong><br>
+  🌍 <span id="profileLanguage"></span><br>
+  🧚 <span id="profileCompanion"></span>
+</p>
+<hr style="border:0;border-top:1px solid #333;margin:0.7rem 0;">
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,6 +170,10 @@ button {
 </div>
 
 <script>
+document.getElementById("profileName").textContent = nickname;
+document.getElementById("profileLanguage").textContent = language;
+document.getElementById("profileCompanion").textContent = companion;
+  
 const nickname = localStorage.getItem("nickname") || "Friend";
 const language = localStorage.getItem("language") || "en-US";
 const companion = localStorage.getItem("companion") || "Whisp";
