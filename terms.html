@@ -1,30 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terms of Use</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: #0f1218;
-      color: #f5f6fa;
-      line-height: 1.6;
-      margin: 2rem;
-    }
-    a { color: #e6c7ff; text-decoration: none; margin: 0 0.5rem; }
-    footer { margin-top: 3rem; font-size: 0.85rem; color: #b7bccb; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talk 2Me Nice</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+/* ------------------ THEME & COLORS ------------------ */
+:root {
+  --bg-main: linear-gradient(160deg, #1b1f27 0%, #2a2f3b 100%);
+  --bg-card: #2c313d;
+  --accent: #ffb86c;
+  --text-main: #e1e4ea;
+  --text-muted: #a1a6b0;
+}
+
+/* ------------------ LAYOUT & TYPOGRAPHY ------------------ */
+body { margin:0; font-family:'Montserrat',system-ui,sans-serif; background: var(--bg-main); color: var(--text-main); display:flex; flex-direction:column; min-height:100vh; }
+h3,h4 { font-family:'Playfair Display', serif; }
+button, input, select { font-family:'Montserrat', sans-serif; }
+
+/* ------------------ LANDING PAGE (PHASE 1) ------------------ */
+#landingPage, #chatContainer { max-width:900px; margin:2rem auto; display:flex; flex-direction:column; gap:1rem; }
+#landingPage input { padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); margin-bottom:1rem; width:100%; }
+#landingPage button { padding:0.6rem 1rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer; transition: all 0.3s ease; width:100%; }
+#landingPage button:hover { transform: scale(1.05); background:#ff9f40; }
+
+/* ------------------ COMPANION SELECTION (PHASE 1 & 3) ------------------ */
+#companionSelector h3 { text-align:center; color:var(--accent); margin-bottom:1rem; }
+.companionGrid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:1rem; }
+.companionCard { background: var(--bg-card); border-radius: 14px; padding: 1rem; cursor:pointer; text-align:center; transition: all 0.25s ease; border: 2px solid transparent; }
+.companionCard h4 { margin:0; }
+.companionCard p { font-size:0.85rem; color:var(--text-muted); margin-top:0.4rem; }
+.companionCard small.preview { display:block; margin-top:0.5rem; font-size:0.75rem; color:var(--text-muted); font-style:italic; }
+.companionCard:hover { transform: translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,0.35);}
+.companionCard.active { border-color:var(--accent); box-shadow:0 0 0 2px rgba(255,184,108,0.25); }
+
+/* ------------------ CHAT PAGE (PHASE 1 & 2) ------------------ */
+#chatContainer { flex-direction:row; display:flex; gap:1rem; animation:fadeIn 0.8s ease-out; }
+#profileSidebar { width:220px; padding:1rem; background: var(--bg-card); border-radius:16px; flex-shrink:0; display:flex; flex-direction:column; gap:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+#starterBox { margin:1rem 0; padding:0.8rem; background:#1f232d; border-radius:12px; cursor:pointer; transition: transform 0.2s; }
+#starterBox:hover { transform:scale(1.03); }
+#starterTitle { font-weight:600; margin:0.5rem 0; color:#ffb86c; text-align:center; }
+#chatArea { flex:1; display:flex; flex-direction:column; background: var(--bg-card); border-radius:16px; padding:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.25); }
+
+/* ------------------ MESSAGES (PHASE 1 & 2) ------------------ */
+.message { max-width:75%; padding:0.8rem 1.2rem; margin-bottom:0.7rem; border-radius:20px; line-height:1.5; opacity:0; animation:fadeInMessage 0.5s forwards; }
+.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
+.bot { background:var(--bg-card); align-self:flex-start; }
+
+/* ------------------ FOOTER (PHASE 1 & 2) ------------------ */
+footer { display:flex; padding:0.8rem; gap:0.5rem; }
+footer input { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); }
+footer button { padding:0.6rem 1rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer; transition: all 0.3s ease; }
+footer button:hover { transform: scale(1.05); background:#ff9f40; }
+
+/* ------------------ VOICE BUTTONS (PHASE 2) ------------------ */
+#micBtn { border-radius:50%; width:42px; height:42px; font-size:1.2rem; background: var(--accent); border:none; cursor:pointer; }
+#micBtn.listening { animation:pulse 1.2s infinite; }
+#micBtn.disabled { opacity:0.4; cursor:not-allowed; }
+#voiceSettings { background: var(--bg-card); padding:1rem; border-radius:14px; margin-top:1rem; font-size:0.85rem;}
+#voiceSettings h4 { margin-top:0; color:var(--accent);}
+#voiceSettings label { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem; gap:0.5rem;}
+
+/* ------------------ ONBOARDING OVERLAY (PHASE 1) ------------------ */
+#onboarding {position:fixed; inset:0; background: rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; z-index:999;}
+.onboardCard {background: var(--bg-card); padding:2rem; border-radius:18px; max-width:360px; text-align:center;}
+.onboardCard h3 {color:var(--accent);}
+.onboardCard button {margin-top:1rem; padding:0.6rem 1.4rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer;}
+
+/* ------------------ ANIMATIONS ------------------ */
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+@keyframes fadeInMessage { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+@keyframes pulse {0%{box-shadow:0 0 0 0 rgba(255,184,108,0.6);} 70%{box-shadow:0 0 0 12px rgba(255,184,108,0);} 100%{box-shadow:0 0 0 0 rgba(255,184,108,0);}}
+.hidden { display:none; }
+</style>
 </head>
 <body>
-  <h1>Terms of Use</h1>
-  <p>By using Talk 2Me Nice, you agree to use this website responsibly.</p>
-  <p>Free and paid features are optional and cancellable at any time.</p>
 
-  <footer>
-    <a href="privacy.html">Privacy</a> •
-    <a href="terms.html">Support</a>
-    <p>© Talk 2Me Nice</p>
-  </footer>
-</body>
-</html>
+<!-- ================= PHASE 1: LANDING PAGE ================= -->
+<div id="landingPage">
+  <h2 style="text-align:center; color:var(--accent); font-family:'Playfair Display', serif;">Talk 2Me Nice</h2>
+  <input id="nicknameInput" placeholder="Enter your nickname" />
+  <div id="companionSelector">
+    <h3>Choose Your Companion</h3>
+    <div class="companionGrid">
+      <div class="companionCard" data-companion="Whisp"><h4>Whisp</h4><p>Gentle, supportive, calm</p><small class="preview">“I’m here with you. Take your time.”</small></div>
+      <div class="companionCard" data-companion="Ace"><h4>Ace</h4><p>Confident, playful, witty</p><small class="preview">“You’ve got my attention — what’s on your mind?”</small></div>
+      <div class="companionCard" data-companion="Sage"><h4>Sage</h4><p>Thoughtful, clear, insightful</p><small class="preview">“Let’s think this through carefully.”</small></div>
+      <div class="companionCard" data-companion="School"><h4>School Mode</h4><p>Polite, age-appropriate, educational</p><small class="preview">“How can I help you learn today?”</small></div>
+    </div>
+  </div>
+  <button onclick="startChat()">Start Chat</button>
+</div>
+
+<!-- ================= PHASE 1 & 2: CHAT CONTAINER ================= -->
+<div id="chatContainer" class="hidden">
+  <div id="profileSidebar">
+    <div class="profileInfo">
+      <p>👤 <strong id="profileName"></strong></p>
+      <p>🌍 <span id="profileLanguage"></span></p>
+      <p>🧚 <span id="profileCompanion"></span></p>
+    </div>
+    <hr>
+    <p id="starterTitle">Conversation Starters</p>
+    <select id="starterDropdown" onchange="startStarter()">
+      <option value="">-- Select Starter --</option>
+    </select>
+    <div id="voiceSettings">
+      <h4>Voice Settings</h4>
+      <label><input type="checkbox" id="voiceOutputToggle" checked> Voice replies</label>
+      <label><input type="checkbox" id="voiceInputToggl
