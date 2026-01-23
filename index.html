@@ -7,95 +7,88 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-main: linear-gradient(160deg, #1b1f27 0%, #2a2f3b 100%);
+  --bg-main: linear-gradient(160deg,#1b1f27 0%,#2a2f3b 100%);
   --bg-card: #2c313d;
   --accent: #ffb86c;
   --text-main: #e1e4ea;
   --text-muted: #a1a6b0;
 }
 
-/* Basic Layout */
-body { margin:0; font-family:'Montserrat',system-ui,sans-serif; background: var(--bg-main); color: var(--text-main); display:flex; flex-direction:column; min-height:100vh; }
-h3,h4 { font-family:'Playfair Display', serif; }
-button { font-family:'Montserrat', sans-serif; cursor:pointer; }
-.hidden { display:none; }
+/* Global */
+body{margin:0;font-family:'Montserrat',sans-serif;background:var(--bg-main);color:var(--text-main);display:flex;flex-direction:column;min-height:100vh;}
+h1,h3,h4{font-family:'Playfair Display',serif;margin:0;}
+button,input,select{font-family:'Montserrat',sans-serif;}
+.hidden{display:none;}
+header{text-align:center;font-size:2rem;color:var(--accent);text-shadow:0 4px 10px rgba(0,0,0,0.35);animation:floatLogo 3s ease-in-out infinite alternate;margin:1rem 0;}
+@keyframes floatLogo{0%{transform:translateY(0px);}100%{transform:translateY(-6px);}}
 
 /* Landing Page */
-#landingPage { max-width:500px; margin:4rem auto; display:flex; flex-direction:column; gap:1rem; text-align:center; }
-#landingPage input { padding:0.8rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); font-size:1rem; width:100%; }
-#landingPage button { padding:0.8rem 1.2rem; border-radius:999px; border:none; background: var(--accent); font-size:1rem; transition:0.3s all; }
-#landingPage button:hover { transform:scale(1.05); background:#ff9f40; }
+#landingPage{max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem;}
+#nicknameInput{padding:0.6rem;border-radius:12px;border:none;background:#1f232d;color:var(--text-main);width:100%;max-width:300px;}
+#startBtn{padding:0.6rem 1rem;border-radius:999px;border:none;background:var(--accent);color:#1b1f27;cursor:pointer;transition:all 0.3s;width:100%;max-width:300px;}
+#startBtn:hover{transform:scale(1.05);background:#ff9f40;}
+#companionContainer{margin:2rem 0;display:flex;flex-direction:column;align-items:center;gap:1rem;}
 
-/* Companion Selector */
-#companionSelector h3 { color:var(--accent); margin-bottom:0.5rem; }
-.companionGrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1rem; }
-.companionCard { background:var(--bg-card); border-radius:14px; padding:0.8rem; text-align:center; border:2px solid transparent; transition:0.25s all; }
-.companionCard.active { border-color:var(--accent); box-shadow:0 0 0 2px rgba(255,184,108,0.25);}
-.companionCard:hover { transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,0.35); }
-.companionCard h4 { margin:0; }
-.companionCard p { font-size:0.85rem; margin:0.2rem 0; color:var(--text-muted); }
-.companionCard small { display:block; font-size:0.75rem; color:var(--text-muted); font-style:italic; margin-top:0.3rem; }
+/* Whisp cloud */
+#whispContainer svg{width:200px;height:100px;cursor:pointer;}
+.whispBody{filter:blur(3px);transition:fill 0.3s;}
+.whispEye{transition:transform 0.3s;}
+
+/* Star companion */
+#star{font-size:5rem;text-shadow:0 3px 6px rgba(0,0,0,0.4),0 0 20px var(--starColor);color:var(--starColor);transition:color 0.3s,text-shadow 0.3s;cursor:pointer;animation:twinkle 2s infinite alternate;}
+@keyframes twinkle{0%{transform:scale(1) rotate(0deg);}50%{transform:scale(1.1) rotate(5deg);}100%{transform:scale(1) rotate(0deg);}}
 
 /* Chat Container */
-#chatContainer { display:flex; flex-direction:row; max-width:900px; margin:2rem auto; gap:1rem; animation:fadeIn 0.8s ease-out; }
-#profileSidebar { width:220px; padding:1rem; background: var(--bg-card); border-radius:16px; display:flex; flex-direction:column; gap:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.3);}
-#chatArea { flex:1; display:flex; flex-direction:column; background: var(--bg-card); border-radius:16px; padding:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.25);}
-#chat { flex:1; overflow-y:auto; margin-bottom:0.5rem; }
-.message { max-width:75%; padding:0.8rem 1.2rem; margin-bottom:0.7rem; border-radius:20px; line-height:1.5; opacity:0; animation:fadeInMessage 0.5s forwards; }
-.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
-.bot { background:var(--bg-card); align-self:flex-start; }
+#chatContainer{flex-direction:row;display:flex;gap:1rem;max-width:900px;margin:2rem auto;animation:fadeIn 0.8s ease-out;}
+#profileSidebar{width:220px;padding:1rem;background:var(--bg-card);border-radius:16px;flex-shrink:0;display:flex;flex-direction:column;gap:1rem;box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+#chatArea{flex:1;display:flex;flex-direction:column;background:var(--bg-card);border-radius:16px;padding:1rem;box-shadow:0 6px 16px rgba(0,0,0,0.25);}
+.message{max-width:75%;padding:0.8rem 1.2rem;margin-bottom:0.7rem;border-radius:20px;line-height:1.5;opacity:0;animation:fadeInMessage 0.5s forwards;}
+.user{background:var(--accent);color:#1b1f27;align-self:flex-end;}
+.bot{background:var(--bg-card);align-self:flex-start;}
+footer{display:flex;flex-wrap:wrap;align-items:center;padding:0.8rem;gap:0.5rem;position:sticky;bottom:0;background:var(--bg-card);}
+footer input{flex:1;padding:0.6rem;border-radius:12px;border:none;background:#1f232d;color:var(--text-main);}
+footer button{padding:0.6rem 1rem;border-radius:999px;border:none;background:var(--accent);cursor:pointer;transition:all 0.3s;}
+footer button:hover{transform:scale(1.05);background:#ff9f40;}
 
-/* Starters & Gear */
-#starterTitle { font-weight:600; color:var(--accent); text-align:center; }
-#starterDropdown { width:100%; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); margin-bottom:1rem; }
-#gearBtn { font-size:1.2rem; background:none; border:none; color:var(--accent); cursor:pointer; align-self:flex-end; margin-bottom:0.5rem; }
-#settingsPanel { background:var(--bg-card); padding:0.8rem; border-radius:12px; display:none; flex-direction:column; gap:0.5rem; }
+/* Settings Panel */
+#settingsPanel{position:absolute;top:50px;right:20px;background:var(--bg-card);padding:1rem;border-radius:14px;width:250px;box-shadow:0 4px 12px rgba(0,0,0,0.5);display:none;}
+#settingsPanel h4{margin-top:0;color:var(--accent);}
+#settingsPanel label{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;gap:0.5rem;}
 
-/* Voice Settings */
-#voiceSettings label { display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; }
-#voiceSettings select, #voiceSettings input[type="checkbox"] { margin-left:0.5rem; }
-
-/* Footer Chat Input */
-footer { display:flex; padding:0.6rem; gap:0.5rem; background:transparent; }
-footer input { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main);}
-footer button { padding:0.6rem 1rem; border-radius:999px; border:none; background: var(--accent); transition:0.3s all; }
-footer button:hover { transform:scale(1.05); background:#ff9f40; }
-
-/* Onboarding Overlay */
-#onboarding {position:fixed; inset:0; background:rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; z-index:999;}
-.onboardCard {background: var(--bg-card); padding:2rem; border-radius:18px; max-width:360px; text-align:center;}
-.onboardCard h3 {color:var(--accent);}
-.onboardCard button {margin-top:1rem; padding:0.6rem 1.4rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer;}
-
-/* Footer links */
-#bottomLinks { text-align:center; margin:1rem 0; font-size:0.8rem; color:var(--text-muted); }
-#bottomLinks a { color:var(--accent); margin:0 0.5rem; text-decoration:none; }
-#bottomLinks a:hover { text-decoration:underline; }
+/* Dropdown */
+select{padding:0.5rem;border-radius:12px;border:none;background:#1f232d;color:var(--text-main);width:100%;}
 
 /* Animations */
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-@keyframes fadeInMessage { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes fadeInMessage{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 </style>
 </head>
 <body>
 
+<header>🎈 Talk 2Me Nice</header>
+
 <!-- Landing Page -->
 <div id="landingPage">
-  <h2>Welcome to Talk 2Me Nice</h2>
   <input id="nicknameInput" placeholder="Enter your nickname" />
-  <div id="companionSelector">
-    <h3>Choose Your Companion</h3>
-    <div class="companionGrid">
-      <div class="companionCard" data-companion="Whisp"><h4>Whisp</h4><p>Gentle, supportive, calm</p><small>“I’m here with you. Take your time.”</small></div>
-      <div class="companionCard" data-companion="Ace"><h4>Ace</h4><p>Confident, playful, witty</p><small>“You’ve got my attention — what’s on your mind?”</small></div>
-      <div class="companionCard" data-companion="Sage"><h4>Sage</h4><p>Thoughtful, clear, insightful</p><small>“Let’s think this through carefully.”</small></div>
-      <div class="companionCard" data-companion="School"><h4>School Mode</h4><p>Polite, age-appropriate, educational</p><small>“How can I help you learn today?”</small></div>
+  <div id="companionContainer">
+    <div id="whispContainer">
+      <svg viewBox="0 0 200 100">
+        <ellipse cx="50" cy="50" rx="50" ry="30" fill="#a8e6cf" class="whispBody"/>
+        <ellipse cx="90" cy="40" rx="40" ry="25" fill="#a8e6cf" class="whispBody"/>
+        <circle cx="40" cy="45" r="5" fill="#fff" class="whispEye"/>
+        <circle cx="70" cy="50" r="5" fill="#fff" class="whispEye"/>
+      </svg>
+      <input type="color" id="whispColorPicker" value="#a8e6cf" title="Choose Whisp color"/>
+    </div>
+    <div id="starContainer">
+      <div id="star" style="--starColor:#ffd700;">⭐</div>
+      <input type="color" id="starColorPicker" value="#ffd700" title="Choose Star color"/>
     </div>
   </div>
-  <button onclick="startChat()">Start Chat</button>
+  <button id="startBtn">Start Chat</button>
 </div>
 
-<!-- Chat Page -->
+<!-- Chat Container -->
 <div id="chatContainer" class="hidden">
   <div id="profileSidebar">
     <div class="profileInfo">
@@ -103,168 +96,97 @@ footer button:hover { transform:scale(1.05); background:#ff9f40; }
       <p>🌍 <span id="profileLanguage"></span></p>
       <p>🧚 <span id="profileCompanion"></span></p>
     </div>
-    <hr>
-    <div id="gearControls">
-      <button id="gearBtn" onclick="toggleSettings()">⚙️ Settings</button>
-      <div id="settingsPanel">
-        <p id="starterTitle">Conversation Starters</p>
-        <select id="starterDropdown" onchange="startStarter()">
-          <option value="">-- Select Starter --</option>
+    <button id="settingsBtn">⚙️ Options</button>
+    <div id="settingsPanel">
+      <h4>Conversation Starter</h4>
+      <select id="starterDropdown" onchange="startStarter()">
+        <option value="">-- Select Starter --</option>
+      </select>
+      <h4>Voice Settings</h4>
+      <label><input type="checkbox" id="voiceOutputToggle" checked> Voice replies</label>
+      <label><input type="checkbox" id="voiceInputToggle" checked> Voice input</label>
+      <label>Speech speed
+        <select id="voiceSpeed">
+          <option value="0.9">Slow</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.1">Fast</option>
         </select>
-        <div id="voiceSettings">
-          <h4>Voice Options</h4>
-          <label><span>Voice Replies</span><input type="checkbox" id="voiceOutputToggle" checked></label>
-          <label><span>Voice Input</span><input type="checkbox" id="voiceInputToggle" checked></label>
-          <label>Speech Speed
-            <select id="voiceSpeed">
-              <option value="0.9">Slow</option>
-              <option value="1" selected>Normal</option>
-              <option value="1.1">Fast</option>
-            </select>
-          </label>
-        </div>
-      </div>
+      </label>
     </div>
   </div>
-
   <div id="chatArea">
     <div id="chat"></div>
   </div>
 </div>
 
 <footer class="hidden">
-  <input id="userInput" placeholder="Type your message…" />
-  <button id="micBtn" onclick="startSpeechToSpeech()">🎤</button>
+  <input id="userInput" placeholder="Type a message…" />
+  <button id="micBtn">🎤</button>
   <button onclick="sendMessage()">Send</button>
+  <a href="#privacy" onclick="alert('Privacy page placeholder')">Privacy</a>
+  <a href="#support" onclick="alert('Support page placeholder')">Support</a>
 </footer>
 
-<div id="bottomLinks">
-  <a href="#" onclick="alert('Privacy Policy'); return false;">Privacy</a> |
-  <a href="#" onclick="alert('Support'); return false;">Support</a>
-</div>
-
-<!-- Onboarding Overlay -->
-<div id="onboarding" class="hidden">
-  <div class="onboardCard">
-    <h3>Welcome to Talk 2Me Nice</h3>
-    <p>Your companion can speak and listen.</p>
-    <p>You can change companions or voice settings anytime.</p>
-    <button onclick="finishOnboarding()">Let’s go</button>
-  </div>
-</div>
-
 <script>
-// ---------------- Companion Definitions ----------------
-const companions = {
-  Whisp:{name:"Whisp", voice:{input:true,output:true,speed:1},systemPrompt:"Gentle, supportive, calm."},
-  Ace:{name:"Ace", voice:{input:true,output:true,speed:1},systemPrompt:"Confident, playful, witty."},
-  Sage:{name:"Sage", voice:{input:true,output:true,speed:1},systemPrompt:"Thoughtful, clear, insightful."},
-  School:{name:"School Mode", voice:{input:false,output:true,speed:1},systemPrompt:"Polite, age-appropriate, educational."}
+// Companion color pickers
+document.getElementById("whispColorPicker").oninput=(e)=>{
+  document.querySelectorAll(".whispBody").forEach(el=>el.setAttribute("fill",e.target.value));
+};
+document.getElementById("starColorPicker").oninput=(e)=>{
+  document.getElementById("star").style.setProperty('--starColor',e.target.value);
 };
 
-// ---------------- Landing & Companion ----------------
-const companionCards=document.querySelectorAll(".companionCard");
-const nicknameInput=document.getElementById("nicknameInput");
-function setActiveCompanion(id){
-  companionCards.forEach(c=>c.classList.remove("active"));
-  document.querySelector(`.companionCard[data-companion='${id}']`)?.classList.add("active");
-  localStorage.setItem("companion",id);
-  applyVoiceRules();
-}
-companionCards.forEach(card=>card.addEventListener("click",()=>setActiveCompanion(card.dataset.companion)));
-function startChat(){
-  if(!nicknameInput.value.trim()){alert("Enter a nickname");return;}
-  localStorage.setItem("nickname",nicknameInput.value.trim());
+// Landing page start
+document.getElementById("startBtn").onclick=()=>{
+  const nick=document.getElementById("nicknameInput").value.trim();
+  if(!nick){alert("Enter a nickname");return;}
+  localStorage.setItem("nickname",nick);
   document.getElementById("landingPage").classList.add("hidden");
   document.getElementById("chatContainer").classList.remove("hidden");
   document.querySelector("footer").classList.remove("hidden");
-  document.getElementById("profileName").textContent=nicknameInput.value.trim();
+  document.getElementById("profileName").textContent=nick;
   document.getElementById("profileLanguage").textContent=localStorage.getItem("language")||"en-US";
-  document.getElementById("profileCompanion").textContent=localStorage.getItem("companion")||"Whisp";
+  document.getElementById("profileCompanion").textContent="Whisp";
   populateStarters();
-  applyVoiceRules();
-  checkOnboarding();
-}
-
-// ---------------- Starters ----------------
-const conversationStarters={
-  "Workplace":["Good morning!","Project update?","Ready to wrap up?"],
-  "Dating":["Grab coffee?","Take a walk?","How was your day?"],
-  "Travel":["Where is the train station?"],
-  "School":["How was class today?","Need help with homework?"],
-  "Advanced":["Did you see the game yesterday?"]
 };
+
+// Settings panel toggle
+document.getElementById("settingsBtn").onclick=()=>{ 
+  const panel=document.getElementById("settingsPanel");
+  panel.style.display=(panel.style.display==="none"||panel.style.display==="")?"block":"none";
+};
+
+// Conversation starters (daily)
+const conversationStarters={
+  "Workplace":["Good morning! How's your day starting?","Hi! Did you catch the latest project update?","Evening! Ready to wrap things up?"],
+  "Dating":["Hi there! Would you like to grab coffee?","Hey! Want to take a walk this afternoon?","Hello! How was your day today?"],
+  "Travel":["Hi! Where is the nearest train station?","Have you explored anywhere new?","Planning your next trip?"],
+  "School":["Hello! How was class today?","Do you need help with homework?","Ready to study something new?"],
+  "Advanced":["Hello! Did you see the game yesterday?","What’s your take on the news today?","Any interesting book you’re reading?"]
+};
+function getDailyStarter(category){
+  const today=new Date().toDateString();
+  const key=`starter_${category}`;
+  let stored=JSON.parse(localStorage.getItem(key))||{};
+  if(stored.date===today&&stored.phrase)return stored.phrase;
+  const options=conversationStarters[category];
+  const phrase=options[Math.floor(Math.random()*options.length)];
+  localStorage.setItem(key,JSON.stringify({date:today,phrase}));
+  return phrase;
+}
 function populateStarters(){
   const dd=document.getElementById("starterDropdown");
   dd.innerHTML=`<option value="">-- Select Starter --</option>`;
   Object.keys(conversationStarters).forEach(cat=>{
-    conversationStarters[cat].forEach(phrase=>{
-      const opt=document.createElement("option");
-      opt.value=phrase; opt.textContent=`${cat}: ${phrase}`;
-      dd.appendChild(opt);
-    });
+    const phrase=getDailyStarter(cat);
+    const opt=document.createElement("option");
+    opt.value=phrase; opt.textContent=`${cat}: ${phrase}`;
+    dd.appendChild(opt);
   });
 }
-function startStarter(){
-  const val=document.getElementById("starterDropdown").value;
-  if(val) sendMessage(val);
-}
+function startStarter(){ const val=document.getElementById("starterDropdown").value; if(val) sendMessage(val); }
 
-// ---------------- Settings Panel ----------------
-const gearBtn=document.getElementById("gearBtn");
-const settingsPanel=document.getElementById("settingsPanel");
-function toggleSettings(){settingsPanel.style.display=(settingsPanel.style.display==="flex"?"none":"flex");}
-
-// ---------------- Voice ----------------
-const voiceOutputToggle=document.getElementById("voiceOutputToggle");
-const voiceInputToggle=document.getElementById("voiceInputToggle");
-const voiceSpeed=document.getElementById("voiceSpeed");
-function loadVoiceSettings(){
-  const saved=JSON.parse(localStorage.getItem("voiceSettings"))||{output:true,input:true,speed:1};
-  voiceOutputToggle.checked=saved.output;
-  voiceInputToggle.checked=saved.input;
-  voiceSpeed.value=saved.speed;
-}
-function saveVoiceSettings(){
-  localStorage.setItem("voiceSettings",JSON.stringify({output:voiceOutputToggle.checked,input:voiceInputToggle.checked,speed:voiceSpeed.value}));
-  applyVoiceRules();
-}
-voiceOutputToggle.onchange=voiceInputToggle.onchange=voiceSpeed.onchange=saveVoiceSettings;
-loadVoiceSettings();
-
-const micBtn=document.getElementById("micBtn");
-let windowVoiceOutputAllowed=true;
-let windowVoiceSpeed=1;
-function applyVoiceRules(){
-  const companionId=localStorage.getItem("companion")||"Whisp";
-  const companion=companions[companionId];
-  const settings=JSON.parse(localStorage.getItem("voiceSettings"))||{output:true,input:true,speed:1};
-  micBtn.disabled=!companion.voice.input||!settings.input;
-  windowVoiceOutputAllowed=companion.voice.output&&settings.output;
-  windowVoiceSpeed=settings.speed;
-}
-function speakBotText(text){
-  if(!windowVoiceOutputAllowed)return;
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang=localStorage.getItem("language")||"en-US";
-  u.rate=windowVoiceSpeed;
-  speechSynthesis.speak(u);
-}
-
-// ---------------- Speech-to-Speech ----------------
-let speechMode=true;
-function startSpeechToSpeech(){
-  if(!speechMode||micBtn.disabled)return;
-  const recognition=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
-  recognition.lang=localStorage.getItem("language")||"en-US";
-  recognition.interimResults=false; recognition.continuous=false;
-  micBtn.classList.add("listening");
-  recognition.onresult=event=>{ const spoken=event.results[0][0].transcript; sendMessage(spoken); };
-  recognition.onend=()=>{ micBtn.classList.remove("listening"); if(speechMode)setTimeout(()=>recognition.start(),300); }
-  recognition.start();
-}
-
-// ---------------- Chat Handling ----------------
+// Chat logic
 const chat=document.getElementById("chat");
 function addMessage(text,sender){
   const div=document.createElement("div");
@@ -273,31 +195,15 @@ function addMessage(text,sender){
   chat.appendChild(div);
   chat.scrollTop=chat.scrollHeight;
 }
-function showTyping(text){
-  let i=0;
-  const div=document.createElement("div");
-  div.className="message bot";
-  chat.appendChild(div);
-  function type(){ if(i<text.length){ div.textContent+=text[i]; i++; setTimeout(type,20);} else {speakBotText(text); chat.scrollTop=chat.scrollHeight; } }
-  type();
-}
-
-// ---------------- AI Placeholder ----------------
-async function getAIResponse(userText){ return `Echo: ${userText}`; }
-
 async function sendMessage(msg=null){
   const input=document.getElementById("userInput");
-  if(msg) input.value=msg;
-  const val=input.value.trim(); if(!val)return;
-  addMessage(val,"user");
+  const text=msg||input.value.trim();
+  if(!text) return;
+  addMessage(text,"user");
   input.value="";
-  const response=await getAIResponse(val);
-  showTyping(response);
+  // Placeholder bot response
+  setTimeout(()=>addMessage(`Echo: ${text}`,"bot"),500);
 }
-
-// ---------------- Onboarding ----------------
-function checkOnboarding(){ if(!localStorage.getItem("onboarded")){document.getElementById("onboarding").classList.remove("hidden");} }
-function finishOnboarding(){ localStorage.setItem("onboarded","true"); document.getElementById("onboarding").classList.add("hidden"); }
 </script>
 </body>
 </html>
