@@ -106,6 +106,15 @@ body {
   text-align:center;
 }
 
+#starterSelect {
+  padding:0.6rem;
+  border-radius:12px;
+  border:none;
+  background:#1f232d;
+  color:var(--text-main);
+  cursor:pointer;
+}
+
 #chatArea {
   flex:1;
   display:flex;
@@ -177,170 +186,4 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
   <p>Choose your nickname and your companion's name to start chatting:</p>
   <input id="nicknameInput" placeholder="Your nickname" />
   <input id="companionInput" placeholder="Your companion's name" />
-  <button onclick="startChat()">Start Chatting</button>
-</div>
-
-<!-- Chat Container -->
-<div id="chatContainer" class="hidden">
-  <div id="profileSidebar">
-    <div class="profileInfo">
-      <p>👤 <strong id="profileName"></strong></p>
-      <p>🌍 <span id="profileLanguage">en-US</span></p>
-      <p>🧚 <span id="profileCompanion"></span></p>
-    </div>
-    <hr>
-    <p id="starterTitle">Conversation Starter</p>
-    <button class="packBtn" onclick="showStarter('Workplace')">Workplace</button>
-    <button class="packBtn" onclick="showStarter('Dating & Social')">Dating & Social</button>
-    <button class="packBtn" onclick="showStarter('Travel')">Travel</button>
-    <button class="packBtn" onclick="showStarter('Advanced Small Talk')">Advanced Small Talk</button>
-  </div>
-  <div id="chatArea">
-    <div id="starterBox" style="display:none;"></div>
-    <div id="chat"></div>
-  </div>
-</div>
-
-<!-- Footer -->
-<footer>
-  <div>
-    <a href="#">Privacy</a> | <a href="#">Support</a>
-  </div>
-  <div style="flex:1; display:flex; gap:0.5rem;">
-    <input id="userInput" placeholder="Type a word or phrase…" />
-    <button onclick="sendMessage()">Send</button>
-  </div>
-</footer>
-
-<script>
-/* Auto-load chat if returning user */
-window.addEventListener("load", () => {
-  const nick = localStorage.getItem("nickname");
-  const comp = localStorage.getItem("companion");
-  if(nick && comp){
-    document.getElementById("landing").classList.add("hidden");
-    document.getElementById("chatContainer").classList.remove("hidden");
-    initChat();
-  }
-});
-
-/* Landing page start */
-function startChat(){
-  const nick = document.getElementById("nicknameInput").value.trim();
-  const comp = document.getElementById("companionInput").value.trim();
-  if(!nick || !comp){
-    alert("Please enter both nicknames!");
-    return;
-  }
-  localStorage.setItem("nickname", nick);
-  localStorage.setItem("companion", comp);
-  document.getElementById("landing").classList.add("hidden");
-  document.getElementById("chatContainer").classList.remove("hidden");
-  initChat();
-}
-
-/* Initialize chat with saved names */
-function initChat(){
-  const nickname = localStorage.getItem("nickname") || "Friend";
-  const companion = localStorage.getItem("companion") || "Whisp";
-  document.getElementById("profileName").textContent = nickname;
-  document.getElementById("profileCompanion").textContent = companion;
-}
-
-/* Seasonal emoji */
-function getSeasonEmoji(){
-  const month = new Date().getMonth() + 1;
-  if(month>=12 || month<=2) return "❄️";
-  if(month>=3 && month<=5) return "🌸";
-  if(month>=6 && month<=8) return "☀️";
-  return "🍂";
-}
-
-/* Conversation starters */
-const season = getSeasonEmoji();
-const conversationStarters = {
-  "Workplace":[
-    { phrase:`${season} Good morning! How's your day starting?`, context:"morning" },
-    { phrase:`${season} Hi! Did you catch the latest project update?`, context:"afternoon" },
-    { phrase:`${season} Evening! Ready to wrap things up?`, context:"evening" }
-  ],
-  "Dating & Social":[
-    { phrase:`${season} Hi there! Would you like to grab coffee?`, context:"morning" },
-    { phrase:`${season} Hey! Want to take a walk this afternoon?`, context:"afternoon" },
-    { phrase:`${season} Hello! How was your day today?`, context:"evening" }
-  ],
-  "Travel":[ { phrase:`${season} Hi! Where is the nearest train station?`, context:"any" } ],
-  "Advanced Small Talk":[ { phrase:`${season} Hello! Did you see the game yesterday?`, context:"any" } ]
-};
-
-/* Time context */
-function getTimeContext(){
-  const hour = new Date().getHours();
-  if(hour>=5 && hour<12) return "morning";
-  if(hour>=12 && hour<18) return "afternoon";
-  return "evening";
-}
-
-/* Daily starter logic */
-function showStarter(pack){
-  const today = new Date().toDateString();
-  const storageKey = `starter_${pack}`;
-  let stored = JSON.parse(localStorage.getItem(storageKey)) || {};
-  if(stored.date === today){
-    displayStarter(stored.phrase);
-  } else {
-    const starters = conversationStarters[pack];
-    const timeCtx = getTimeContext();
-    let starter = starters.find(s=>s.context===timeCtx) || starters[0];
-    localStorage.setItem(storageKey, JSON.stringify({ date: today, phrase: starter.phrase }));
-    displayStarter(starter.phrase);
-  }
-}
-
-function displayStarter(phrase){
-  const starterBox = document.getElementById("starterBox");
-  starterBox.textContent = phrase;
-  starterBox.style.display="block";
-  starterBox.onclick = () => {
-    starterBox.style.display="none";
-    showTyping(phrase);
-  };
-}
-
-/* Chat handling */
-const chat = document.getElementById("chat");
-
-function addMessage(text, sender){
-  const div = document.createElement("div");
-  div.className = `message ${sender}`;
-  div.textContent = text;
-  chat.appendChild(div);
-  setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
-}
-
-/* Typing animation for bot */
-function showTyping(text){
-  const typingBubble = document.createElement("div");
-  typingBubble.className = "typing";
-  typingBubble.textContent = "Typing...";
-  chat.appendChild(typingBubble);
-  chat.scrollTop = chat.scrollHeight;
-  setTimeout(() => {
-    chat.removeChild(typingBubble);
-    addMessage(text, "bot");
-  }, 1000 + Math.random() * 1000);
-}
-
-/* Send message & Enter key support */
-const input = document.getElementById("userInput");
-
-function sendMessage(){
-  if(!input.value.trim()) return;
-  addMessage(input.value,"user");
-  input.value="";
-}
-
-input.addEventListener("keypress", e => { if(e.key==="Enter") sendMessage(); });
-</script>
-</body>
-</html>
+  <button onclick="startChat()"
