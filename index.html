@@ -1,3 +1,55 @@
+<!-- Welcome / Login Overlay -->
+<div id="welcomeOverlay">
+  <div class="welcomeCard">
+    <h3>Welcome to Talk 2Me Nice</h3>
+    <p>Enter a nickname and choose your companion to start chatting.</p>
+    
+    <input id="nicknameOverlay" placeholder="Enter your nickname" />
+
+    <div id="companionSelectorOverlay">
+      <h4>Choose Your Companion</h4>
+      <div class="companionGrid">
+        <div class="companionCardOverlay" data-companion="Whisp">
+          <h5>Whisp</h5>
+          <p>Gentle, supportive, calm</p>
+          <small>“I’m here with you. Take your time.”</small>
+        </div>
+        <div class="companionCardOverlay" data-companion="Ace">
+          <h5>Ace</h5>
+          <p>Confident, playful, witty</p>
+          <small>“You’ve got my attention — what’s on your mind?”</small>
+        </div>
+        <div class="companionCardOverlay" data-companion="Sage">
+          <h5>Sage</h5>
+          <p>Thoughtful, clear, insightful</p>
+          <small>“Let’s think this through carefully.”</small>
+        </div>
+        <div class="companionCardOverlay" data-companion="School">
+          <h5>School Mode</h5>
+          <p>Polite, age-appropriate, educational</p>
+          <small>“How can I help you learn today?”</small>
+        </div>
+      </div>
+    </div>
+
+    <div id="landingOptions">
+      <label>
+        Language: 
+        <select id="languageSelect">
+          <option value="en-US" selected>English</option>
+          <option value="es-ES">Spanish</option>
+          <option value="fr-FR">French</option>
+          <option value="de-DE">German</option>
+        </select>
+      </label>
+      <label>
+        <input type="checkbox" id="dummyModeToggle"> Dummy Mode (Test)
+      </label>
+    </div>
+
+    <button id="startChatBtn">Start Chat</button>
+  </div>
+</div>
 <!DOCTYPE html>
 <html lang="en">
 <head>
