@@ -354,14 +354,27 @@ function addMessage(text, sender){
 function showTyping(text){
   const typingBubble = document.createElement("div");
   typingBubble.className = "typing";
-  typingBubble.textContent = "Typing...";
   chat.appendChild(typingBubble);
+
+  let dots = 1;
+  typingBubble.textContent = "Typing" + ".".repeat(dots);
   chat.scrollTop = chat.scrollHeight;
-  setTimeout(()=>{
+
+  const interval = setInterval(() => {
+    dots = (dots % 3) + 1;
+    typingBubble.textContent = "Typing" + ".".repeat(dots);
+    chat.scrollTop = chat.scrollHeight;
+  }, 400);
+
+  // Random duration for realism
+  const duration = 1000 + Math.random() * 1000;
+  setTimeout(() => {
+    clearInterval(interval);
     chat.removeChild(typingBubble);
-    addMessage(text,"bot");
-  }, 1000 + Math.random()*1000);
+    addMessage(text, "bot");
+  }, duration);
 }
+
 
 /* Send message & Enter key */
 const input = document.getElementById("userInput");
