@@ -13,7 +13,6 @@
   --text-main: #e1e4ea;
   --text-muted: #a1a6b0;
 }
-
 body {
   margin:0;
   font-family:'Montserrat', system-ui,sans-serif;
@@ -23,7 +22,6 @@ body {
   flex-direction:column;
   min-height:100vh;
 }
-
 #chatContainer {
   display:flex;
   max-width:900px;
@@ -31,7 +29,6 @@ body {
   gap:1rem;
   flex:1;
 }
-
 #profileSidebar {
   width:220px;
   padding:1rem;
@@ -43,9 +40,7 @@ body {
   gap:1rem;
   box-shadow:0 6px 16px rgba(0,0,0,0.3);
 }
-
 #packs { display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem; }
-
 .packButton {
   background:#1f232d;
   color:var(--text-main);
@@ -57,7 +52,6 @@ body {
   font-size:0.9rem;
 }
 .packButton:hover { background:var(--accent); color:#1b1f27; transform:scale(1.03); }
-
 #chatArea {
   flex:1;
   display:flex;
@@ -67,7 +61,6 @@ body {
   padding:1rem;
   overflow-y:auto;
 }
-
 .message {
   max-width:75%;
   padding:0.8rem 1.2rem;
@@ -79,30 +72,15 @@ body {
 }
 .user { background:var(--accent); color:#1b1f27; align-self:flex-end; cursor:text; }
 .bot { background:var(--bg-card); align-self:flex-start; cursor:pointer; }
-
+.message span.word { text-decoration:underline; cursor:pointer; }
 #inputArea { display:flex; padding:0.8rem; gap:0.5rem; }
 #userInput { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main);}
 button.sendBtn { padding:0.6rem 1rem; border-radius:999px; border:none; background:var(--accent); cursor:pointer; transition:all 0.3s ease;}
 button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
-
 #nextPhrase { margin-top:0.5rem; padding:0.5rem 1rem; border-radius:999px; border:none; background:#6fa8dc; color:#1b1f27; cursor:pointer; display:none; }
 #nextPhrase:hover { background:#5b90c7; }
-
 @keyframes fadeInMessage { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
-
-#gear {
-  position:fixed;
-  bottom:90px; right:20px;
-  width:44px; height:44px;
-  border-radius:50%;
-  background:var(--bg-card);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:20px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.3);
-}
+#gear { position:fixed; bottom:90px; right:20px; width:44px; height:44px; border-radius:50%; background:var(--bg-card); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:20px; box-shadow:0 4px 12px rgba(0,0,0,0.3);}
 #options { position:fixed; bottom:150px; right:20px; background:var(--bg-card); padding:1rem; border-radius:16px; width:260px; display:none; }
 #options label { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; }
 </style>
@@ -110,7 +88,6 @@ button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
 <body>
 
 <div id="chatContainer">
-
   <div id="profileSidebar">
     <h3 id="profileName"></h3>
     <p id="profileLanguage"></p>
@@ -118,7 +95,6 @@ button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
     <div id="packs"></div>
     <button id="nextPhrase" onclick="nextPhrase()">Next Phrase →</button>
   </div>
-
   <div id="chatArea"></div>
 </div>
 
@@ -168,10 +144,9 @@ const conversationPresets = {
   ]
 };
 
-// Select one daily pack/phrase
 function getDailyPreset() {
   const keys = Object.keys(conversationPresets);
-  const today = new Date().getDate(); // day of month
+  const today = new Date().getDate();
   const index = today % keys.length;
   const packName = keys[index];
   const phrases = conversationPresets[packName];
@@ -183,30 +158,38 @@ let daily = getDailyPreset();
 let currentIndex = daily.phraseIndex;
 let currentPack = daily.packName;
 
-// Show only one daily starter
+// Only show one starter
 packsDiv.innerHTML = `<div class="packButton" onclick="startDaily()">${daily.packName} → ${daily.phrases[currentIndex]}</div>`;
 
 function startDaily() {
   chatArea.innerHTML = "";
-  addMessage(`Today's conversation starter: ${daily.phrases[currentIndex]}`, "bot");
+  addBotMessage(daily.phrases[currentIndex]);
   nextBtn.style.display = "inline-block";
 }
 
 function nextPhrase(){
   currentIndex++;
   if(currentIndex >= daily.phrases.length){
-    addMessage("You've finished all phrases for today! 🎉", "bot");
+    addBotMessage("You've finished all phrases for today! 🎉");
     nextBtn.style.display = "none";
     return;
   }
-  addMessage(daily.phrases[currentIndex], "bot");
+  addBotMessage(daily.phrases[currentIndex]);
 }
 
-function addMessage(text,sender){
+function addBotMessage(text){
   const div=document.createElement("div");
-  div.className=`message ${sender}`;
-  div.textContent=text;
-  if(sender==="bot") div.onclick = ()=> speak(text);
+  div.className="message bot";
+  
+  // Split into words for clickable pronunciation
+  text.split(" ").forEach(word=>{
+    const span=document.createElement("span");
+    span.className="word";
+    span.textContent = word + " ";
+    span.onclick = ()=> speakWord(word);
+    div.appendChild(span);
+  });
+
   chatArea.appendChild(div);
   chatArea.scrollTop = chatArea.scrollHeight;
 }
@@ -214,12 +197,16 @@ function addMessage(text,sender){
 function sendMessage(){
   const input = document.getElementById("userInput");
   if(!input.value.trim()) return;
-  addMessage(input.value,"user");
+  const div = document.createElement("div");
+  div.className="message user";
+  div.textContent = input.value;
+  chatArea.appendChild(div);
   input.value="";
+  chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-function speak(text){
-  const u = new SpeechSynthesisUtterance(text);
+function speakWord(word){
+  const u = new SpeechSynthesisUtterance(word);
   u.lang = language;
   speechSynthesis.speak(u);
 }
