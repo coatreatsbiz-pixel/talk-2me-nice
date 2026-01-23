@@ -1,13 +1,3 @@
-<p style="font-size:0.8rem; color:#a1a6b0;">
-  Learner Profile
-</p>
-<p style="font-size:0.9rem;">
-  👤 <strong id="profileName"></strong><br>
-  🌍 <span id="profileLanguage"></span><br>
-  🧚 <span id="profileCompanion"></span>
-</p>
-<hr style="border:0;border-top:1px solid #333;margin:0.7rem 0;">
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,7 +97,7 @@ button {
   font-size:20px;
 }
 
-/* Options */
+/* Options panel */
 #options {
   position:fixed;
   bottom:150px;
@@ -144,7 +134,7 @@ button {
 
 <header>
   <h2 id="greeting"></h2>
-<p style="font-size:0.8rem;color:#a1a6b0;">Step 2 of 2 · Conversation</p>
+  <p style="font-size:0.8rem;color:#a1a6b0;">Step 2 of 2 · Conversation</p>
 </header>
 
 <div id="chat"></div>
@@ -157,6 +147,16 @@ button {
 <div id="gear" onclick="toggleOptions()">⚙️</div>
 
 <div id="options">
+  <!-- Learner Profile -->
+  <p style="font-size:0.8rem; color:#a1a6b0;">Learner Profile</p>
+  <p style="font-size:0.9rem;">
+    👤 <strong id="profileName"></strong><br>
+    🌍 <span id="profileLanguage"></span><br>
+    🧚 <span id="profileCompanion"></span>
+  </p>
+  <hr style="border:0;border-top:1px solid #333;margin:0.7rem 0;">
+
+  <!-- Pronunciation toggle -->
   <label>
     <input type="checkbox" id="phoneticToggle" />
     Pronunciation mode
@@ -170,28 +170,29 @@ button {
 </div>
 
 <script>
-document.getElementById("profileName").textContent = nickname;
-document.getElementById("profileLanguage").textContent = language;
-document.getElementById("profileCompanion").textContent = companion;
-  
+// Load stored learner info
 const nickname = localStorage.getItem("nickname") || "Friend";
 const language = localStorage.getItem("language") || "en-US";
 const companion = localStorage.getItem("companion") || "Whisp";
 
-document.getElementById("greeting").textContent =
-  `Hi ${nickname} 🌱 I'm ${companion}.`;
+// Set greeting
+document.getElementById("greeting").textContent = `Hi ${nickname} 🌱 I'm ${companion}.`;
 
-document.getElementById("languageInfo").textContent =
-  `Learning language: ${language}`;
+// Populate learner profile
+document.getElementById("profileName").textContent = nickname;
+document.getElementById("profileLanguage").textContent = language;
+document.getElementById("profileCompanion").textContent = companion;
 
 const chat = document.getElementById("chat");
 
+// Speech function
 function speak(text){
   const u=new SpeechSynthesisUtterance(text);
   u.lang=language;
   speechSynthesis.speak(u);
 }
 
+// Simple phonetic hint
 function simplePhonetic(word){
   return word
     .replace(/th/g,"th")
@@ -200,6 +201,7 @@ function simplePhonetic(word){
     .replace(/ing/g,"ing");
 }
 
+// Add message to chat
 function addMessage(text,sender){
   const div=document.createElement("div");
   div.className=`message ${sender}`;
@@ -223,9 +225,10 @@ function addMessage(text,sender){
   chat.scrollTop=chat.scrollHeight;
 }
 
+// Send user message
 function sendMessage(){
   const i=document.getElementById("userInput");
-  if(!i.value.trim())return;
+  if(!i.value.trim()) return;
   addMessage(i.value,"user");
   i.value="";
   setTimeout(()=>{
@@ -233,14 +236,16 @@ function sendMessage(){
   },500);
 }
 
+// Initial message
 addMessage("This is your calm space. Use the gear ⚙️ for help.","bot");
 
+// Toggle options panel
 function toggleOptions(){
   const o=document.getElementById("options");
   o.style.display=o.style.display==="block"?"none":"block";
 }
 
-/* Alphabet */
+// Alphabet
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l=>{
   const d=document.createElement("div");
   d.className="tile";
@@ -249,7 +254,7 @@ function toggleOptions(){
   document.getElementById("alphabet").appendChild(d);
 });
 
-/* Numbers */
+// Numbers
 "0123456789".split("").forEach(n=>{
   const d=document.createElement("div");
   d.className="tile";
