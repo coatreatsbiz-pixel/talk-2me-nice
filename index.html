@@ -12,6 +12,39 @@
   --accent: #ffb86c;
   --text-main: #e1e4ea;
   --text-muted: #a1a6b0;
+  /* Sticky footer adjustments */
+#chatContainer {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 1rem;
+  animation: fadeIn 0.8s ease-out;
+  min-height: calc(100vh - 80px); /* leave space for footer */
+}
+footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  padding: 0.8rem;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  z-index: 10;
+  align-items: center;
+}
+
+/* Privacy & Support links at bottom of sidebar */
+#sidebarLinks {
+  margin-top: auto;
+  font-size: 0.8rem;
+  text-align: center;
+}
+#sidebarLinks a {
+  color: var(--text-muted);
+  text-decoration: none;
+  margin: 0 0.4rem;
+}
+#sidebarLinks a:hover {
+  text-decoration: underline;
+  color: var(--accent);
 }
 
 /* Basic layout */
