@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Talk 2Me Nice — Conversation</title>
-
+<title>Talk 2Me Nice — Welcome</title>
 <style>
 :root {
   --bg-main:#1b1f27;
@@ -19,243 +18,104 @@ body {
   font-family:system-ui, sans-serif;
   background:var(--bg-main);
   color:var(--text-main);
-  display:flex;
-  flex-direction:column;
-  height:100vh;
 }
 
-header {
-  padding:1rem;
+.container {
+  max-width:500px;
+  margin:3rem auto;
+  padding:2rem;
+  background: var(--bg-card);
+  border-radius:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
   text-align:center;
-  border-bottom:1px solid #333;
 }
 
-#chat {
-  flex:1;
-  padding:1rem;
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-}
+h1 { font-size:2rem; margin-bottom:1rem; }
+p { color:var(--text-muted); margin-bottom:1.5rem; }
 
-.message {
-  max-width:80%;
-  padding:0.7rem 1rem;
-  margin-bottom:0.7rem;
-  border-radius:16px;
-  line-height:1.4;
-}
+label { display:block; margin-top:1rem; margin-bottom:0.3rem; text-align:left; }
 
-.user {
-  background:var(--accent);
-  color:#1b1f27;
-  align-self:flex-end;
-}
-
-.bot {
-  background:var(--bg-card);
-  align-self:flex-start;
-}
-
-footer {
-  display:flex;
-  padding:0.8rem;
-  gap:0.5rem;
-  border-top:1px solid #333;
-}
-
-input {
-  flex:1;
+input, select {
+  width:100%;
   padding:0.6rem;
-  border-radius:12px;
-  border:none;
+  border-radius:10px;
+  border:1px solid var(--accent);
   background:#1f232d;
   color:var(--text-main);
+  font-size:1rem;
 }
 
 button {
-  padding:0.6rem 1rem;
+  margin-top:1.5rem;
+  padding:0.8rem 1.5rem;
   border-radius:999px;
   border:none;
   background:var(--accent);
+  color:#1b1f27;
   cursor:pointer;
+  font-size:1rem;
+  transition:all 0.3s ease;
+}
+button:hover {
+  background:#5b90c7;
+  transform:scale(1.03);
 }
 
-#gear {
-  position:fixed;
-  bottom:90px;
-  right:20px;
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:var(--bg-card);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:20px;
-}
-
-#options {
-  position:fixed;
-  bottom:150px;
-  right:20px;
-  background:var(--bg-card);
-  padding:1rem;
-  border-radius:16px;
-  width:260px;
-  display:none;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  gap:0.4rem;
-}
-
-.tile {
-  background:#1f232d;
-  padding:0.5rem;
-  text-align:center;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.word {
-  cursor:pointer;
-  text-decoration:underline;
-}
+footer { margin-top:2rem; font-size:0.85rem; color:var(--text-muted); }
+footer a { color:var(--text-muted); text-decoration:none; margin:0 0.5rem; }
+footer a:hover { text-decoration:underline; }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h2 id="greeting"></h2>
-  <p style="font-size:0.8rem;color:#a1a6b0;">Step 2 of 2 · Conversation</p>
-</header>
+<div class="container">
+  <p style="text-align:center; font-size:0.85rem; color:#a1a6b0;">Step 1 of 2 · Setup</p>
+  <h1>Welcome to Talk 2Me Nice 💛</h1>
+  <p>Set up your account and get ready to learn naturally.</p>
 
-<!-- Chat area -->
-<div id="chat"></div>
+  <label for="nickname">Nickname:</label>
+  <input type="text" id="nickname" placeholder="Your nickname">
 
-<footer>
-  <input id="userInput" placeholder="Type a word or phrase…" />
-  <button onclick="sendMessage()">Send</button>
-</footer>
+  <label for="language">Choose Your Language (Free):</label>
+  <select id="language">
+    <option value="en-US">English ✔</option>
+    <option value="es-ES">Spanish ✔</option>
+    <option value="fr-FR">French ✔</option>
+    <option value="de-DE">German ✔</option>
+    <option value="zh-CN">Chinese ✔</option>
+    <option value="ja-JP" disabled>Japanese 🔒</option>
+    <option value="ko-KR" disabled>Korean 🔒</option>
+    <option value="it-IT" disabled>Italian 🔒</option>
+  </select>
 
-<!-- Gear -->
-<div id="gear" onclick="toggleOptions()">⚙️</div>
+  <label for="companion">Choose a Companion:</label>
+  <select id="companion">
+    <option value="whisp">Whisp ✔</option>
+    <option value="star" disabled>Star 🔒</option>
+    <option value="puff" disabled>Puff 🔒</option>
+  </select>
 
-<!-- Options panel -->
-<div id="options">
-  <!-- Learner Profile -->
-  <p style="font-size:0.8rem;color:#a1a6b0;">Learner Profile</p>
-  <p style="font-size:0.9rem;">
-    👤 <strong id="profileName"></strong><br>
-    🌍 <span id="profileLanguage"></span><br>
-    🧚 <span id="profileCompanion"></span>
-  </p>
-  <hr style="border:0;border-top:1px solid #333;margin:0.7rem 0;">
+  <button onclick="startConversation()">Continue →</button>
 
-  <!-- Pronunciation toggle -->
-  <label>
-    <input type="checkbox" id="phoneticToggle" />
-    Pronunciation mode
-  </label>
-
-  <p>Alphabet</p>
-  <div class="grid" id="alphabet"></div>
-
-  <p>Numbers</p>
-  <div class="grid" id="numbers"></div>
+  <footer>
+    <a href="privacy.html">Privacy</a> •
+    <a href="terms.html">Support</a>
+  </footer>
 </div>
 
 <script>
-// Load stored info
-const nickname = localStorage.getItem("nickname") || "Friend";
-const language = localStorage.getItem("language") || "en-US";
-const companion = localStorage.getItem("companion") || "Whisp";
+function startConversation(){
+  const nickname = document.getElementById("nickname").value || "Friend";
+  const language = document.getElementById("language").value;
+  const companion = document.getElementById("companion").value;
 
-// Greeting
-document.getElementById("greeting").textContent = `Hi ${nickname} 🌱 I'm ${companion}.`;
+  localStorage.setItem("nickname", nickname);
+  localStorage.setItem("language", language);
+  localStorage.setItem("companion", companion);
 
-// Learner profile
-document.getElementById("profileName").textContent = nickname;
-document.getElementById("profileLanguage").textContent = language;
-document.getElementById("profileCompanion").textContent = companion;
-
-const chat = document.getElementById("chat");
-
-// Speech
-function speak(text){
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang=language;
-  speechSynthesis.speak(u);
+  window.location.href = "index.html"; // go to Step 2 page
 }
-
-// Simple phonetic hint
-function simplePhonetic(word){
-  return word
-    .replace(/th/g,"th")
-    .replace(/ph/g,"f")
-    .replace(/tion/g,"shun")
-    .replace(/ing/g,"ing");
-}
-
-// Add message
-function addMessage(text,sender){
-  const div=document.createElement("div");
-  div.className=`message ${sender}`;
-  if(sender==="bot" && document.getElementById("phoneticToggle").checked){
-    text.split(" ").forEach(w=>{
-      const span=document.createElement("span");
-      span.className="word";
-      span.textContent=w+" ";
-      span.onclick=()=>{ speak(w); alert(simplePhonetic(w)); };
-      div.appendChild(span);
-    });
-  } else {
-    div.textContent=text;
-  }
-  chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-// Send user message
-function sendMessage(){
-  const i=document.getElementById("userInput");
-  if(!i.value.trim()) return;
-  addMessage(i.value,"user");
-  i.value="";
-  setTimeout(()=>addMessage("Try tapping a word if pronunciation mode is on 💛","bot"),500);
-}
-
-// Initial bot message
-addMessage("This is your calm space. Use the gear ⚙️ for help.","bot");
-
-// Toggle options panel
-function toggleOptions(){
-  const o=document.getElementById("options");
-  o.style.display = o.style.display==="block"?"none":"block";
-}
-
-// Alphabet
-"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l=>{
-  const d=document.createElement("div");
-  d.className="tile";
-  d.textContent=l;
-  d.onclick=()=>speak(l);
-  document.getElementById("alphabet").appendChild(d);
-});
-
-// Numbers
-"0123456789".split("").forEach(n=>{
-  const d=document.createElement("div");
-  d.className="tile";
-  d.textContent=n;
-  d.onclick=()=>speak(n);
-  document.getElementById("numbers").appendChild(d);
-});
 </script>
 
 </body>
