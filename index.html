@@ -167,7 +167,6 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
 
 @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 @keyframes fadeInMessage { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
-
 </style>
 </head>
 <body>
@@ -214,6 +213,17 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
 </footer>
 
 <script>
+/* Auto-load chat if returning user */
+window.addEventListener("load", () => {
+  const nick = localStorage.getItem("nickname");
+  const comp = localStorage.getItem("companion");
+  if(nick && comp){
+    document.getElementById("landing").classList.add("hidden");
+    document.getElementById("chatContainer").classList.remove("hidden");
+    initChat();
+  }
+});
+
 /* Landing page start */
 function startChat(){
   const nick = document.getElementById("nicknameInput").value.trim();
@@ -283,4 +293,54 @@ function showStarter(pack){
     const timeCtx = getTimeContext();
     let starter = starters.find(s=>s.context===timeCtx) || starters[0];
     localStorage.setItem(storageKey, JSON.stringify({ date: today, phrase: starter.phrase }));
-    displayStarter(starter.
+    displayStarter(starter.phrase);
+  }
+}
+
+function displayStarter(phrase){
+  const starterBox = document.getElementById("starterBox");
+  starterBox.textContent = phrase;
+  starterBox.style.display="block";
+  starterBox.onclick = () => {
+    starterBox.style.display="none";
+    showTyping(phrase);
+  };
+}
+
+/* Chat handling */
+const chat = document.getElementById("chat");
+
+function addMessage(text, sender){
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
+  div.textContent = text;
+  chat.appendChild(div);
+  setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
+}
+
+/* Typing animation for bot */
+function showTyping(text){
+  const typingBubble = document.createElement("div");
+  typingBubble.className = "typing";
+  typingBubble.textContent = "Typing...";
+  chat.appendChild(typingBubble);
+  chat.scrollTop = chat.scrollHeight;
+  setTimeout(() => {
+    chat.removeChild(typingBubble);
+    addMessage(text, "bot");
+  }, 1000 + Math.random() * 1000);
+}
+
+/* Send message & Enter key support */
+const input = document.getElementById("userInput");
+
+function sendMessage(){
+  if(!input.value.trim()) return;
+  addMessage(input.value,"user");
+  input.value="";
+}
+
+input.addEventListener("keypress", e => { if(e.key==="Enter") sendMessage(); });
+</script>
+</body>
+</html>
