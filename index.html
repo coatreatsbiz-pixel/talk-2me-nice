@@ -301,4 +301,116 @@ const conversationStarters = {
   "Workplace":[
     { phrase:`${season} Good morning! How's your day starting?`, context:"morning" },
     { phrase:`${season} Hi! Did you catch the latest project update?`, context:"afternoon" },
-    { phrase:`${season} Evening! Ready to wrap things
+    { phrase:`${season} Evening! Ready to wrap things up?`, context:"evening" }
+  ],
+  "Dating & Social":[
+    { phrase:`${season} Hi there! Would you like to grab coffee?`, context:"morning" },
+    { phrase:`${season} Hey! Want to take a walk this afternoon?`, context:"afternoon" },
+    { phrase:`${season} Hello! How was your day today?`, context:"evening" }
+  ],
+  "Travel":[ { phrase:`${season} Hi! Where is the nearest train station?`, context:"any" } ],
+  "Advanced Small Talk":[ { phrase:`${season} Hello! Did you see the game yesterday?`, context:"any" } ],
+  "School":[
+    { phrase:`${season} Hey! How’s your homework going?`, context:"any" },
+    { phrase:`${season} Did you catch the game at school today?`, context:"any" },
+    { phrase:`${season} Who’s your favorite teacher this year?`, context:"any" }
+  ]
+};
+
+/* Time context */
+function getTimeContext(){
+  const hour = new Date().getHours();
+  if(hour>=5 && hour<12) return "morning";
+  if(hour>=12 && hour<18) return "afternoon";
+  return "evening";
+}
+
+/* Select starter from dropdown */
+function selectStarter(pack){
+  if(!pack) return;
+  const starters = conversationStarters[pack];
+  const timeCtx = getTimeContext();
+  const starter = starters.find(s=>s.context===timeCtx) || starters[0];
+  displayStarter(starter.phrase);
+  document.getElementById("starterSelect").value = "";
+}
+
+/* Display starter with typing animation */
+function displayStarter(phrase){
+  const starterBox = document.getElementById("starterBox");
+  starterBox.textContent = phrase;
+  starterBox.style.display="block";
+  starterBox.onclick = () => {
+    starterBox.style.display="none";
+    showTyping(phrase);
+  };
+}
+
+/* Chat handling */
+const chat = document.getElementById("chat");
+function addMessage(text,sender){
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
+  div.textContent = text;
+  chat.appendChild(div);
+  setTimeout(()=>chat.scrollTop=chat.scrollHeight,50);
+}
+
+/* Mock translation function (replace with API later) */
+async function translateText(text,targetLang){
+  // For now, return the same text; later call real translation API
+  return text;
+}
+
+/* Typing animation with TTS and translation */
+async function showTyping(originalText){
+  const selectedLang = localStorage.getItem("language") || "en-US";
+
+  const typingBubble = document.createElement("div");
+  typingBubble.className = "typing";
+  chat.appendChild(typingBubble);
+
+  let dots=1;
+  typingBubble.textContent = "Typing" + ".".repeat(dots);
+  chat.scrollTop = chat.scrollHeight;
+
+  const interval = setInterval(() => {
+    dots = (dots % 3) + 1;
+    typingBubble.textContent = "Typing" + ".".repeat(dots);
+    chat.scrollTop = chat.scrollHeight;
+  },400);
+
+  const duration = 1000 + Math.random()*1000;
+  setTimeout(async ()=>{
+    clearInterval(interval);
+    chat.removeChild(typingBubble);
+
+    // Translate before showing
+    const botText = await translateText(originalText,selectedLang);
+    addMessage(botText,"bot");
+
+    // Speak it
+    speakBotText(botText,selectedLang);
+  },duration);
+}
+
+/* TTS function */
+function speakBotText(text,lang="en-US"){
+  if(!window.speechSynthesis) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = lang;
+  speechSynthesis.speak(utter);
+}
+
+/* Send message & Enter key */
+const input = document.getElementById("userInput");
+function sendMessage(msg=null){
+  const val = msg || input.value.trim();
+  if(!val) return;
+  addMessage(val,"user");
+  input.value="";
+}
+input.addEventListener("keypress", e => { if(e.key==="Enter") sendMessage(); });
+</script>
+</body>
+</html>
