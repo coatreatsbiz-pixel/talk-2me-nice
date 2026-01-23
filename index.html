@@ -60,20 +60,18 @@ footer a:hover { text-decoration:underline; }
   <label for="nickname">Nickname:</label>
   <input type="text" id="nickname" placeholder="Your nickname">
 
-  <label for="language">Select Your Language (Free):</label>
-  <select id="language">
-    <!-- Free languages -->
-    <option value="en-US">English ✔</option>
-    <option value="es-ES">Spanish ✔</option>
-    <option value="fr-FR">French ✔</option>
-    <option value="de-DE">German ✔</option>
-    <option value="zh-CN">Chinese ✔</option>
+ <label for="language">Select Your Language (Free):</label>
+<select id="language">
+  <option value="en-US">English ✔</option>
+  <option value="es-ES">Spanish ✔</option>
+  <option value="fr-FR">French ✔</option>
+  <option value="de-DE">German ✔</option>
+  <option value="zh-CN">Chinese ✔</option>
 
-    <!-- Locked / Nice+ -->
-    <option value="ja-JP" data-locked="true">Japanese 🔒</option>
-    <option value="ko-KR" data-locked="true">Korean 🔒</option>
-    <option value="it-IT" data-locked="true">Italian 🔒</option>
-  </select>
+  <option value="ja-JP" disabled>Japanese 🔒</option>
+  <option value="ko-KR" disabled>Korean 🔒</option>
+  <option value="it-IT" disabled>Italian 🔒</option>
+</select>
 
   <label for="companion">Choose a Companion:</label>
   <select id="companion">
