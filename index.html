@@ -187,6 +187,7 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
   <input id="nicknameInput" placeholder="Your nickname" />
   <input id="companionInput" placeholder="Your companion's name" />
   <button onclick="startChat()">Start Chatting</button>
+  <button onclick="startDummyMode()">Try Dummy Mode</button>
 </div>
 
 <!-- Chat Container -->
@@ -252,6 +253,25 @@ function startChat(){
   initChat();
 }
 
+/* Dummy mode for testing site */
+function startDummyMode(){
+  localStorage.setItem("nickname", "Tester");
+  localStorage.setItem("companion", "Whisp");
+  document.getElementById("landing").classList.add("hidden");
+  document.getElementById("chatContainer").classList.remove("hidden");
+  initChat();
+
+  // Show a random starter automatically
+  setTimeout(() => {
+    const packs = ["Workplace","Dating & Social","Travel","Advanced Small Talk","School"];
+    const randomPack = packs[Math.floor(Math.random()*packs.length)];
+    selectStarter(randomPack);
+
+    // Add dummy user message
+    setTimeout(()=>addMessage("Hello, this is a test message!", "user"), 1500);
+  }, 500);
+}
+
 /* Initialize chat with saved names */
 function initChat(){
   const nickname = localStorage.getItem("nickname") || "Friend";
@@ -268,7 +288,6 @@ function getSeasonEmoji(){
   if(month>=6 && month<=8) return "☀️";
   return "🍂";
 }
-
 const season = getSeasonEmoji();
 
 /* Conversation starters */
@@ -328,7 +347,7 @@ function addMessage(text, sender){
   div.className = `message ${sender}`;
   div.textContent = text;
   chat.appendChild(div);
-  setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
+  setTimeout(()=>chat.scrollTop=chat.scrollHeight,50);
 }
 
 /* Typing animation for bot */
@@ -338,10 +357,10 @@ function showTyping(text){
   typingBubble.textContent = "Typing...";
   chat.appendChild(typingBubble);
   chat.scrollTop = chat.scrollHeight;
-  setTimeout(() => {
+  setTimeout(()=>{
     chat.removeChild(typingBubble);
-    addMessage(text, "bot");
-  }, 1000 + Math.random() * 1000);
+    addMessage(text,"bot");
+  }, 1000 + Math.random()*1000);
 }
 
 /* Send message & Enter key */
