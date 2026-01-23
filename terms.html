@@ -13,15 +13,16 @@
   --text-main: #e1e4ea;
   --text-muted: #a1a6b0;
 }
+
 /* Base styles */
 body { margin:0; font-family:'Montserrat',sans-serif; background: var(--bg-main); color: var(--text-main); display:flex; flex-direction:column; min-height:100vh; }
-h3,h4 { font-family:'Playfair Display', serif; margin:0; }
-button { font-family:'Montserrat', sans-serif; cursor:pointer; }
+h1,h3,h4 { font-family:'Playfair Display', serif; margin:0; }
+button { font-family:'Montserrat',sans-serif; cursor:pointer; }
 .hidden { display:none; }
 
 /* Landing Page */
 #landingPage { max-width:500px; margin:4rem auto; text-align:center; }
-#landingPage h1 { font-family:'Playfair Display', serif; font-size:2.5rem; color:var(--accent); margin-bottom:1rem; }
+#landingPage h1 { font-size:2.5rem; color:var(--accent); margin-bottom:1rem; }
 #landingPage input { padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); margin-bottom:1rem; width:100%; }
 #landingPage button { padding:0.8rem 1.2rem; border-radius:999px; border:none; background: var(--accent); color:#1b1f27; font-weight:600; width:100%; transition:0.3s; }
 #landingPage button:hover { transform:scale(1.05); background:#ff9f40; }
@@ -60,6 +61,7 @@ footer { display:flex; padding:0.6rem; gap:0.5rem; align-items:center; backgroun
 footer input { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); }
 footer button { padding:0.6rem 1rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer; transition:0.3s; }
 footer button:hover { transform:scale(1.05); background:#ff9f40; }
+footer a { color:var(--accent); text-decoration:none; font-size:0.85rem; }
 
 /* Options Panel */
 #optionsPanel { display:none; flex-direction:column; gap:0.8rem; background:#1f232d; padding:0.8rem; border-radius:14px; }
@@ -85,10 +87,10 @@ footer button:hover { transform:scale(1.05); background:#ff9f40; }
   <div id="companionSelector">
     <h3>Choose Your Companion</h3>
     <div class="companionGrid">
-      <div class="companionCard" data-companion="Whisp"><h4>Whisp</h4><p>Gentle, supportive</p><small class="preview">“I’m here with you.”</small></div>
-      <div class="companionCard" data-companion="Robot"><h4>Robot</h4><p>Smart, playful</p><small class="preview">“Ready to assist!”</small></div>
-      <div class="companionCard" data-companion="Star"><h4>Star</h4><p>Bright, energetic</p><small class="preview">“Let’s shine together!”</small></div>
-      <div class="companionCard" data-companion="Cloud"><h4>Cloud</h4><p>Calm, soft</p><small class="preview">“Floating with you.”</small></div>
+      <div class="companionCard" data-companion="Whisp"><h4>Whisp</h4><p>Gentle, supportive</p><small>“I’m here with you.”</small></div>
+      <div class="companionCard" data-companion="Robot"><h4>Robot</h4><p>Smart, playful</p><small>“Ready to assist!”</small></div>
+      <div class="companionCard" data-companion="Star"><h4>Star</h4><p>Bright, energetic</p><small>“Let’s shine together!”</small></div>
+      <div class="companionCard" data-companion="Cloud"><h4>Cloud</h4><p>Calm, soft</p><small>“Floating with you.”</small></div>
     </div>
   </div>
   <button onclick="startChat()">Start Chat</button>
@@ -118,7 +120,21 @@ footer button:hover { transform:scale(1.05); background:#ff9f40; }
           <option value="1.1">Fast</option>
         </select>
       </label>
-      <label>Companion Color <input type="color" id="compColor"></label>
+      <label>Language
+        <select id="languageSelect">
+          <option value="en-US">English</option>
+          <option value="es-ES">Spanish</option>
+          <option value="fr-FR">French</option>
+        </select>
+      </label>
+      <label>Tone
+        <select id="toneSelect">
+          <option value="friendly">Friendly</option>
+          <option value="formal">Formal</option>
+          <option value="playful">Playful</option>
+        </select>
+      </label>
+      <label>Companion Color <input type="color" id="compColor" value="#ffb86c"></label>
     </div>
   </div>
 
@@ -138,30 +154,27 @@ footer button:hover { transform:scale(1.05); background:#ff9f40; }
   <a href="#" onclick="returnToChat()">Privacy</a> | <a href="#" onclick="returnToChat()">Support</a>
 </footer>
 
-<!-- Onboarding Overlay -->
 <div id="onboarding" class="hidden">
   <div class="onboardCard">
     <h3>Welcome to Talk 2Me Nice</h3>
     <p>Your companion can speak and listen.</p>
-    <p>You can change companions or voice settings anytime.</p>
+    <p>You can change companions, voice, language, and tone anytime.</p>
     <button onclick="finishOnboarding()">Let’s go</button>
   </div>
 </div>
 
 <script>
-// -------------------- COMPANIONS --------------------
+// ---------------- COMPANIONS ----------------
 const companions = {
-  Whisp:{name:"Whisp", voice:{input:true,output:true}}, 
-  Robot:{name:"Robot", voice:{input:true,output:true}}, 
-  Star:{name:"Star", voice:{input:true,output:true}}, 
-  Cloud:{name:"Cloud", voice:{input:true,output:true}}
+  Whisp:{name:"Whisp", voice:{input:true,output:true}, expression:{eyes:0.5,mouth:0.5}},
+  Robot:{name:"Robot", voice:{input:true,output:true}, expression:{eyes:0.5,mouth:0.5}},
+  Star:{name:"Star", voice:{input:true,output:true}, expression:{eyes:0.5,mouth:0.5}},
+  Cloud:{name:"Cloud", voice:{input:true,output:true}, expression:{eyes:0.5,mouth:0.5}}
 };
-
 const companionCards = document.querySelectorAll(".companionCard");
-const nicknameInput = document.getElementById("nicknameInput");
-let activeCompanion = "Whisp";
+let activeCompanion="Whisp";
 
-// -------------------- LANDING --------------------
+// ---------------- LANDING ----------------
 function setActiveCompanion(id){
   companionCards.forEach(c=>c.classList.remove("active"));
   document.querySelector(`.companionCard[data-companion='${id}']`)?.classList.add("active");
@@ -172,25 +185,26 @@ function setActiveCompanion(id){
 companionCards.forEach(c=>c.addEventListener("click",()=>setActiveCompanion(c.dataset.companion)));
 
 function startChat(){
-  if(!nicknameInput.value.trim()){ alert("Enter nickname"); return; }
-  localStorage.setItem("nickname",nicknameInput.value.trim());
+  const nickname=document.getElementById("nicknameInput").value.trim();
+  if(!nickname){ alert("Enter nickname"); return; }
+  localStorage.setItem("nickname",nickname);
   document.getElementById("landingPage").classList.add("hidden");
   document.getElementById("chatContainer").classList.remove("hidden");
   document.querySelector("footer").classList.remove("hidden");
-  document.getElementById("profileName").textContent = nicknameInput.value.trim();
-  document.getElementById("profileLanguage").textContent = localStorage.getItem("language")||"en-US";
-  document.getElementById("profileCompanion").textContent = activeCompanion;
+  document.getElementById("profileName").textContent=nickname;
+  document.getElementById("profileLanguage").textContent=document.getElementById("languageSelect").value;
+  document.getElementById("profileCompanion").textContent=activeCompanion;
   populateStarters();
   renderCompanion();
   dailyStarter();
   checkOnboarding();
 }
 
-// -------------------- COMPANION RENDER --------------------
+// ---------------- COMPANION RENDER ----------------
 function renderCompanion(){
-  const svg = document.getElementById("companionSVG");
+  const svg=document.getElementById("companionSVG");
+  const color=document.getElementById("compColor")?.value || "#ffb86c";
   svg.innerHTML="";
-  const color = document.getElementById("compColor")?.value || "#ffb86c";
   switch(activeCompanion){
     case "Whisp":
       svg.innerHTML=`<ellipse cx="100" cy="100" rx="70" ry="50" fill="${color}" />`; break;
@@ -204,30 +218,33 @@ function renderCompanion(){
 }
 document.getElementById("compColor")?.addEventListener("input",renderCompanion);
 
-// -------------------- DAILY STARTER --------------------
-const conversationStarters = {
+// ---------------- DAILY STARTER ----------------
+const conversationStarters={
   "Workplace":[`How's work today?`,`Got a meeting today?`,`Any updates?`],
   "Dating":[`Hi, fancy a coffee?`,`Want to go for a walk?`,`How was your day?`],
-  "Travel":[`Where are we off today?`,`Have you packed?`,`Ready for an adventure?`],
+  "Travel":[`Where are we off today?`,`Have you packed?`,`Ready for adventure?`],
   "School":[`Need help with homework?`,`How was class today?`,`Any tests today?`],
   "SmallTalk":[`Did you see the game yesterday?`,`How’s the weather?`,`Any plans today?`]
 };
-
 function dailyStarter(){
-  const dd = document.getElementById("starterDropdown");
+  const dd=document.getElementById("starterDropdown");
   dd.innerHTML=`<option value="">-- Select Starter --</option>`;
-  const today = new Date().getDate();
+  const today=new Date().getDate();
   Object.keys(conversationStarters).forEach(cat=>{
-    const phrases = conversationStarters[cat];
-    const index = today % phrases.length; // rotate daily
-    const opt = document.createElement("option");
-    opt.value = phrases[index]; opt.textContent=`${cat}: ${phrases[index]}`;
+    const phrases=conversationStarters[cat];
+    const index=today % phrases.length;
+    const opt=document.createElement("option");
+    opt.value=phrases[index]; opt.textContent=`${cat}: ${phrases[index]}`;
     dd.appendChild(opt);
   });
 }
+function startStarter(){
+  const val=document.getElementById("starterDropdown").value;
+  if(val) sendMessage(val);
+}
 
-// -------------------- CHAT --------------------
-const chat = document.getElementById("chat");
+// ---------------- CHAT ----------------
+const chat=document.getElementById("chat");
 function addMessage(text,sender){
   const div=document.createElement("div");
   div.className=`message ${sender}`;
@@ -241,11 +258,14 @@ async function sendMessage(msg=null){
   if(!text) return;
   addMessage(text,"user");
   input.value="";
-  const botResp=`${activeCompanion} says: ${text}`; // placeholder
+  // AI placeholder with multilingual tone
+  const lang=document.getElementById("languageSelect").value;
+  const tone=document.getElementById("toneSelect").value;
+  const botResp=`[${activeCompanion} | ${tone} | ${lang}]: ${text}`;
   addMessage(botResp,"bot");
 }
 
-// -------------------- ONBOARDING --------------------
+// ---------------- ONBOARDING ----------------
 function checkOnboarding(){
   if(!localStorage.getItem("onboardDone")) document.getElementById("onboarding").classList.remove("hidden");
 }
@@ -254,13 +274,13 @@ function finishOnboarding(){
   document.getElementById("onboarding").classList.add("hidden");
 }
 
-// -------------------- OPTIONS --------------------
+// ---------------- OPTIONS ----------------
 function toggleOptions(){
   const panel=document.getElementById("optionsPanel");
   panel.style.display=(panel.style.display==="flex"?"none":"flex");
 }
 
-// -------------------- SPEECH --------------------
+// ---------------- SPEECH ----------------
 function startSpeechToSpeech(){ alert("Speech-to-speech triggered (placeholder)"); }
 function returnToChat(){ alert("Returning to chat (placeholder)"); }
 </script>
