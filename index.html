@@ -1,1 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talk 2Me Nice — Conversation</title>
+<style>
+:root {
+  --bg-main:#1b1f27;
+  --bg-card:#242833;
+  --accent:#6fa8dc;
+  --text-main:#e1e4ea;
+  --text-muted:#a1a6b0;
+}
 
+body {
+  margin:0;
+  font-family:system-ui, sans-serif;
+  background:var(--bg-main);
+  color:var(--text-main);
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
+
+header {
+  padding:1rem;
+  text-align:center;
+  border-bottom:1px solid #333;
+}
+
+#chat {
+  flex:1;
+  padding:1rem;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+.message {
+  max-width:80%;
+  padding:0.7rem 1rem;
+  margin-bottom:0.7rem;
+  border-radius:16px;
+  line-height:1.4;
+}
+
+.user {
+  background:var(--accent);
+  color:#1b1f27;
+  align-self:flex-end;
+}
+
+.bot {
+  background:var(--bg-card);
+  align-self:flex-start;
+}
+
+footer {
+  display:flex;
+  padding:0.8rem;
+  gap:0.5rem;
+  border-top:1px solid #333;
+}
+
+input {
+  flex:1;
+  padding:0.6rem;
+  border-radius:12px;
+  border:none;
+  background:#1f232d;
+  color:var(--text-main);
+}
+
+button {
+  padding:0.6rem 1rem;
+  border-radius:999px;
+  border:none;
+  background:var(--accent);
+  cursor:pointer;
+}
+
+/* Gear */
+#gear {
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:var(--bg-card);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:20px;
+}
+
+/* Options */
+#options {
+  position:fixed;
+  bottom:150px;
+  right:20px;
+  background:var(--bg-card);
+  padding:1rem;
+  border-radius:16px;
+  width:260px;
+  display:none;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:0.4rem;
+}
+
+.tile {
+  background:#1f232d;
+  padding:0.5rem;
+  text-align:center;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.word {
+  cursor:pointer;
+  text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+// Step 2 redirect if Step 1 not complete
+const nickname = localStorage.getItem("nickname");
+const language = localStorage.getItem("language");
+const companion = localStorage.getItem("companion");
+
+if(!nickname || !language || !companion){
+  window.location.href = "step1.html";
+}
+</script>
+
+<header>
+  <h2 id="greeting"></h2>
+  <p style="font-size:0.8rem;color:#a1a6b0;">Step 2 of 2 · Conversation</p>
+</header>
+
+<div id="chat"></div>
+
+<footer>
+  <input id="userInput" placeholder="Type a word or phrase…" />
+  <button onclick="sendMessage()">Send</button>
+</footer>
+
+<div id="gear" onclick="toggleOptions()">⚙️</div>
+
+<div id="options">
+  <label>
+    <input type="checkbox" id="phoneticToggle" />
+    Pronunciation mode
+  </label>
+
+  <p>Alphabet</p>
+  <div class="grid" id="alphabet"></div>
+
+  <p>Numbers</p>
+  <div class="grid" id="numbers"></div>
+</div>
+
+<script>
+document.getElementById("greeting").textContent =
+  `Hi ${nickname} 🌱 I'm ${companion}.`;
+
+const chat = document.getElementById("chat");
+
+function speak(text){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=language;
+  speechSynthesis.speak(u);
+}
+
+function simplePhonetic(word){
+  return word.replace(/th/g,"th").replace(/ph/g,"f").replace(/tion/g,"shun").replace(/ing/g,"ing");
+}
+
+function addMessage(text,sender){
+  const div=document.createElement("div");
+  div.className=`message ${sender}`;
+
+  if(sender==="bot" && document.getElementById("phoneticToggle").checked){
+    text.split(" ").forEach(w=>{
+      const span=document.createElement("span");
+      span.className="word";
+      span.textContent=w+" ";
+      span.onclick=()=>{ speak(w); alert(simplePhonetic(w)); };
+      div.appendChild(span);
+    });
+  } else {
+    div.textContent=text;
+  }
+
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function sendMessage(){
+  const i=document.getElementById("userInput");
+  if(!i.value.trim())return;
+  addMessage(i.value,"user");
+  i.value="";
+  setTimeout(()=>{ addMessage("Try tapping a word if pronunciation mode is on 💛","bot"); },500);
+}
+
+addMessage("This is your calm space. Use the gear ⚙️ for help.","bot");
+
+function toggleOptions(){
+  const o=document.getElementById("options");
+  o.style.display=o.style.display==="block"?"none":"block";
+}
+
+// Alphabet
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l=>{
+  const d=document.createElement("div");
+  d.className="tile";
+  d.textContent=l;
+  d.onclick=()=>speak(l);
+  document.getElementById("alphabet").appendChild(d);
+});
+
+// Numbers
+"0123456789".split("").forEach(n=>{
+  const d=document.createElement("div");
+  d.className="tile";
+  d.textContent=n;
+  d.onclick=()=>speak(n);
+  document.getElementById("numbers").appendChild(d);
+});
+</script>
+
+</body>
+</html>
