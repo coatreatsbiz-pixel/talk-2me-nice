@@ -14,7 +14,7 @@
   --muted:#a1a6b0;
 }
 
-/* Basic */
+/* Global */
 *{box-sizing:border-box}
 body{margin:0;font-family:Montserrat,system-ui,sans-serif;background:var(--bg-main);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 .brandWave{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 20% 30%,rgba(255,184,108,.08),transparent 40%),radial-gradient(circle at 80% 70%,rgba(255,184,108,.06),transparent 40%);animation:calmWave 12s ease-in-out infinite;}
@@ -24,13 +24,12 @@ body{margin:0;font-family:Montserrat,system-ui,sans-serif;background:var(--bg-ma
 #loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:10;}
 .loginCard{background:var(--bg-card);padding:2rem;border-radius:18px;width:100%;max-width:360px;text-align:center;}
 .loginCard h1{font-family:'Playfair Display',serif;margin-top:0;color:var(--accent);}
-.loginCard input{width:100%;padding:.7rem;border-radius:12px;border:none;background:#1f232d;color:var(--text);margin-bottom:1rem;}
-.loginCard select{width:100%;padding:.6rem;border-radius:12px;background:#1f232d;color:var(--text);border:none;margin-bottom:1rem;}
+.loginCard input, .loginCard select{width:100%;padding:.7rem;border-radius:12px;border:none;background:#1f232d;color:var(--text);margin-bottom:1rem;}
 .loginCard button{width:100%;padding:.7rem;border-radius:999px;border:none;background:var(--accent);cursor:pointer;}
 
 /* ---------- APP ---------- */
 #app{max-width:1000px;margin:2rem auto;display:flex;gap:1rem;}
-#sidebar{width:240px;background:var(--bg-card);border-radius:16px;padding:1rem;display:flex;flex-direction:column;gap:.8rem;position:relative;}
+#sidebar{width:260px;background:var(--bg-card);border-radius:16px;padding:1rem;display:flex;flex-direction:column;gap:.8rem;position:relative;}
 #chatArea{flex:1;background:var(--bg-card);border-radius:16px;padding:1rem;display:flex;flex-direction:column;position:relative;}
 #chat{flex:1;overflow-y:auto;padding-bottom:1rem;}
 
@@ -38,7 +37,7 @@ body{margin:0;font-family:Montserrat,system-ui,sans-serif;background:var(--bg-ma
 .profile p{margin:.2rem 0;font-size:.9rem;font-weight:500;}
 
 /* ---------- CHAT MESSAGES ---------- */
-.message{max-width:75%;padding:.8rem 1.1rem;border-radius:18px;margin-bottom:.6rem;line-height:1.4;animation:fadeIn .4s forwards;}
+.message{max-width:75%;padding:.8rem 1.1rem;border-radius:18px;margin-bottom:.6rem;line-height:1.4;animation:fadeIn .4s forwards;word-break:break-word;}
 .user{background:var(--accent);color:#1b1f27;align-self:flex-end;}
 .bot{background:#1f232d;align-self:flex-start;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -59,12 +58,13 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
 .settingsCard label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
 .settingsCard button{margin-top:1rem;padding:.6rem 1.2rem;border-radius:999px;border:none;background:var(--accent);cursor:pointer;width:100%;}
 .settingsCard .links{display:flex;justify-content:space-between;margin-top:1rem;font-size:0.8rem;}
-.settingsCard .links a{color:var(--accent);text-decoration:none;}
+.settingsCard .links a{color:var(--accent);text-decoration:none}
 
 /* ---------- STARTER & CHAT BOX ---------- */
 #starterSelect{margin-top:.3rem;}
 #chatInputContainer{display:flex;gap:.5rem;margin-top:1rem;}
-#companionCard{transition:all 0.3s ease;}
+#companionCard{transition:all 0.3s ease;padding:1rem;border-radius:16px;background:var(--bg-card);border:2px solid var(--accent);display:inline-block;text-align:center;}
+.translationTip{font-size:0.75rem;color:#ffb86c;font-style:italic;margin-top:.2rem;display:none;}
 </style>
 </head>
 <body>
@@ -74,9 +74,9 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
 <div id="loginOverlay">
   <div class="loginCard">
     <h1>Talk 2Me Nice</h1>
-    <p>What should we call you?</p>
-    <input id="nicknameInput" placeholder="Nickname"/>
-    <div class="sectionTitle">Choose Companion</div>
+    <p>Nickname:</p>
+    <input id="nicknameInput" placeholder="Enter nickname"/>
+    <p>Choose Companion:</p>
     <select id="companionSelect">
       <option value="Whisp">Whisp (calm)</option>
       <option value="Ace">Ace (playful)</option>
@@ -95,9 +95,12 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
       <p>🧚 <span id="companionLabel"></span></p>
     </div>
 
-    <div class="sectionTitle">Settings <button style="float:right" onclick="openSettings()">⚙️</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>Settings</div>
+      <button onclick="openSettings()">⚙️</button>
+    </div>
 
-    <div class="sectionTitle">Conversation Starter</div>
+    <div>Conversation Starter</div>
     <select id="starterCategorySelect" onchange="populateStarterCategory(this.value)">
       <option value="">— select category —</option>
       <option value="Workplace">Workplace</option>
@@ -105,6 +108,7 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
       <option value="Social">Social</option>
       <option value="Travel">Travel</option>
       <option value="Advanced">Advanced</option>
+      <option value="DailyLesson">💡 Daily Lesson</option>
     </select>
     <select id="starterSelect">
       <option value="">— select one —</option>
@@ -112,11 +116,10 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
   </div>
 
   <div id="chatArea">
-    <!-- Companion Center Stage -->
+    <!-- Companion Center -->
     <div style="text-align:center;margin-bottom:1rem;">
-      <div id="companionCard" style="display:inline-block;padding:1rem;border-radius:16px;background:var(--bg-card);border:2px solid var(--accent);">
-        <strong id="companionName">Whisp</strong>
-      </div>
+      <div id="companionCard"><strong id="companionName">Whisp</strong></div>
+      <div id="translationTip" class="translationTip"></div>
     </div>
     <div id="chat"></div>
     <div id="chatInputContainer">
@@ -131,17 +134,15 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
 <div id="settingsOverlay">
   <div class="settingsCard">
     <h3>Talk 2Me Nice Settings</h3>
-    <label>
-      Companion
+    <label>Companion
       <select id="settingsCompanion">
         <option value="Whisp">Whisp</option>
         <option value="Ace">Ace</option>
         <option value="Sage">Sage</option>
-        <option value="School">School Mode</option>
+        <option value="School">School</option>
       </select>
     </label>
-    <label>
-      Language
+    <label>Language
       <select id="settingsLanguage">
         <option value="en">English</option>
         <option value="es">Español</option>
@@ -149,20 +150,15 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
         <option value="pt">Português</option>
       </select>
     </label>
-    <label>
-      Voice Speed
+    <label>Voice Speed
       <select id="voiceSpeed">
         <option value="0.9">Slow</option>
         <option value="1" selected>Normal</option>
         <option value="1.1">Fast</option>
       </select>
     </label>
-    <label>
-      <input type="checkbox" id="voiceOutputToggle" checked> Voice Replies
-    </label>
-    <label>
-      <input type="checkbox" id="voiceInputToggle" checked> Voice Input
-    </label>
+    <label><input type="checkbox" id="voiceOutputToggle" checked> Voice Replies</label>
+    <label><input type="checkbox" id="voiceInputToggle" checked> Voice Input</label>
     <div class="links">
       <a href="#" onclick="closeSettings();return false;">Close</a>
       <a href="#" onclick="alert('Privacy Policy Placeholder');return false;">Privacy</a>
@@ -173,15 +169,16 @@ footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(
 
 <script>
 // ---------- STATE ----------
-const state={user:{name:""},companion:"Whisp",language:"en",emotionalLoad:"neutral",voice:{input:true,output:true,speed:1},starterUsed:false};
+const state={user:{name:""},companion:"Whisp",language:"en",voice:{input:true,output:true,speed:1},starterUsed:false,dailyLessonUsed:false};
 
 // ---------- STARTERS ----------
 const starterCategories={
-  "Workplace":["Morning check-in","Project update","Wrap up evening"],
-  "School":["How was class?","Homework help","Favorite subject?"],
+  "Workplace":["Good morning!","Project update?","Wrap up evening?"],
+  "School":["How was class?","Homework help?","Favorite subject?"],
   "Social":["Grab coffee?","Walk this afternoon?","How was your day?"],
-  "Travel":["Nearest station?","Travel plans?","Favorite place visited?"],
-  "Advanced":["Did you see the game?","Thoughts on recent news?","Any plans this weekend?"]
+  "Travel":["Nearest station?","Travel plans?","Favorite place?"],
+  "Advanced":["Did you see the game?","Thoughts on news?","Any weekend plans?"],
+  "DailyLesson":["Phrase: Hello / Hola / Bonjour / Olá","Mini-Exercise: Reply with your greeting"]
 };
 
 // ---------- ELEMENTS ----------
@@ -197,17 +194,15 @@ const input=document.getElementById("input");
 const mic=document.getElementById("mic");
 const starterSelect=document.getElementById("starterSelect");
 const starterCategorySelect=document.getElementById("starterCategorySelect");
+const translationTip=document.getElementById("translationTip");
 
 // ---------- LOGIN ----------
 function enterApp(){
-  const name=nicknameInput.value.trim();
-  if(!name)return alert("Enter a nickname");
+  const name=nicknameInput.value.trim(); if(!name)return alert("Enter a nickname");
   state.user.name=name;
   state.companion=companionSelect.value;
-  loginOverlay.style.display="none";
-  app.style.display="flex";
-  nameLabel.textContent=name;
-  companionLabel.textContent=state.companion;
+  loginOverlay.style.display="none"; app.style.display="flex";
+  nameLabel.textContent=name; companionLabel.textContent=state.companion;
   companionName.textContent=state.companion;
   greet();
 }
@@ -215,7 +210,7 @@ function enterApp(){
 // ---------- SETTINGS ----------
 function openSettings(){document.getElementById("settingsOverlay").style.display="flex";}
 function closeSettings(){document.getElementById("settingsOverlay").style.display="none";}
-document.getElementById("settingsCompanion").onchange=()=>{state.companion=document.getElementById("settingsCompanion").value;companionLabel.textContent=state.companion;companionName.textContent=state.companion;}
+document.getElementById("settingsCompanion").onchange=()=>{state.companion=document.getElementById("settingsCompanion").value; companionLabel.textContent=state.companion; companionName.textContent=state.companion;}
 document.getElementById("settingsLanguage").onchange=()=>{state.language=document.getElementById("settingsLanguage").value;}
 document.getElementById("voiceSpeed").onchange=()=>{state.voice.speed=parseFloat(document.getElementById("voiceSpeed").value);}
 document.getElementById("voiceOutputToggle").onchange=()=>{state.voice.output=document.getElementById("voiceOutputToggle").checked;}
@@ -233,55 +228,20 @@ function populateStarterCategory(category){
 }
 starterSelect.onchange=()=>{if(!state.starterUsed && starterSelect.value){state.starterUsed=true;send(starterSelect.value);}};
 
-// ---------- EI ----------
-function assess(text){
-  const patterns={en:{high:/!{2,}|panic|overwhelmed|angry|stressed/i,low:/ok|fine|sure/i},
-                  es:{high:/!{2,}|ansioso|abrumado|enojado|estresado/i,low:/bien|ok|vale/i},
-                  fr:{high:/!{2,}|anxieux|débordé|énervé|stressé/i,low:/ça va|bien|ok/i},
-                  pt:{high:/!{2,}|ansioso|sobrecarregado|irritado|estressado/i,low:/bem|ok|tá/i}};
-  const lang=patterns[state.language]||patterns.en;
-  if(lang.high.test(text))return"high";
-  if(lang.low.test(text))return"low";
-  return"neutral";
-}
-
-// ---------- REPLY ----------
-function generateReply(){
-  const replies={
-    en:{high:"Let's slow down. I'm here with you.",neutral:"I hear you. Want to keep going?",low:"I'm here whenever you want to talk."},
-    es:{high:"Vamos a bajar el ritmo. Estoy contigo.",neutral:"Te escucho. ¿Quieres seguir?",low:"Estoy aquí cuando quieras hablar."},
-    fr:{high:"Ralentissons. Je suis là avec toi.",neutral:"Je t'écoute. Tu veux continuer ?",low:"Je suis là quand tu veux."},
-    pt:{high:"Vamos desacelerar. Estou com você.",neutral:"Estou te ouvindo. Quer continuar?",low:"Estou aqui quando quiser falar."}
-  };
-  if(state.companion==="School")state.emotionalLoad="neutral";
-  const langReplies=replies[state.language]||replies.en;
-  return langReplies[state.emotionalLoad];
+// ---------- SIMPLE TRANSLATION (DEMO) ----------
+function translateText(text,lang){
+  const dict={Hello:{es:"Hola",fr:"Bonjour",pt:"Olá"}};
+  return dict[text]&&dict[text][lang]?dict[text][lang]:text;
 }
 
 // ---------- CHAT ----------
-let convoCount=parseInt(localStorage.getItem("convoCount"))||0;
 function add(text,who){const div=document.createElement("div");div.className=`message ${who}`;div.textContent=text;chat.appendChild(div);chat.scrollTop=chat.scrollHeight;}
-function animateCompanion(){
-  const card=document.getElementById("companionCard");
-  card.style.transition="all 0.4s ease";
-  switch(state.emotionalLoad){
-    case "high": card.style.boxShadow="0 0 20px 4px red"; card.style.transform="scale(1.05)"; break;
-    case "low": card.style.boxShadow="0 0 12px 2px green"; card.style.transform="scale(0.98)"; break;
-    default: card.style.boxShadow="0 0 14px 2px var(--accent)"; card.style.transform="scale(1)";
-  }
-}
 function send(msg){
-  const text=msg||input.value.trim(); if(!text)return; add(text,"user"); input.value=""; state.emotionalLoad=assess(text); animateCompanion();
-  convoCount++; localStorage.setItem("convoCount",convoCount);
-  setTimeout(()=>{
-    const reply=generateReply(); add(reply,"bot"); speak(reply);
-    if(Math.random()<0.3 && !state.starterUsed){
-      const catKeys=Object.keys(starterCategories);
-      const category=catKeys[Math.floor(Math.random()*catKeys.length)];
-      const followUp=starterCategories[category][Math.floor(Math.random()*starterCategories[category].length)];
-      add("💡 "+followUp,"bot"); speak(followUp); state.starterUsed=true;
-    }
-  },400);
+  const text=msg||input.value.trim(); if(!text)return; add(text,"user"); input.value="";
+  // Show translation tip if Daily Lesson
+  if(starterCategorySelect.value==="DailyLesson"){translationTip.style.display="block"; translationTip.textContent="Translation: "+translateText(text,state.language);}else{translationTip.style.display="none";}
+  // Simple adaptive reply
+  setTimeout(()=>{const reply="Echo: "+text; add(reply,"bot"); speak(reply);},300);
 }
 
 // ---------- SPEECH ----------
