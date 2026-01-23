@@ -1,164 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Talk 2Me Nice</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Talk 2Me Nice</title>
 
-  <style>
-    :root {
-      --bg-main: #1b1f27;
-      --bg-card: #242833;
-      --accent: #6fa8dc;
-      --text-main: #e1e4ea;
-      --text-muted: #a1a6b0;
-    }
+<style>
+:root {
+  --bg-main:#1b1f27;
+  --bg-card:#242833;
+  --accent:#6fa8dc;
+  --text-main:#e1e4ea;
+  --text-muted:#a1a6b0;
+}
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-main);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+body {
+  margin:0;
+  font-family:system-ui, sans-serif;
+  background:var(--bg-main);
+  color:var(--text-main);
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
 
-    header {
-      padding: 1rem;
-      text-align: center;
-      border-bottom: 1px solid #333;
-    }
+header {
+  padding:1rem;
+  text-align:center;
+  border-bottom:1px solid #333;
+}
 
-    header h2 {
-      margin: 0;
-      font-size: 1.4rem;
-    }
+#chat {
+  flex:1;
+  padding:1rem;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
 
-    header p {
-      margin: 0.3rem 0 0;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
+.message {
+  max-width:80%;
+  padding:0.7rem 1rem;
+  margin-bottom:0.7rem;
+  border-radius:16px;
+}
 
-    #chat {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
+.user {
+  background:var(--accent);
+  color:#1b1f27;
+  align-self:flex-end;
+}
 
-    .message {
-      max-width: 80%;
-      padding: 0.7rem 1rem;
-      margin-bottom: 0.7rem;
-      border-radius: 16px;
-      line-height: 1.4;
-      word-wrap: break-word;
-    }
+.bot {
+  background:var(--bg-card);
+  align-self:flex-start;
+}
 
-    .user {
-      background: var(--accent);
-      color: #1b1f27;
-      align-self: flex-end;
-    }
+footer {
+  display:flex;
+  padding:0.8rem;
+  gap:0.5rem;
+  border-top:1px solid #333;
+}
 
-    .bot {
-      background: var(--bg-card);
-      color: var(--text-main);
-      align-self: flex-start;
-    }
+input {
+  flex:1;
+  padding:0.6rem;
+  border-radius:12px;
+  border:none;
+  background:#1f232d;
+  color:var(--text-main);
+}
 
-    footer {
-      display: flex;
-      padding: 0.8rem;
-      border-top: 1px solid #333;
-      gap: 0.5rem;
-      background: var(--bg-main);
-    }
+button {
+  padding:0.6rem 1rem;
+  border-radius:999px;
+  border:none;
+  background:var(--accent);
+  cursor:pointer;
+}
 
-    input {
-      flex: 1;
-      padding: 0.6rem 0.8rem;
-      border-radius: 12px;
-      border: none;
-      font-size: 1rem;
-      background: #1f232d;
-      color: var(--text-main);
-    }
+/* ⚙️ Gear Button */
+#gear {
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:var(--bg-card);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:20px;
+}
 
-    button {
-      padding: 0.6rem 1.2rem;
-      border-radius: 999px;
-      border: none;
-      background: var(--accent);
-      color: #1b1f27;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-  </style>
+/* Options Panel */
+#options {
+  position:fixed;
+  bottom:150px;
+  right:20px;
+  background:var(--bg-card);
+  padding:1rem;
+  border-radius:16px;
+  width:260px;
+  display:none;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:0.4rem;
+}
+
+.tile {
+  background:#1f232d;
+  padding:0.5rem;
+  text-align:center;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:0.9rem;
+}
+</style>
 </head>
 
 <body>
 
-  <header>
-    <h2 id="greeting">Welcome</h2>
-    <p id="languageInfo"></p>
-  </header>
+<header>
+  <h2 id="greeting"></h2>
+  <p id="languageInfo" style="font-size:0.85rem;color:var(--text-muted)"></p>
+</header>
 
-  <div id="chat"></div>
+<div id="chat"></div>
 
-  <footer>
-    <input id="userInput" placeholder="Type a word or phrase…" />
-    <button onclick="sendMessage()">Send</button>
-  </footer>
+<footer>
+  <input id="userInput" placeholder="Type a word or phrase…" />
+  <button onclick="sendMessage()">Send</button>
+</footer>
 
-  <script>
-    // Load saved user data
-    const nickname = localStorage.getItem("nickname") || "Friend";
-    const language = localStorage.getItem("language") || "English";
-    const companion = localStorage.getItem("companion") || "Whisp";
+<div id="gear" onclick="toggleOptions()">⚙️</div>
 
-    // Set header text
-    document.getElementById("greeting").textContent =
-      `Hi ${nickname} 🌱 I'm ${companion}.`;
+<div id="options">
+  <p style="margin-top:0;">Alphabet</p>
+  <div class="grid" id="alphabet"></div>
+  <p>Numbers</p>
+  <div class="grid" id="numbers"></div>
+</div>
 
-    document.getElementById("languageInfo").textContent =
-      `Learning language: ${language}`;
+<script>
+const nickname = localStorage.getItem("nickname") || "Friend";
+const language = localStorage.getItem("language") || "en-US";
+const companion = localStorage.getItem("companion") || "Whisp";
 
-    const chat = document.getElementById("chat");
+document.getElementById("greeting").textContent =
+  `Hi ${nickname} 🌱 I'm ${companion}.`;
 
-    function addMessage(text, sender) {
-      const div = document.createElement("div");
-      div.className = `message ${sender}`;
-      div.textContent = text;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+document.getElementById("languageInfo").textContent =
+  `Learning language: ${language}`;
 
-    function sendMessage() {
-      const input = document.getElementById("userInput");
-      const text = input.value.trim();
-      if (!text) return;
+const chat = document.getElementById("chat");
 
-      addMessage(text, "user");
-      input.value = "";
+function addMessage(text, sender) {
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-      setTimeout(() => {
-        addMessage(
-          "I hear you 💛 You can keep going, or try another word.",
-          "bot"
-        );
-      }, 500);
-    }
+function sendMessage() {
+  const input = document.getElementById("userInput");
+  if (!input.value.trim()) return;
+  addMessage(input.value,"user");
+  input.value="";
+  setTimeout(()=>{
+    addMessage("I hear you 💛 Keep going.","bot");
+  },500);
+}
 
-    // Initial welcome message
-    addMessage(
-      "This is your calm space to practice. Say anything you like.",
-      "bot"
-    );
-  </script>
+addMessage("This is your calm space. Try the gear ⚙️ for alphabet help.","bot");
+
+/* Gear toggle */
+function toggleOptions(){
+  const o=document.getElementById("options");
+  o.style.display=o.style.display==="block"?"none":"block";
+}
+
+/* Speech */
+function speak(text){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=language;
+  speechSynthesis.speak(u);
+}
+
+/* Build alphabet */
+const alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const alphaDiv=document.getElementById("alphabet");
+alpha.forEach(l=>{
+  const d=document.createElement("div");
+  d.className="tile";
+  d.textContent=l;
+  d.onclick=()=>speak(l);
+  alphaDiv.appendChild(d);
+});
+
+/* Numbers */
+const nums=[..."0123456789"];
+const numDiv=document.getElementById("numbers");
+nums.forEach(n=>{
+  const d=document.createElement("div");
+  d.className="tile";
+  d.textContent=n;
+  d.onclick=()=>speak(n);
+  numDiv.appendChild(d);
+});
+</script>
 
 </body>
 </html>
