@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Talk 2Me Nice — Guided Conversations</title>
+<title>Talk 2Me Nice — Chat</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -20,121 +20,118 @@ body {
   background: var(--bg-main);
   color: var(--text-main);
   display:flex;
-  height:100vh;
-  overflow:hidden;
+  flex-direction:column;
+  min-height:100vh;
 }
 
-/* Sidebar */
-#sidebar {
-  width:260px;
-  background: var(--bg-card);
+/* Chat container */
+#chatContainer {
+  display:flex;
+  max-width:900px;
+  margin:2rem auto;
+  gap:1rem;
+  flex:1;
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* Profile Sidebar */
+#profileSidebar {
+  width:220px;
   padding:1rem;
-  overflow-y:auto;
+  background:var(--bg-card);
+  border-radius:16px;
   flex-shrink:0;
   display:flex;
   flex-direction:column;
-  gap:0.5rem;
-  box-shadow: 2px 0 12px rgba(0,0,0,0.3);
+  gap:1rem;
+  box-shadow:0 6px 16px rgba(0,0,0,0.3);
 }
+#profileSidebar h3 { margin:0; font-size:1rem; color:#ffb86c; text-align:center; }
+#profileSidebar p { margin:0; font-size:0.85rem; color:var(--text-muted); text-align:center; }
 
-/* Sidebar headings */
-.pack {
-  font-weight:600;
-  font-size:1rem;
-  cursor:pointer;
-  padding:0.5rem;
-  border-radius:10px;
-  transition:all 0.2s ease;
-}
-.pack:hover { background:rgba(255,184,108,0.2); }
-
-.section {
-  padding:0.4rem 0.8rem;
-  font-size:0.9rem;
-  margin-left:0.5rem;
-  cursor:pointer;
-  border-radius:8px;
-  display:none;
-}
-.section:hover { background:rgba(255,184,108,0.2); }
-
-/* Chat area */
 #chatArea {
   flex:1;
   display:flex;
   flex-direction:column;
+  background:#242833;
+  border-radius:16px;
   padding:1rem;
-}
-
-#chat {
-  flex:1;
   overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:0.6rem;
-  margin-bottom:0.5rem;
 }
 
+/* Messages */
 .message {
   max-width:75%;
-  padding:0.7rem 1.2rem;
-  border-radius:16px;
-  line-height:1.4;
-  animation: fadeInMessage 0.4s forwards;
+  padding:0.8rem 1.2rem;
+  margin-bottom:0.7rem;
+  border-radius:20px;
+  line-height:1.5;
+  opacity:0;
+  animation: fadeInMessage 0.5s forwards;
 }
 .user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
 .bot { background:var(--bg-card); align-self:flex-start; }
 
-input {
+/* Conversation packs */
+#packs {
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.5rem;
+  justify-content:center;
+  margin-bottom:1rem;
+}
+.packButton {
+  background:#1f232d;
+  color:var(--text-main);
+  border:1px solid var(--accent);
+  padding:0.5rem 0.8rem;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.2s;
+}
+.packButton:hover { background:var(--accent); color:#1b1f27; transform:scale(1.05); }
+
+/* Input area */
+#inputArea {
+  display:flex;
+  padding:0.8rem;
+  gap:0.5rem;
+}
+#userInput {
   flex:1;
-  padding:0.6rem 1rem;
-  border-radius:999px;
+  padding:0.6rem;
+  border-radius:12px;
   border:none;
   background:#1f232d;
   color:var(--text-main);
 }
-
-button {
-  margin-left:0.5rem;
+button.sendBtn {
   padding:0.6rem 1rem;
   border-radius:999px;
   border:none;
-  background: var(--accent);
+  background:var(--accent);
   cursor:pointer;
-  transition: all 0.3s ease;
+  transition:all 0.3s ease;
 }
-button:hover { background:#ff9f40; transform:scale(1.03); }
-
-/* Footer & input area */
-#inputArea {
-  display:flex;
-  gap:0.5rem;
-  padding-top:0.5rem;
-}
+button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
 
 /* Animations */
-@keyframes fadeInMessage {
-  from { opacity:0; transform: translateY(10px);}
-  to { opacity:1; transform: translateY(0);}
-}
+@keyframes fadeInMessage { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes floatCompanion { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
 
-@keyframes floatCompanion {
-  0%, 100% { transform: translateY(0);}
-  50% { transform: translateY(-6px);}
-}
-
-/* Gear button */
+/* Gear */
 #gear { 
-  position:fixed; 
-  bottom:90px; right:20px; 
-  width:44px; height:44px; 
-  border-radius:50%; 
-  background:var(--bg-card); 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  cursor:pointer; 
-  font-size:20px; 
+  position:fixed;
+  bottom:90px; right:20px;
+  width:44px; height:44px;
+  border-radius:50%;
+  background:var(--bg-card);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:20px;
   box-shadow:0 4px 12px rgba(0,0,0,0.3);
   animation: floatCompanion 4s ease-in-out infinite;
 }
@@ -142,126 +139,99 @@ button:hover { background:#ff9f40; transform:scale(1.03); }
 /* Options panel */
 #options {
   position:fixed;
-  bottom:150px;
-  right:20px;
+  bottom:150px; right:20px;
   background:var(--bg-card);
   padding:1rem;
   border-radius:16px;
-  width:220px;
+  width:260px;
   display:none;
-  box-shadow:0 6px 16px rgba(0,0,0,0.3);
 }
+#options label { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; }
 </style>
 </head>
 <body>
 
-<div id="sidebar">
-  <h3>Conversation Packs</h3>
-  <div class="pack" onclick="toggleSections('workplace')">Workplace Conversations</div>
-    <div class="section" data-pack="workplace">Greetings</div>
-    <div class="section" data-pack="workplace">Meetings</div>
-    <div class="section" data-pack="workplace">Casual Chat</div>
+<div id="chatContainer">
 
-  <div class="pack" onclick="toggleSections('dating')">Dating & Social</div>
-    <div class="section" data-pack="dating">Greetings</div>
-    <div class="section" data-pack="dating">Small Talk</div>
-    <div class="section" data-pack="dating">Compliments & Closings</div>
-
-  <div class="pack" onclick="toggleSections('travel')">Travel</div>
-    <div class="section" data-pack="travel">Greetings</div>
-    <div class="section" data-pack="travel">Directions</div>
-    <div class="section" data-pack="travel">Food & Experiences</div>
-
-  <div class="pack" onclick="toggleSections('advanced')">Advanced Small Talk</div>
-    <div class="section" data-pack="advanced">Weather & Events</div>
-    <div class="section" data-pack="advanced">Opinions & Stories</div>
-    <div class="section" data-pack="advanced">Humor & Expressions</div>
-</div>
-
-<div id="chatArea">
-  <div id="chat"></div>
-
-  <div id="inputArea">
-    <input id="userInput" placeholder="Type a word or phrase…" />
-    <button onclick="sendMessage()">Send</button>
+  <!-- Profile Sidebar -->
+  <div id="profileSidebar">
+    <h3 id="profileName"></h3>
+    <p id="profileLanguage"></p>
+    <p id="profileCompanion"></p>
+    <div id="packs">
+      <div class="packButton" onclick="startPack('Workplace Conversations')">Workplace</div>
+      <div class="packButton" onclick="startPack('Dating & Social')">Dating & Social</div>
+      <div class="packButton" onclick="startPack('Travel')">Travel</div>
+      <div class="packButton" onclick="startPack('Advanced Small Talk')">Small Talk</div>
+    </div>
   </div>
+
+  <!-- Chat Area -->
+  <div id="chatArea"></div>
 </div>
 
+<!-- Input -->
+<div id="inputArea">
+  <input id="userInput" placeholder="Type a word or phrase…" />
+  <button class="sendBtn" onclick="sendMessage()">Send</button>
+</div>
+
+<!-- Gear / Options -->
 <div id="gear" onclick="toggleOptions()">⚙️</div>
 <div id="options">
-  <label><input type="checkbox" id="phoneticToggle" /> Pronunciation mode</label>
+  <label><input type="checkbox" id="phoneticToggle"/> Pronunciation mode</label>
 </div>
 
 <script>
-const packs = {
-  'workplace': {
-    'Greetings': ["Hi", "Good morning", "How are you?"],
-    'Meetings': ["Let's schedule a meeting", "Agenda for today", "Deadline update"],
-    'Casual Chat': ["Weekend plans?", "Coffee break?", "Lunch together?"]
-  },
-  'dating': {
-    'Greetings': ["Hi", "Hey, how are you?", "Good to see you"],
-    'Small Talk': ["Your day?", "Hobbies?", "Movies?"],
-    'Compliments & Closings': ["You look great", "Nice seeing you", "See you soon"]
-  },
-  'travel': {
-    'Greetings': ["Hello", "Good day", "Excuse me"],
-    'Directions': ["Where is the bathroom?", "How do I get to the station?", "Left or right?"],
-    'Food & Experiences': ["What do you recommend?", "I like this dish", "Delicious!"]
-  },
-  'advanced': {
-    'Weather & Events': ["Nice weather today", "Did you hear the news?", "Rain expected?"],
-    'Opinions & Stories': ["I think that...", "Let me tell you a story...", "My opinion is..."],
-    'Humor & Expressions': ["That's funny!", "I can't believe it", "LOL!"]
-  }
-};
+const nickname = localStorage.getItem("nickname") || "Friend";
+const language = localStorage.getItem("language") || "en-US";
+const companion = localStorage.getItem("companion") || "Whisp";
 
-const chat = document.getElementById("chat");
+document.getElementById("profileName").textContent = nickname;
+document.getElementById("profileLanguage").textContent = `Language: ${language}`;
+document.getElementById("profileCompanion").textContent = `Companion: ${companion}`;
 
-function addMessage(text, sender="bot") {
-  const div = document.createElement("div");
-  div.className = `message ${sender}`;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+const chatArea = document.getElementById("chatArea");
 
-  if(sender==="bot" && document.getElementById("phoneticToggle").checked){
-    const u = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(u);
-  }
+function speak(text){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=language;
+  speechSynthesis.speak(u);
+}
+
+function addMessage(text,sender){
+  const div=document.createElement("div");
+  div.className=`message ${sender}`;
+  div.textContent=text;
+  chatArea.appendChild(div);
+  chatArea.scrollTop = chatArea.scrollHeight;
 }
 
 function sendMessage(){
   const input = document.getElementById("userInput");
   if(!input.value.trim()) return;
-  addMessage(input.value,"user");
-  input.value="";
+  addMessage(input.value, "user");
+  input.value = "";
+  setTimeout(()=>addMessage("Tap a word for pronunciation 💛", "bot"), 400);
 }
 
-// Sidebar toggling
-function toggleSections(packName){
-  document.querySelectorAll(`#sidebar .section[data-pack]`).forEach(sec=>{
-    if(sec.dataset.pack === packName){
-      sec.style.display = (sec.style.display==="block")?"none":"block";
-    } else sec.style.display="none";
-  });
-}
-
-// Clicking a section sends first phrase to chat
-document.querySelectorAll('.section').forEach(sec=>{
-  sec.onclick = ()=>{
-    const pack = sec.dataset.pack;
-    const section = sec.textContent;
-    packs[pack][section].forEach(phrase=>{
-      addMessage(phrase,"bot");
-    });
-  };
-});
-
-// Gear toggle
 function toggleOptions(){
-  const o = document.getElementById("options");
-  o.style.display = (o.style.display==="block")?"none":"block";
+  const options=document.getElementById("options");
+  options.style.display = options.style.display==="block"?"none":"block";
+}
+
+/* Conversation Packs */
+const conversationPresets = {
+  "Workplace Conversations": ["Hello, how are you?", "Good morning!", "Let's schedule a meeting."],
+  "Dating & Social": ["Hi! How was your day?", "Do you want to grab coffee?", "I like your smile!"],
+  "Travel": ["Where is the nearest hotel?", "Can you recommend a restaurant?", "What time does the train leave?"],
+  "Advanced Small Talk": ["Nice weather today, isn't it?", "Did you watch the game last night?", "Any plans for the weekend?"]
+};
+
+function startPack(packName){
+  const phrases = conversationPresets[packName];
+  phrases.forEach(p => addMessage(p, "bot"));
+  addMessage(`You're exploring: ${packName} 💛`, "bot");
 }
 </script>
 
