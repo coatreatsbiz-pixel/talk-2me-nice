@@ -43,6 +43,7 @@ header {
   padding:0.7rem 1rem;
   margin-bottom:0.7rem;
   border-radius:16px;
+  line-height:1.4;
 }
 
 .user {
@@ -80,7 +81,7 @@ button {
   cursor:pointer;
 }
 
-/* ⚙️ Gear Button */
+/* Gear */
 #gear {
   position:fixed;
   bottom:90px;
@@ -96,7 +97,7 @@ button {
   font-size:20px;
 }
 
-/* Options Panel */
+/* Options */
 #options {
   position:fixed;
   bottom:150px;
@@ -120,7 +121,11 @@ button {
   text-align:center;
   border-radius:8px;
   cursor:pointer;
-  font-size:0.9rem;
+}
+
+.word {
+  cursor:pointer;
+  text-decoration:underline;
 }
 </style>
 </head>
@@ -142,8 +147,14 @@ button {
 <div id="gear" onclick="toggleOptions()">⚙️</div>
 
 <div id="options">
-  <p style="margin-top:0;">Alphabet</p>
+  <label>
+    <input type="checkbox" id="phoneticToggle" />
+    Pronunciation mode
+  </label>
+
+  <p>Alphabet</p>
   <div class="grid" id="alphabet"></div>
+
   <p>Numbers</p>
   <div class="grid" id="numbers"></div>
 </div>
@@ -161,59 +172,76 @@ document.getElementById("languageInfo").textContent =
 
 const chat = document.getElementById("chat");
 
-function addMessage(text, sender) {
-  const div = document.createElement("div");
-  div.className = `message ${sender}`;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  if (!input.value.trim()) return;
-  addMessage(input.value,"user");
-  input.value="";
-  setTimeout(()=>{
-    addMessage("I hear you 💛 Keep going.","bot");
-  },500);
-}
-
-addMessage("This is your calm space. Try the gear ⚙️ for alphabet help.","bot");
-
-/* Gear toggle */
-function toggleOptions(){
-  const o=document.getElementById("options");
-  o.style.display=o.style.display==="block"?"none":"block";
-}
-
-/* Speech */
 function speak(text){
   const u=new SpeechSynthesisUtterance(text);
   u.lang=language;
   speechSynthesis.speak(u);
 }
 
-/* Build alphabet */
-const alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const alphaDiv=document.getElementById("alphabet");
-alpha.forEach(l=>{
+function simplePhonetic(word){
+  return word
+    .replace(/th/g,"th")
+    .replace(/ph/g,"f")
+    .replace(/tion/g,"shun")
+    .replace(/ing/g,"ing");
+}
+
+function addMessage(text,sender){
+  const div=document.createElement("div");
+  div.className=`message ${sender}`;
+
+  if(sender==="bot" && document.getElementById("phoneticToggle").checked){
+    text.split(" ").forEach(w=>{
+      const span=document.createElement("span");
+      span.className="word";
+      span.textContent=w+" ";
+      span.onclick=()=>{
+        speak(w);
+        alert(simplePhonetic(w));
+      };
+      div.appendChild(span);
+    });
+  } else {
+    div.textContent=text;
+  }
+
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function sendMessage(){
+  const i=document.getElementById("userInput");
+  if(!i.value.trim())return;
+  addMessage(i.value,"user");
+  i.value="";
+  setTimeout(()=>{
+    addMessage("Try tapping a word if pronunciation mode is on 💛","bot");
+  },500);
+}
+
+addMessage("This is your calm space. Use the gear ⚙️ for help.","bot");
+
+function toggleOptions(){
+  const o=document.getElementById("options");
+  o.style.display=o.style.display==="block"?"none":"block";
+}
+
+/* Alphabet */
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l=>{
   const d=document.createElement("div");
   d.className="tile";
   d.textContent=l;
   d.onclick=()=>speak(l);
-  alphaDiv.appendChild(d);
+  document.getElementById("alphabet").appendChild(d);
 });
 
 /* Numbers */
-const nums=[..."0123456789"];
-const numDiv=document.getElementById("numbers");
-nums.forEach(n=>{
+"0123456789".split("").forEach(n=>{
   const d=document.createElement("div");
   d.className="tile";
   d.textContent=n;
   d.onclick=()=>speak(n);
-  numDiv.appendChild(d);
+  document.getElementById("numbers").appendChild(d);
 });
 </script>
 
