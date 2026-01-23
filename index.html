@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Talk 2Me Nice</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talk 2Me Nice — Conversation</title>
 
 <style>
 :root {
@@ -81,7 +81,6 @@ button {
   cursor:pointer;
 }
 
-/* Gear */
 #gear {
   position:fixed;
   bottom:90px;
@@ -97,7 +96,6 @@ button {
   font-size:20px;
 }
 
-/* Options panel */
 #options {
   position:fixed;
   bottom:150px;
@@ -137,6 +135,7 @@ button {
   <p style="font-size:0.8rem;color:#a1a6b0;">Step 2 of 2 · Conversation</p>
 </header>
 
+<!-- Chat area -->
 <div id="chat"></div>
 
 <footer>
@@ -144,11 +143,13 @@ button {
   <button onclick="sendMessage()">Send</button>
 </footer>
 
+<!-- Gear -->
 <div id="gear" onclick="toggleOptions()">⚙️</div>
 
+<!-- Options panel -->
 <div id="options">
   <!-- Learner Profile -->
-  <p style="font-size:0.8rem; color:#a1a6b0;">Learner Profile</p>
+  <p style="font-size:0.8rem;color:#a1a6b0;">Learner Profile</p>
   <p style="font-size:0.9rem;">
     👤 <strong id="profileName"></strong><br>
     🌍 <span id="profileLanguage"></span><br>
@@ -170,22 +171,22 @@ button {
 </div>
 
 <script>
-// Load stored learner info
+// Load stored info
 const nickname = localStorage.getItem("nickname") || "Friend";
 const language = localStorage.getItem("language") || "en-US";
 const companion = localStorage.getItem("companion") || "Whisp";
 
-// Set greeting
+// Greeting
 document.getElementById("greeting").textContent = `Hi ${nickname} 🌱 I'm ${companion}.`;
 
-// Populate learner profile
+// Learner profile
 document.getElementById("profileName").textContent = nickname;
 document.getElementById("profileLanguage").textContent = language;
 document.getElementById("profileCompanion").textContent = companion;
 
 const chat = document.getElementById("chat");
 
-// Speech function
+// Speech
 function speak(text){
   const u=new SpeechSynthesisUtterance(text);
   u.lang=language;
@@ -201,26 +202,21 @@ function simplePhonetic(word){
     .replace(/ing/g,"ing");
 }
 
-// Add message to chat
+// Add message
 function addMessage(text,sender){
   const div=document.createElement("div");
   div.className=`message ${sender}`;
-
   if(sender==="bot" && document.getElementById("phoneticToggle").checked){
     text.split(" ").forEach(w=>{
       const span=document.createElement("span");
       span.className="word";
       span.textContent=w+" ";
-      span.onclick=()=>{
-        speak(w);
-        alert(simplePhonetic(w));
-      };
+      span.onclick=()=>{ speak(w); alert(simplePhonetic(w)); };
       div.appendChild(span);
     });
   } else {
     div.textContent=text;
   }
-
   chat.appendChild(div);
   chat.scrollTop=chat.scrollHeight;
 }
@@ -231,18 +227,16 @@ function sendMessage(){
   if(!i.value.trim()) return;
   addMessage(i.value,"user");
   i.value="";
-  setTimeout(()=>{
-    addMessage("Try tapping a word if pronunciation mode is on 💛","bot");
-  },500);
+  setTimeout(()=>addMessage("Try tapping a word if pronunciation mode is on 💛","bot"),500);
 }
 
-// Initial message
+// Initial bot message
 addMessage("This is your calm space. Use the gear ⚙️ for help.","bot");
 
 // Toggle options panel
 function toggleOptions(){
   const o=document.getElementById("options");
-  o.style.display=o.style.display==="block"?"none":"block";
+  o.style.display = o.style.display==="block"?"none":"block";
 }
 
 // Alphabet
