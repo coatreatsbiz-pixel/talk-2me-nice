@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Talk 2Me Nice — Welcome</title>
+  <title>Talk 2Me Nice</title>
 
   <style>
     :root {
@@ -16,127 +16,126 @@
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: system-ui, sans-serif;
       background: var(--bg-main);
       color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
 
-    .container {
-      max-width: 480px;
-      margin: 3rem auto;
-      padding: 2rem;
-      background: var(--bg-card);
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    }
-
-    h1 {
+    header {
+      padding: 1rem;
       text-align: center;
-      margin-bottom: 0.5rem;
+      border-bottom: 1px solid #333;
     }
 
-    p {
-      text-align: center;
-      color: var(--text-muted);
+    #chat {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
     }
 
-    label {
-      display: block;
-      margin-top: 1.2rem;
-      margin-bottom: 0.3rem;
-      font-size: 0.9rem;
+    .message {
+      max-width: 75%;
+      padding: 0.7rem 1rem;
+      margin-bottom: 0.7rem;
+      border-radius: 14px;
+      line-height: 1.4;
     }
 
-    input, select {
-      width: 100%;
-      padding: 0.6rem;
-      border-radius: 10px;
-      border: 1px solid var(--accent);
-      background: #1f232d;
-      color: var(--text-main);
-      font-size: 1rem;
-    }
-
-    select option:disabled {
-      color: #777;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 1.5rem;
-      padding: 0.9rem;
-      border-radius: 999px;
-      border: none;
+    .user {
       background: var(--accent);
       color: #1b1f27;
-      font-size: 1rem;
-      cursor: pointer;
+      margin-left: auto;
+    }
+
+    .bot {
+      background: var(--bg-card);
+      color: var(--text-main);
+      margin-right: auto;
     }
 
     footer {
-      margin-top: 2rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
+      display: flex;
+      padding: 0.8rem;
+      border-top: 1px solid #333;
+      gap: 0.5rem;
     }
 
-    footer a {
-      color: var(--text-muted);
-      text-decoration: none;
-      margin: 0 0.5rem;
+    input {
+      flex: 1;
+      padding: 0.6rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Welcome to Talk 2Me Nice 💛</h1>
-    <p>Learn gently. Speak naturally.</p>
+  <header>
+    <h2 id="greeting">Welcome</h2>
+    <p id="languageInfo" style="font-size:0.85rem;color:var(--text-muted)"></p>
+  </header>
 
-    <label for="nickname">Nickname</label>
-    <input id="nickname" type="text" placeholder="Friend" />
+  <div id="chat"></div>
 
-    <label for="language">Choose a Language (Free)</label>
-    <select id="language">
-      <option value="en-US">English ✔</option>
-      <option value="es-ES">Spanish ✔</option>
-      <option value="fr-FR">French ✔</option>
-      <option value="de-DE">German ✔</option>
-      <option value="zh-CN">Chinese ✔</option>
-
-      <option value="ja-JP" disabled>Japanese 🔒 Nice+</option>
-      <option value="ko-KR" disabled>Korean 🔒 Nice+</option>
-      <option value="it-IT" disabled>Italian 🔒 Nice+</option>
-    </select>
-
-    <label for="companion">Companion</label>
-    <select id="companion">
-      <option value="whisp">Whisp ✔</option>
-      <option value="star" disabled>Star 🔒 Nice+</option>
-      <option value="puff" disabled>Puff 🔒 Nice+</option>
-    </select>
-
-    <button onclick="startApp()">Start Talking</button>
-
-    <footer>
-      <a href="/privacy.html">Privacy</a> •
-      <a href="/terms.html">Support</a>
-    </footer>
-  </div>
+  <footer>
+    <input id="userInput" placeholder="Say something…" />
+    <button onclick="sendMessage()">Send</button>
+  </footer>
 
   <script>
-    function startApp() {
-      const nickname = document.getElementById("nickname").value || "Friend";
-      const language = document.getElementById("language").value;
-      const companion = document.getElementById("companion").value;
+    // Load user settings
+    const nickname = localStorage.getItem("nickname") || "Friend";
+    const language = localStorage.getItem("language") || "en-US";
+    const companion = localStorage.getItem("companion") || "whisp";
 
-      localStorage.setItem("nickname", nickname);
-      localStorage.setItem("language", language);
-      localStorage.setItem("companion", companion);
+    document.getElementById("greeting").textContent =
+      `Hi ${nickname} 🌱 I’m ${companion}.`;
 
-      window.location.href = "/index.html";
+    document.getElementById("languageInfo").textContent =
+      `Learning language: ${language}`;
+
+    const chat = document.getElementById("chat");
+
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
     }
+
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      input.value = "";
+
+      // Placeholder bot response
+      setTimeout(() => {
+        addMessage("I hear you 💛 Say more when you’re ready.", "bot");
+      }, 600);
+    }
+
+    // First welcome message
+    addMessage(
+      "You can talk freely here. No pressure. No tests.",
+      "bot"
+    );
   </script>
 
 </body>
