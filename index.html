@@ -95,6 +95,31 @@ function enterApp(){
   window.location.href = "/index.html"; // replace with your main chat page
 }
 </script>
+// landing.html
+function enterApp() {
+  const nickname = document.getElementById('nickname').value || 'Friend';
+  const language = document.getElementById('language').value;
+  const companion = document.getElementById('companion').value;
+
+  // Save choices
+  localStorage.setItem('nickname', nickname);
+  localStorage.setItem('language', language);
+  localStorage.setItem('companion', companion);
+
+  // Redirect to main app
+  window.location.href = "/index.html";
+}
+// index.html
+const nickname = localStorage.getItem('nickname') || 'Friend';
+const selectedLanguage = localStorage.getItem('language') || 'en-US';
+const selectedCompanion = localStorage.getItem('companion') || 'whisp';
+
+// Set greeting
+document.getElementById('greeting').textContent = `Hi ${nickname}! Talk like a friend. Learn naturally. Feel safe.`;
+
+// Preselect language & companion in gear bubble
+document.getElementById('languageSelect').value = selectedLanguage;
+document.getElementById('companionSelect').value = selectedCompanion;
 
 </body>
 </html>
