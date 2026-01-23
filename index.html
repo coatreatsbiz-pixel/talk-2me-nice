@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talk 2Me Nice</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Landing Page -->
+<div id="landingPage">
+  <div class="logo">Talk 2Me Nice</div>
+  <input id="nicknameInput" placeholder="Enter your nickname" />
+  
+  <div id="companionSelector">
+    <h3>Choose Your Companion</h3>
+    <div class="companionGrid">
+      <div class="companionCard" data-companion="Whisp">
+        <h4>Whisp</h4>
+        <p>Gentle, supportive, calm</p>
+        <small class="preview">“I’m here with you. Take your time.”</small>
+      </div>
+      <div class="companionCard" data-companion="Star">
+        <h4>Star</h4>
+        <p>Bold, bright, energetic</p>
+        <small class="preview">“Shine on! Let’s chat.”</small>
+      </div>
+      <div class="companionCard" data-companion="Robot">
+        <h4>Robot</h4>
+        <p>Logical, precise, witty</p>
+        <small class="preview">“Ready to process your thoughts.”</small>
+      </div>
+      <div class="companionCard" data-companion="Cloud">
+        <h4>Cloud</h4>
+        <p>Fluffy, whimsical, expressive</p>
+        <small class="preview">“Floating with ideas… let’s talk.”</small>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="startChat()">Start Chat</button>
+</div>
+
+<!-- Chat Page -->
+<div id="chatContainer" class="hidden">
+  <div id="profileSidebar">
+    <div class="profileInfo">
+      <p>👤 <strong id="profileName"></strong></p>
+      <p>🌍 <span id="profileLanguage"></span></p>
+      <p>🧚 <span id="profileCompanion"></span></p>
+    </div>
+
+    <hr>
+    <p id="starterTitle">Conversation Starters</p>
+    <select id="starterDropdown" onchange="startStarter()">
+      <option value="">-- Select Starter --</option>
+    </select>
+
+    <div id="voiceSettings">
+      <h4>Voice & Speech</h4>
+      <label><input type="checkbox" id="voiceOutputToggle" checked> Voice replies</label>
+      <label><input type="checkbox" id="voiceInputToggle" checked> Voice input</label>
+      <label>Speech speed
+        <select id="voiceSpeed">
+          <option value="0.9">Slow</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.1">Fast</option>
+        </select>
+      </label>
+    </div>
+
+    <hr>
+    <div id="modeSettings">
+      <h4>Modes</h4>
+      <label><input type="checkbox" id="dailyStarterToggle" checked> Daily Starter Only</label>
+    </div>
+
+    <hr>
+    <div id="footerLinks">
+      <a href="#" onclick="showPrivacy()">Privacy</a> | 
+      <a href="#" onclick="showSupport()">Support</a>
+    </div>
+  </div>
+
+  <div id="chatArea">
+    <div id="chat"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="hidden">
+  <input id="userInput" placeholder="Type a message…" />
+  <button id="micBtn" onclick="startSpeechToSpeech()">🎤</button>
+  <button onclick="sendMessage()">Send</button>
+  <button id="speechToSpeechBtn" class="active" onclick="toggleSpeechToSpeech()">🗣️ Speech-to-Speech: ON</button>
+</footer>
+
+<!-- Onboarding -->
+<div id="onboarding" class="hidden">
+  <div class="onboardCard">
+    <h3>Welcome to Talk 2Me Nice</h3>
+    <p>Your companion can speak and listen.</p>
+    <p>You can change companions or voice settings anytime.</p>
+    <button onclick="finishOnboarding()">Let’s go</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
 
