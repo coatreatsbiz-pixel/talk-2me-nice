@@ -131,6 +131,8 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
       <p>👤 <strong id="profileName"></strong></p>
       <p>🌍 <span id="profileLanguage"></span></p>
       <p>🧚 <span id="profileCompanion"></span></p>
+      <div id="sidebarLinks">
+  <a href="#">Privacy</a> | <a href="#">Support</a>
     </div>
     <hr>
     <p id="starterTitle">Conversation Starters</p>
@@ -567,6 +569,7 @@ async function getAIResponse(userText, companionPrompt){
     headers:{ "Content-Type":"application/json", "Authorization":"Bearer YOUR_OPENAI_API_KEY" },
     body: JSON.stringify(body)
   });
+
   const data = await res.json();
   return data.choices[0].message.content;
 }
