@@ -204,7 +204,7 @@ function addMessage(text, sender, phonetic){
   const div = document.createElement("div");
   div.className = `message ${sender}`;
   div.textContent = text;
-  if(sender === "bot"){
+  if(sender==="bot"){
     div.onclick = () => {
       document.getElementById("userInput").value = text;
       if(document.getElementById("phoneticToggle").checked && phonetic){
@@ -221,8 +221,16 @@ function addMessage(text, sender, phonetic){
 function sendMessage(){
   const input = document.getElementById("userInput");
   if(!input.value.trim()) return;
-  addMessage(input.value, "user");
-  input.value = "";
+  addMessage(input.value,"user");
+
+  // Check if current pack has bot responses
+  if(currentPack && conversationFlows[currentPack]){
+    const lastUser = input.value.trim().toLowerCase();
+    const response = conversationFlows[currentPack][lastUser];
+    if(response) addMessage(response,"bot");
+  }
+
+  input.value="";
 }
 
 // Toggle gear options
@@ -231,36 +239,9 @@ function toggleOptions(){
   options.style.display = options.style.display==="block"?"none":"block";
 }
 
-// Conversation packs
+// Conversation packs with mini flows
 const conversationPresets = {
   "Workplace Conversations": [
     {text:"Hello, how are you?", phonetic:"Hel-lo, how are you?"},
     {text:"Good morning!", phonetic:"Good mor-ning!"},
-    {text:"Let's schedule a meeting.", phonetic:"Let's sched-ule a meet-ing."}
-  ],
-  "Dating & Social": [
-    {text:"Hi! How was your day?", phonetic:"Hi! How was your day?"},
-    {text:"Do you want to grab coffee?", phonetic:"Do you want to grab cof-fee?"},
-    {text:"I like your smile!", phonetic:"I like your smile!"}
-  ],
-  "Travel": [
-    {text:"Where is the nearest hotel?", phonetic:"Where is the near-est ho-tel?"},
-    {text:"Can you recommend a restaurant?", phonetic:"Can you rec-om-mend a rest-au-rant?"},
-    {text:"What time does the train leave?", phonetic:"What time does the train leave?"}
-  ],
-  "Advanced Small Talk": [
-    {text:"Nice weather today, isn't it?", phonetic:"Nice wea-ther to-day, isn't it?"},
-    {text:"Did you watch the game last night?", phonetic:"Did you watch the game last night?"},
-    {text:"Any plans for the weekend?", phonetic:"Any plans for the week-end?"}
-  ]
-};
-
-function startPack(packName){
-  chatArea.innerHTML = ""; // clear previous
-  addMessage(`You're exploring: ${packName} 💛`, "bot");
-  conversationPresets[packName].forEach(p => addMessage(p.text,"bot",p.phonetic));
-}
-</script>
-
-</body>
-</html>
+    {text:"Let's schedule a meeting.", phonetic:"Let's sched-ule a meet-ing
