@@ -79,4 +79,3 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
 .onboardCard {background: var(--bg-card); padding:2rem; border-radius:18px; max-width:360px; text-align:center;}
 .onboardCard h3 {color:var(--accent);}
 .onboardCard button {margin-top:1rem; padding:0.6rem 1.4rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer;}
-
