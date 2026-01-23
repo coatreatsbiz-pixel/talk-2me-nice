@@ -37,12 +37,12 @@ body {
   text-align:center;
 }
 
-#landing input {
+#landing input, #landing select {
   padding:0.6rem 1rem;
   margin:0.5rem;
   border-radius:12px;
   border:none;
-  width:200px;
+  width:220px;
   background:#1f232d;
   color:var(--text-main);
 }
@@ -183,9 +183,16 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
 <!-- Landing Page -->
 <div id="landing">
   <h1>Welcome to Talk 2Me Nice</h1>
-  <p>Choose your nickname and your companion's name to start chatting:</p>
+  <p>Choose your nickname, companion, and language:</p>
   <input id="nicknameInput" placeholder="Your nickname" />
-  <input id="companionInput" placeholder="Your companion's name" />
+  <input id="companionInput" placeholder="Companion's name" />
+  <select id="languageSelect">
+    <option value="en-US">English (US)</option>
+    <option value="es-ES">Spanish</option>
+    <option value="fr-FR">French</option>
+    <option value="de-DE">German</option>
+    <option value="ja-JP">Japanese</option>
+  </select>
   <button onclick="startChat()">Start Chatting</button>
   <button onclick="startDummyMode()">Try Dummy Mode</button>
 </div>
@@ -195,7 +202,7 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
   <div id="profileSidebar">
     <div class="profileInfo">
       <p>👤 <strong id="profileName"></strong></p>
-      <p>🌍 <span id="profileLanguage">en-US</span></p>
+      <p>🌍 <span id="profileLanguage"></span></p>
       <p>🧚 <span id="profileCompanion"></span></p>
     </div>
     <hr>
@@ -231,7 +238,8 @@ footer button:hover { transform: scale(1.05); background:#ff9f40; }
 window.addEventListener("load", () => {
   const nick = localStorage.getItem("nickname");
   const comp = localStorage.getItem("companion");
-  if(nick && comp){
+  const lang = localStorage.getItem("language");
+  if(nick && comp && lang){
     document.getElementById("landing").classList.add("hidden");
     document.getElementById("chatContainer").classList.remove("hidden");
     initChat();
@@ -242,12 +250,11 @@ window.addEventListener("load", () => {
 function startChat(){
   const nick = document.getElementById("nicknameInput").value.trim();
   const comp = document.getElementById("companionInput").value.trim();
-  if(!nick || !comp){
-    alert("Please enter both nicknames!");
-    return;
-  }
+  const lang = document.getElementById("languageSelect").value;
+  if(!nick || !comp){ alert("Please enter both nicknames!"); return; }
   localStorage.setItem("nickname", nick);
   localStorage.setItem("companion", comp);
+  localStorage.setItem("language", lang);
   document.getElementById("landing").classList.add("hidden");
   document.getElementById("chatContainer").classList.remove("hidden");
   initChat();
@@ -255,20 +262,17 @@ function startChat(){
 
 /* Dummy mode for testing site */
 function startDummyMode(){
-  localStorage.setItem("nickname", "Tester");
-  localStorage.setItem("companion", "Whisp");
+  localStorage.setItem("nickname","Tester");
+  localStorage.setItem("companion","Whisp");
+  localStorage.setItem("language","en-US");
   document.getElementById("landing").classList.add("hidden");
   document.getElementById("chatContainer").classList.remove("hidden");
   initChat();
-
-  // Show a random starter automatically
   setTimeout(() => {
     const packs = ["Workplace","Dating & Social","Travel","Advanced Small Talk","School"];
     const randomPack = packs[Math.floor(Math.random()*packs.length)];
     selectStarter(randomPack);
-
-    // Add dummy user message
-    setTimeout(()=>addMessage("Hello, this is a test message!", "user"), 1500);
+    setTimeout(()=>sendMessage("Hello, this is a test message!"),1500);
   }, 500);
 }
 
@@ -276,8 +280,10 @@ function startDummyMode(){
 function initChat(){
   const nickname = localStorage.getItem("nickname") || "Friend";
   const companion = localStorage.getItem("companion") || "Whisp";
+  const language = localStorage.getItem("language") || "en-US";
   document.getElementById("profileName").textContent = nickname;
   document.getElementById("profileCompanion").textContent = companion;
+  document.getElementById("profileLanguage").textContent = language;
 }
 
 /* Seasonal emoji */
@@ -295,95 +301,4 @@ const conversationStarters = {
   "Workplace":[
     { phrase:`${season} Good morning! How's your day starting?`, context:"morning" },
     { phrase:`${season} Hi! Did you catch the latest project update?`, context:"afternoon" },
-    { phrase:`${season} Evening! Ready to wrap things up?`, context:"evening" }
-  ],
-  "Dating & Social":[
-    { phrase:`${season} Hi there! Would you like to grab coffee?`, context:"morning" },
-    { phrase:`${season} Hey! Want to take a walk this afternoon?`, context:"afternoon" },
-    { phrase:`${season} Hello! How was your day today?`, context:"evening" }
-  ],
-  "Travel":[ { phrase:`${season} Hi! Where is the nearest train station?`, context:"any" } ],
-  "Advanced Small Talk":[ { phrase:`${season} Hello! Did you see the game yesterday?`, context:"any" } ],
-  "School":[
-    { phrase:`${season} Hey! How’s your homework going?`, context:"any" },
-    { phrase:`${season} Did you catch the game at school today?`, context:"any" },
-    { phrase:`${season} Who’s your favorite teacher this year?`, context:"any" }
-  ]
-};
-
-/* Time context */
-function getTimeContext(){
-  const hour = new Date().getHours();
-  if(hour>=5 && hour<12) return "morning";
-  if(hour>=12 && hour<18) return "afternoon";
-  return "evening";
-}
-
-/* Select starter from dropdown */
-function selectStarter(pack){
-  if(!pack) return;
-  const starters = conversationStarters[pack];
-  const timeCtx = getTimeContext();
-  const starter = starters.find(s=>s.context===timeCtx) || starters[0];
-  displayStarter(starter.phrase);
-  document.getElementById("starterSelect").value = "";
-}
-
-/* Display starter with typing animation */
-function displayStarter(phrase){
-  const starterBox = document.getElementById("starterBox");
-  starterBox.textContent = phrase;
-  starterBox.style.display="block";
-  starterBox.onclick = () => {
-    starterBox.style.display="none";
-    showTyping(phrase);
-  };
-}
-
-/* Chat handling */
-const chat = document.getElementById("chat");
-function addMessage(text, sender){
-  const div = document.createElement("div");
-  div.className = `message ${sender}`;
-  div.textContent = text;
-  chat.appendChild(div);
-  setTimeout(()=>chat.scrollTop=chat.scrollHeight,50);
-}
-
-/* Typing animation for bot */
-function showTyping(text){
-  const typingBubble = document.createElement("div");
-  typingBubble.className = "typing";
-  chat.appendChild(typingBubble);
-
-  let dots = 1;
-  typingBubble.textContent = "Typing" + ".".repeat(dots);
-  chat.scrollTop = chat.scrollHeight;
-
-  const interval = setInterval(() => {
-    dots = (dots % 3) + 1;
-    typingBubble.textContent = "Typing" + ".".repeat(dots);
-    chat.scrollTop = chat.scrollHeight;
-  }, 400);
-
-  // Random duration for realism
-  const duration = 1000 + Math.random() * 1000;
-  setTimeout(() => {
-    clearInterval(interval);
-    chat.removeChild(typingBubble);
-    addMessage(text, "bot");
-  }, duration);
-}
-
-
-/* Send message & Enter key */
-const input = document.getElementById("userInput");
-function sendMessage(){
-  if(!input.value.trim()) return;
-  addMessage(input.value,"user");
-  input.value="";
-}
-input.addEventListener("keypress", e => { if(e.key==="Enter") sendMessage(); });
-</script>
-</body>
-</html>
+    { phrase:`${season} Evening! Ready to wrap things
