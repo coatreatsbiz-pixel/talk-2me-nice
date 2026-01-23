@@ -44,7 +44,8 @@ body {
   box-shadow:0 6px 16px rgba(0,0,0,0.3);
 }
 
-#packs { display:flex; flex-wrap:wrap; justify-content:center; margin-bottom:1rem; }
+#packs { display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem; }
+
 .packButton {
   background:#1f232d;
   color:var(--text-main);
@@ -53,8 +54,9 @@ body {
   border-radius:12px;
   cursor:pointer;
   transition:0.2s;
+  font-size:0.9rem;
 }
-.packButton:hover { background:var(--accent); color:#1b1f27; transform:scale(1.05); }
+.packButton:hover { background:var(--accent); color:#1b1f27; transform:scale(1.03); }
 
 #chatArea {
   flex:1;
@@ -82,6 +84,9 @@ body {
 #userInput { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main);}
 button.sendBtn { padding:0.6rem 1rem; border-radius:999px; border:none; background:var(--accent); cursor:pointer; transition:all 0.3s ease;}
 button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
+
+#nextPhrase { margin-top:0.5rem; padding:0.5rem 1rem; border-radius:999px; border:none; background:#6fa8dc; color:#1b1f27; cursor:pointer; display:none; }
+#nextPhrase:hover { background:#5b90c7; }
 
 @keyframes fadeInMessage { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
 
@@ -111,6 +116,7 @@ button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
     <p id="profileLanguage"></p>
     <p id="profileCompanion"></p>
     <div id="packs"></div>
+    <button id="nextPhrase" onclick="nextPhrase()">Next Phrase →</button>
   </div>
 
   <div id="chatArea"></div>
@@ -137,6 +143,7 @@ document.getElementById("profileCompanion").textContent = `Companion: ${companio
 
 const chatArea = document.getElementById("chatArea");
 const packsDiv = document.getElementById("packs");
+const nextBtn = document.getElementById("nextPhrase");
 
 const conversationPresets = {
   "Workplace Conversations": [
@@ -169,27 +176,37 @@ function getDailyPreset() {
   const packName = keys[index];
   const phrases = conversationPresets[packName];
   const phraseIndex = today % phrases.length;
-  return { packName, phrase: phrases[phraseIndex] };
+  return { packName, phrases, phraseIndex };
 }
 
 let daily = getDailyPreset();
+let currentIndex = daily.phraseIndex;
 let currentPack = daily.packName;
 
-// Show the daily preset in sidebar as a single button
-packsDiv.innerHTML = `<div class="packButton" onclick="startDaily()">${daily.packName} → ${daily.phrase}</div>`;
+// Show only one daily starter
+packsDiv.innerHTML = `<div class="packButton" onclick="startDaily()">${daily.packName} → ${daily.phrases[currentIndex]}</div>`;
 
 function startDaily() {
   chatArea.innerHTML = "";
-  addMessage(`Today's conversation starter: ${daily.phrase}`, "bot");
+  addMessage(`Today's conversation starter: ${daily.phrases[currentIndex]}`, "bot");
+  nextBtn.style.display = "inline-block";
+}
+
+function nextPhrase(){
+  currentIndex++;
+  if(currentIndex >= daily.phrases.length){
+    addMessage("You've finished all phrases for today! 🎉", "bot");
+    nextBtn.style.display = "none";
+    return;
+  }
+  addMessage(daily.phrases[currentIndex], "bot");
 }
 
 function addMessage(text,sender){
   const div=document.createElement("div");
   div.className=`message ${sender}`;
   div.textContent=text;
-  if(sender==="bot"){
-    div.onclick = ()=> speak(text);
-  }
+  if(sender==="bot") div.onclick = ()=> speak(text);
   chatArea.appendChild(div);
   chatArea.scrollTop = chatArea.scrollHeight;
 }
