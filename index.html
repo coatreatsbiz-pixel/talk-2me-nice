@@ -49,6 +49,25 @@ body {
 #profileSidebar h3 { margin:0; font-size:1rem; color:#ffb86c; text-align:center; }
 #profileSidebar p { margin:0; font-size:0.85rem; color:var(--text-muted); text-align:center; }
 
+#packs {
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.5rem;
+  justify-content:center;
+  margin-bottom:1rem;
+}
+.packButton {
+  background:#1f232d;
+  color:var(--text-main);
+  border:1px solid var(--accent);
+  padding:0.5rem 0.8rem;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.2s;
+}
+.packButton:hover { background:var(--accent); color:#1b1f27; transform:scale(1.05); }
+
+/* Chat area */
 #chatArea {
   flex:1;
   display:flex;
@@ -69,27 +88,8 @@ body {
   opacity:0;
   animation: fadeInMessage 0.5s forwards;
 }
-.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
-.bot { background:var(--bg-card); align-self:flex-start; }
-
-/* Conversation packs */
-#packs {
-  display:flex;
-  flex-wrap:wrap;
-  gap:0.5rem;
-  justify-content:center;
-  margin-bottom:1rem;
-}
-.packButton {
-  background:#1f232d;
-  color:var(--text-main);
-  border:1px solid var(--accent);
-  padding:0.5rem 0.8rem;
-  border-radius:12px;
-  cursor:pointer;
-  transition:0.2s;
-}
-.packButton:hover { background:var(--accent); color:#1b1f27; transform:scale(1.05); }
+.user { background:var(--accent); color:#1b1f27; align-self:flex-end; cursor:text; }
+.bot { background:var(--bg-card); align-self:flex-start; cursor:pointer; }
 
 /* Input area */
 #inputArea {
@@ -160,7 +160,7 @@ button.sendBtn:hover { transform:scale(1.05); background:#ff9f40; }
     <p id="profileCompanion"></p>
     <div id="packs">
       <div class="packButton" onclick="startPack('Workplace Conversations')">Workplace</div>
-      <div class="packButton" onclick="startPack('Dating & Social')">Dating & Social</div>
+      <div class="packButton" onclick="startPack('Dating & Social')">Dating</div>
       <div class="packButton" onclick="startPack('Travel')">Travel</div>
       <div class="packButton" onclick="startPack('Advanced Small Talk')">Small Talk</div>
     </div>
@@ -194,44 +194,71 @@ document.getElementById("profileCompanion").textContent = `Companion: ${companio
 const chatArea = document.getElementById("chatArea");
 
 function speak(text){
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang=language;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = language;
   speechSynthesis.speak(u);
 }
 
-function addMessage(text,sender){
-  const div=document.createElement("div");
-  div.className=`message ${sender}`;
-  div.textContent=text;
+// Add a message to chat
+function addMessage(text, sender, phonetic){
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
+  div.textContent = text;
+  if(sender === "bot"){
+    div.onclick = () => {
+      document.getElementById("userInput").value = text;
+      if(document.getElementById("phoneticToggle").checked && phonetic){
+        alert(phonetic);
+      }
+      speak(text);
+    }
+  }
   chatArea.appendChild(div);
   chatArea.scrollTop = chatArea.scrollHeight;
 }
 
+// Send message typed by user
 function sendMessage(){
   const input = document.getElementById("userInput");
   if(!input.value.trim()) return;
   addMessage(input.value, "user");
   input.value = "";
-  setTimeout(()=>addMessage("Tap a word for pronunciation 💛", "bot"), 400);
 }
 
+// Toggle gear options
 function toggleOptions(){
-  const options=document.getElementById("options");
+  const options = document.getElementById("options");
   options.style.display = options.style.display==="block"?"none":"block";
 }
 
-/* Conversation Packs */
+// Conversation packs
 const conversationPresets = {
-  "Workplace Conversations": ["Hello, how are you?", "Good morning!", "Let's schedule a meeting."],
-  "Dating & Social": ["Hi! How was your day?", "Do you want to grab coffee?", "I like your smile!"],
-  "Travel": ["Where is the nearest hotel?", "Can you recommend a restaurant?", "What time does the train leave?"],
-  "Advanced Small Talk": ["Nice weather today, isn't it?", "Did you watch the game last night?", "Any plans for the weekend?"]
+  "Workplace Conversations": [
+    {text:"Hello, how are you?", phonetic:"Hel-lo, how are you?"},
+    {text:"Good morning!", phonetic:"Good mor-ning!"},
+    {text:"Let's schedule a meeting.", phonetic:"Let's sched-ule a meet-ing."}
+  ],
+  "Dating & Social": [
+    {text:"Hi! How was your day?", phonetic:"Hi! How was your day?"},
+    {text:"Do you want to grab coffee?", phonetic:"Do you want to grab cof-fee?"},
+    {text:"I like your smile!", phonetic:"I like your smile!"}
+  ],
+  "Travel": [
+    {text:"Where is the nearest hotel?", phonetic:"Where is the near-est ho-tel?"},
+    {text:"Can you recommend a restaurant?", phonetic:"Can you rec-om-mend a rest-au-rant?"},
+    {text:"What time does the train leave?", phonetic:"What time does the train leave?"}
+  ],
+  "Advanced Small Talk": [
+    {text:"Nice weather today, isn't it?", phonetic:"Nice wea-ther to-day, isn't it?"},
+    {text:"Did you watch the game last night?", phonetic:"Did you watch the game last night?"},
+    {text:"Any plans for the weekend?", phonetic:"Any plans for the week-end?"}
+  ]
 };
 
 function startPack(packName){
-  const phrases = conversationPresets[packName];
-  phrases.forEach(p => addMessage(p, "bot"));
+  chatArea.innerHTML = ""; // clear previous
   addMessage(`You're exploring: ${packName} 💛`, "bot");
+  conversationPresets[packName].forEach(p => addMessage(p.text,"bot",p.phonetic));
 }
 </script>
 
