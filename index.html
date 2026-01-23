@@ -15,11 +15,9 @@
   --text:#e1e4ea;
   --muted:#a1a6b0;
 }
-
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Montserrat,system-ui,sans-serif;
+  margin:0;font-family:Montserrat,system-ui,sans-serif;
   background:var(--bg-main);
   color:var(--text);
   min-height:100vh;
@@ -27,7 +25,7 @@ body{
   flex-direction:column;
 }
 
-/* ---------- BRAND WAVE ---------- */
+/* Brand wave background */
 .brandWave{
   position:fixed;
   inset:0;
@@ -106,7 +104,7 @@ body{
   flex-direction:column;
 }
 
-/* ---------- SIDEBAR ---------- */
+/* Sidebar sections */
 .profile p{margin:.2rem 0;font-size:.9rem}
 select{
   width:100%;
@@ -171,7 +169,7 @@ footer button{
   cursor:pointer;
 }
 
-/* ---------- MIC ---------- */
+/* MIC */
 #mic.listening{
   animation:pulse 1.2s infinite;
 }
@@ -182,7 +180,6 @@ footer button{
 }
 </style>
 </head>
-
 <body>
 <div class="brandWave"></div>
 
@@ -190,7 +187,7 @@ footer button{
 <div id="loginOverlay">
   <div class="loginCard">
     <h1>Talk 2Me Nice</h1>
-    <p>How should we call you?</p>
+    <p>What should we call you?</p>
     <input id="nicknameInput" placeholder="Nickname"/>
     <button onclick="enterApp()">Enter</button>
   </div>
@@ -210,6 +207,14 @@ footer button{
       <option value="Ace">Ace (playful)</option>
       <option value="Sage">Sage (clear)</option>
       <option value="School">School Mode</option>
+    </select>
+
+    <div class="sectionTitle">Language</div>
+    <select id="languageSelect">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="pt">Português</option>
     </select>
 
     <div class="sectionTitle">Conversation Starter</div>
@@ -237,6 +242,7 @@ footer button{
 const state={
   user:{name:""},
   companion:"Whisp",
+  language:"en",
   emotionalLoad:"neutral",
   starterUsed:false,
   voiceAllowed:true
@@ -247,27 +253,42 @@ function enterApp(){
   const name=nicknameInput.value.trim();
   if(!name)return alert("Enter a nickname");
   state.user.name=name;
+  state.language = localStorage.getItem("language") || "en";
   localStorage.setItem("name",name);
   loginOverlay.style.display="none";
   app.style.display="flex";
   document.querySelector("footer").style.display="flex";
   nameLabel.textContent=name;
   companionLabel.textContent=state.companion;
+  languageSelect.value = state.language;
   greet();
 }
 
-/* ---------- EI ENGINE ---------- */
+/* ---------- EI ENGINE (Multilingual) ---------- */
 function assess(text){
-  if(/!{2,}|overwhelmed|panic|angry/i.test(text)) return "high";
-  if(/ok|fine|sure/i.test(text)) return "low";
+  const patterns = {
+    en:{high:/!{2,}|panic|overwhelmed|angry|stressed/i,low:/ok|fine|sure/i},
+    es:{high:/!{2,}|ansioso|abrumado|enojado|estresado/i,low:/bien|ok|vale/i},
+    fr:{high:/!{2,}|anxieux|débordé|énervé|stressé/i,low:/ça va|bien|ok/i},
+    pt:{high:/!{2,}|ansioso|sobrecarregado|irritado|estressado/i,low:/bem|ok|tá/i}
+  };
+  const lang = patterns[state.language] || patterns.en;
+  if(lang.high.test(text)) return "high";
+  if(lang.low.test(text)) return "low";
   return "neutral";
 }
 
-/* ---------- RESPONSES (AI STUB) ---------- */
-function generateReply(text){
-  if(state.emotionalLoad==="high")
-    return "Let’s slow this down together. You don’t have to solve everything right now.";
-  return "I hear you. Tell me a little more if you want.";
+/* ---------- RESPONSES ---------- */
+function generateReply(){
+  const replies = {
+    en:{high:"Let’s slow this down together. You’re not alone here.",neutral:"I hear you. Want to keep going?",low:"I’m here whenever you want to talk."},
+    es:{high:"Vamos a bajar el ritmo juntos. No estás solo aquí.",neutral:"Te escucho. ¿Quieres seguir?",low:"Aquí estoy cuando quieras hablar."},
+    fr:{high:"On peut ralentir ensemble. Tu n’es pas seul ici.",neutral:"Je t’écoute. Tu veux continuer ?",low:"Je suis là quand tu veux."},
+    pt:{high:"Vamos desacelerar juntos. Você não está sozinho.",neutral:"Estou te ouvindo. Quer continuar?",low:"Estou aqui quando quiser falar."}
+  };
+  if(state.companion==="School") state.emotionalLoad="neutral";
+  const langReplies = replies[state.language] || replies.en;
+  return langReplies[state.emotionalLoad];
 }
 
 /* ---------- CHAT ---------- */
@@ -280,13 +301,13 @@ function add(text,who){
 }
 
 function send(msg){
-  const text=msg||input.value.trim();
-  if(!text)return;
+  const text = msg || input.value.trim();
+  if(!text) return;
   add(text,"user");
   input.value="";
   state.emotionalLoad=assess(text);
   setTimeout(()=>{
-    const reply=generateReply(text);
+    const reply=generateReply();
     add(reply,"bot");
     speak(reply);
   },600);
@@ -305,11 +326,19 @@ companionSelect.onchange=()=>{
   companionLabel.textContent=state.companion;
 };
 
+/* ---------- LANGUAGE ---------- */
+languageSelect.onchange=()=>{
+  state.language=languageSelect.value;
+  localStorage.setItem("language",state.language);
+};
+
 /* ---------- VOICE ---------- */
 function speak(text){
-  if(!state.voiceAllowed||state.emotionalLoad==="high")return;
-  const u=new SpeechSynthesisUtterance(text);
-  speechSynthesis.speak(u);
+  if(!state.voiceAllowed || state.emotionalLoad==="high") return;
+  const utter=new SpeechSynthesisUtterance(text);
+  const voiceMap={en:"en-US",es:"es-ES",fr:"fr-FR",pt:"pt-BR"};
+  utter.lang=voiceMap[state.language]||"en-US";
+  speechSynthesis.speak(utter);
 }
 function voiceIn(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -325,8 +354,8 @@ function voiceIn(){
 function greet(){
   const lastTone=localStorage.getItem("tone");
   if(lastTone){
-    add(`Last time you preferred things calm and steady. We can keep that.`,"bot");
-  }else{
+    add(`Last time you preferred a calm tone. We can keep that.`,"bot");
+  } else {
     add("I’m here. We can talk at your pace.","bot");
   }
 }
