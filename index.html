@@ -3,274 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Talk 2Me Nice</title>
+<title>Talk 2Me Nice — Welcome</title>
 <style>
 :root {
   --bg-main: #1b1f27;
   --bg-card: #242833;
   --accent: #6fa8dc;
-  --accent-soft: rgba(111,168,220,0.3);
   --text-main: #e1e4ea;
   --text-muted: #a1a6b0;
 }
-
 body {
   margin:0;
   font-family: 'Montserrat', system-ui, sans-serif;
   background: var(--bg-main);
   color: var(--text-main);
-  line-height:1.6;
 }
-
-main { max-width:980px; margin:0 auto; padding:2rem 1.5rem; }
-h1 { font-family:'Playfair Display', serif; font-size:2.6rem; font-weight:600; text-align:center; }
-p { color:var(--text-muted); text-align:center; }
-
-.card {
+.container {
+  max-width:500px;
+  margin:3rem auto;
+  padding:2rem;
   background: var(--bg-card);
   border-radius:20px;
-  padding:2rem;
-  margin:2rem 0;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  text-align:center;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
+h1 { font-family:'Playfair Display', serif; font-size:2rem; margin-bottom:1rem; }
+p { color:var(--text-muted); margin-bottom:1.5rem; }
 
-.chat-shell {
-  background:#1f232d;
-  border-radius:16px;
-  padding:1rem;
-  height:300px;
-  overflow-y:auto;
-  margin-bottom:1rem;
-  border:1px solid var(--accent-soft);
-}
+label { display:block; margin:0.8rem 0 0.2rem; text-align:left; }
+input, select { width:100%; padding:0.5rem; border-radius:10px; border:1px solid var(--accent); background:#1f232d; color:var(--text-main); }
 
-.chat-msg { margin:0.4rem 0; }
-.user { color: var(--accent); }
-.app { color: var(--text-main); }
-
-.chat-input { display:flex; gap:0.5rem; }
-.chat-input input { flex:1; padding:0.6rem 1rem; border-radius:999px; border:1px solid var(--accent-soft); background:#242833; color:var(--text-main); }
-.chat-input button { padding:0.6rem 1rem; border-radius:999px; background:var(--accent); color:#1b1f27; border:none; cursor:pointer; transition: all 0.3s ease; }
-.chat-input button:hover { background:#5b90c7; transform:scale(1.03); }
-
-.companion {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 80px;
-  height: 80px;
-  border-radius:50%;
-  background:#3a4a65;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  animation: float 5s ease-in-out infinite;
-}
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-/* Options bubble */
-#optionsButton {
-  position: fixed;
-  bottom: 120px;
-  right:20px;
-  width:60px;
-  height:60px;
-  background:#3a4a65;
-  color:#6fa8dc;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  cursor:pointer;
-  box-shadow:0 4px 12px rgba(0,0,0,0.4);
-}
-
-#optionsPanel {
-  position: fixed;
-  bottom:200px;
-  right:20px;
-  width:280px;
-  max-height:400px;
-  background:#242833;
-  color: var(--text-main);
-  border-radius:16px;
-  padding:1rem;
-  display:none;
-  overflow-y:auto;
-  border:1px solid var(--accent-soft);
-  box-shadow:0 6px 20px rgba(0,0,0,0.3);
-}
-
-#letters button {
-  padding:0.3rem 0.5rem;
-  border-radius:6px;
+button {
+  margin-top:1.5rem;
+  padding:0.8rem 1.5rem;
+  border-radius:999px;
   border:none;
+  background:var(--accent);
+  color:#1b1f27;
   cursor:pointer;
-  background:#3a4a65;
-  color:#6fa8dc;
-  margin:2px;
+  font-size:1rem;
+  transition: all 0.3s ease;
 }
-#letters button:hover { background:#5b6b8c; }
+button:hover { background:#5b90c7; transform:scale(1.03); }
 
-.locked { opacity:0.5; cursor:not-allowed; }
-
-footer { text-align:center; margin-top:3rem; font-size:0.85rem; color:var(--text-muted); }
+footer { margin-top:2rem; font-size:0.85rem; color:var(--text-muted); }
 footer a { color:var(--text-muted); text-decoration:none; margin:0 0.5rem; }
 footer a:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
-<main>
-  <h1>Talk 2Me Nice</h1>
-  <p>Talk like a friend. Learn naturally. Feel safe.</p>
 
-  <section class="card">
-    <h2>Demo Chat</h2>
-    <div class="chat-shell" id="chat">
-      <div class="chat-msg app">Hi! I’m your Talk 2Me Nice companion. 💛</div>
-    </div>
-    <div class="chat-input">
-      <input type="text" id="userInput" placeholder="Type a message..." />
-      <button onclick="sendMessage()">Send</button>
-    </div>
-    <p><em>This is a placeholder interface. AI & Nice+ features will come later.</em></p>
-  </section>
+<div class="container">
+  <h1>Welcome to Talk 2Me Nice 💛</h1>
+  <p>Set up your account and get ready to learn naturally.</p>
+
+  <label for="nickname">Nickname:</label>
+  <input type="text" id="nickname" placeholder="Your nickname">
+
+  <label for="language">Select Your Language (Free):</label>
+  <select id="language">
+    <option value="en-US">English ✔</option>
+  </select>
+
+  <label for="companion">Choose a Companion:</label>
+  <select id="companion">
+    <option value="whisp">Whisp ✔</option>
+  </select>
+
+  <p>Nice+ unlocks extra languages, companions, and voice chat!</p>
+
+  <button onclick="enterApp()">Start Talking</button>
 
   <footer>
     <a href="/privacy.html">Privacy</a> •
     <a href="/terms.html">Support</a>
-    <p>© Talk 2Me Nice</p>
   </footer>
-</main>
-
-<div class="companion">🧚</div>
-
-<!-- Options Bubble -->
-<div id="optionsButton">⚙️</div>
-<div id="optionsPanel">
-  <h3>Options</h3>
-
-  <!-- Language Selector -->
-  <label for="languageSelect">Language:</label>
-  <select id="languageSelect" style="margin-bottom:0.5rem; width:100%; padding:0.3rem;">
-    <option value="en-US" data-locked="false">English ✔</option>
-    <option value="es-ES" data-locked="true">Spanish 🔒</option>
-    <option value="fr-FR" data-locked="true">French 🔒</option>
-    <option value="ja-JP" data-locked="true">Japanese 🔒</option>
-  </select>
-
-  <!-- Alphabet / Numbers -->
-  <p>Tap a letter or number to hear it:</p>
-  <div id="letters"></div>
-
-  <!-- Phonetic Toggle -->
-  <label style="display:block; margin-top:0.5rem; font-size:0.8rem;">
-    <input type="checkbox" id="phoneticToggle"> Show phonetic breakdown
-  </label>
-
-  <!-- Companion Selection -->
-  <p style="margin-top:0.5rem;">Companion:</p>
-  <select id="companionSelect" style="width:100%; margin-bottom:0.5rem;">
-    <option value="whisp" data-locked="false">Whisp ✔</option>
-    <option value="star" data-locked="true">Star 🔒</option>
-    <option value="puff" data-locked="true">Puff 🔒</option>
-  </select>
-
-  <!-- Voice Chat Toggle -->
-  <label>
-    <input type="checkbox" id="voiceToggle" data-locked="true"> Enable Voice Chat 🔒
-  </label>
-
-  <p style="margin-top:0.5rem;">
-    <a href="#" onclick="optionsPanel.style.display='none'; return false;">Return to chat</a>
-  </p>
 </div>
 
 <script>
-// Entitlement
-let NICE_PLUS = false; // toggle to simulate subscription
+function enterApp(){
+  const nickname = document.getElementById('nickname').value || 'Friend';
+  const language = document.getElementById('language').value;
+  const companion = document.getElementById('companion').value;
 
-const optionsButton = document.getElementById('optionsButton');
-const optionsPanel = document.getElementById('optionsPanel');
-const lettersDiv = document.getElementById('letters');
-const phoneticToggle = document.getElementById('phoneticToggle');
-const languageSelect = document.getElementById('languageSelect');
-const companionSelect = document.getElementById('companionSelect');
-const voiceToggle = document.getElementById('voiceToggle');
+  // Save to local storage or pass to main app
+  localStorage.setItem('nickname', nickname);
+  localStorage.setItem('language', language);
+  localStorage.setItem('companion', companion);
 
-const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const numbers = '0123456789';
-
-function populateLetters() {
-  lettersDiv.innerHTML = '';
-  [...alphabet,...numbers].forEach(char => {
-    const btn = document.createElement('button');
-    btn.textContent = char;
-    btn.onclick = () => playSound(char);
-    lettersDiv.appendChild(btn);
-  });
-}
-populateLetters();
-
-function playSound(char) {
-  const langOption = languageSelect.options[languageSelect.selectedIndex];
-  if(langOption.dataset.locked === 'true' && !NICE_PLUS){
-    alert('🔒 This language is a Nice+ feature. Unlock to use.');
-    return;
-  }
-
-  const lang = langOption.value;
-  const phonetic = phoneticToggle.checked ? ` (${char}-phonetic)` : '';
-  const utter = new SpeechSynthesisUtterance(char);
-  utter.lang = lang;
-  window.speechSynthesis.speak(utter);
-}
-
-// Companion & Voice gating
-function checkLock(selectElem) {
-  const opt = selectElem.options[selectElem.selectedIndex];
-  if(opt.dataset.locked === 'true' && !NICE_PLUS){
-    alert('🔒 This feature is Nice+ only. Unlock to use.');
-    selectElem.value = selectElem.querySelector('[data-locked="false"]').value;
-    return false;
-  }
-  return true;
-}
-
-companionSelect.onchange = () => checkLock(companionSelect);
-voiceToggle.onchange = () => {
-  if(voiceToggle.dataset.locked==='true' && !NICE_PLUS){
-    alert('🔒 Voice Chat is a Nice+ feature. Unlock to use.');
-    voiceToggle.checked = false;
-  }
-}
-
-// Toggle panel
-optionsButton.onclick = () => {
-  optionsPanel.style.display = optionsPanel.style.display==='none'?'block':'none';
-};
-
-// Simple chat placeholder
-const chat = document.getElementById('chat');
-const input = document.getElementById('userInput');
-function sendMessage() {
-  const msg = input.value.trim();
-  if(!msg) return;
-  const userDiv = document.createElement('div');
-  userDiv.classList.add('chat-msg','user');
-  userDiv.textContent = msg;
-  chat.appendChild(userDiv);
-
-  const appDiv = document.createElement('div');
-  appDiv.classList.add('chat-msg','app');
-  appDiv.textContent = "🤖 This is a placeholder response.";
-  chat.appendChild(appDiv);
-
-  chat.scrollTop = chat.scrollHeight;
-  input.value='';
+  // Redirect to main app page
+  window.location.href = "/index.html"; // replace with your main chat page
 }
 </script>
+
 </body>
 </html>
