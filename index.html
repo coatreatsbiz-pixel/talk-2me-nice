@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Whisp — Daily Practice</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
 :root {
   --bg-main: linear-gradient(160deg, #1b1f27 0%, #2a2f3b 100%);
@@ -7,121 +17,352 @@
   --text-muted: #a1a6b0;
 }
 
+* { box-sizing: border-box; }
+
 body {
-  margin:0;
+  margin: 0;
   font-family: 'Montserrat', system-ui, sans-serif;
   background: var(--bg-main);
   color: var(--text-main);
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
+  min-height: 100vh;
 }
-<main id="dailyChatHub">
-  <h1>What would you like to practice today?</h1>
-  <p class="subtitle">Choose a conversation space. We’ll take it from there.</p>
 
-  <section class="chatModes">
+/* ---------------- HOME HUB ---------------- */
+
+#dailyChatHub {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 1rem;
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+#dailyChatHub h1 {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.chatModes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.modeCard {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 1.8rem 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.modeCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.5);
+}
+
+.modeCard .icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.modeCard h2 {
+  margin: 0.4rem 0;
+  font-size: 1.2rem;
+}
+
+.modeCard p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.workplace { border-top: 3px solid #ffb86c; }
+.dating    { border-top: 3px solid #ff7aa2; }
+.travel    { border-top: 3px solid #4fd1c5; }
+.smalltalk { border-top: 3px solid #ffd166; }
+
+/* ---------------- MODE SETUP ---------------- */
+
+#modeSetup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.hidden { display: none; }
+
+.setupCard {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+#scenarioList {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.scenario {
+  padding: 0.7rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.scenario:hover,
+.scenario.active {
+  background: rgba(255,255,255,0.12);
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: #1b1f27;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ff9f40;
+}
+
+/* ---------------- CHAT ---------------- */
+
+#chatScreen {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  display: none;
+}
+
+.message {
+  max-width: 75%;
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 0.7rem;
+  border-radius: 20px;
+  line-height: 1.5;
+  animation: fadeInMessage 0.4s ease-out;
+}
+
+.bot {
+  background: var(--bg-card);
+}
+
+.user {
+  background: var(--accent);
+  color: #1b1f27;
+  margin-left: auto;
+}
+
+#inputRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: none;
+}
+
+/* ---------------- ANIMATIONS ---------------- */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInMessage {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HOME -->
+<section id="dailyChatHub">
+  <h1>What would you like to practice today?</h1>
+  <p class="subtitle">Choose a conversation space. Whisp will guide you.</p>
+
+  <div class="chatModes">
     <div class="modeCard workplace" data-mode="work">
       <span class="icon">💼</span>
       <h2>Workplace Conversations</h2>
-      <p>Natural, professional conversations — meetings, updates, and everyday work talk.</p>
+      <p>Professional, natural, everyday work talk.</p>
     </div>
 
     <div class="modeCard dating" data-mode="dating">
       <span class="icon">💬</span>
       <h2>Dating & Social</h2>
-      <p>Connection-focused conversations — light, curious, and human.</p>
+      <p>Friendly, curious, human connection.</p>
     </div>
 
     <div class="modeCard travel" data-mode="travel">
       <span class="icon">✈️</span>
       <h2>Travel</h2>
-      <p>Short, practical conversations for moving through the world with ease.</p>
+      <p>Short conversations that move you through the world.</p>
     </div>
 
     <div class="modeCard smalltalk" data-mode="smalltalk">
       <span class="icon">🧠</span>
       <h2>Advanced Small Talk</h2>
-      <p>Flow, rhythm, and confidence in everyday conversations.</p>
+      <p>Flow, comfort, and conversation rhythm.</p>
     </div>
-  </section>
-</main>
+  </div>
+</section>
 
-/* Chat container */
-#chatContainer { 
-  display:flex; 
-  max-width:900px; 
-  margin:2rem auto; 
-  gap:1rem; 
-  animation: fadeIn 0.8s ease-out;
+<!-- MODE SETUP -->
+<div id="modeSetup" class="hidden">
+  <div class="setupCard">
+    <h2 id="setupTitle"></h2>
+    <p id="setupIntro"></p>
+
+    <div id="scenarioList"></div>
+
+    <button id="startChat">Start Conversation</button>
+  </div>
+</div>
+
+<!-- CHAT -->
+<section id="chatScreen">
+  <div id="messages"></div>
+
+  <div id="inputRow">
+    <input id="userInput" placeholder="Say something…" />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</section>
+
+<script>
+const modes = {
+  work: {
+    title: "Workplace Conversations",
+    intro: "Let’s practice work conversations — calm, natural, and real.",
+    scenarios: [
+      "Casual check-in",
+      "Meeting small talk",
+      "Giving an update",
+      "Asking a question"
+    ]
+  },
+  dating: {
+    title: "Dating & Social",
+    intro: "We’ll keep this light and human. No pressure.",
+    scenarios: [
+      "Starting a conversation",
+      "Keeping it going",
+      "Light flirting",
+      "Ending smoothly"
+    ]
+  },
+  travel: {
+    title: "Travel",
+    intro: "Simple conversations for everyday travel moments.",
+    scenarios: [
+      "Asking directions",
+      "Hotel or airport",
+      "Ordering food",
+      "Quick chat"
+    ]
+  },
+  smalltalk: {
+    title: "Advanced Small Talk",
+    intro: "Small talk is comfort. Let’s practice the flow.",
+    scenarios: [
+      "Continuing a chat",
+      "Responding naturally",
+      "Adding warmth",
+      "Ending politely"
+    ]
+  }
+};
+
+let selectedMode = null;
+let selectedScenario = null;
+
+document.querySelectorAll('.modeCard').forEach(card => {
+  card.addEventListener('click', () => openSetup(card.dataset.mode));
+});
+
+function openSetup(modeKey) {
+  selectedMode = modes[modeKey];
+  selectedScenario = null;
+
+  document.getElementById('setupTitle').textContent = selectedMode.title;
+  document.getElementById('setupIntro').textContent = selectedMode.intro;
+
+  const list = document.getElementById('scenarioList');
+  list.innerHTML = '';
+
+  selectedMode.scenarios.forEach(text => {
+    const div = document.createElement('div');
+    div.className = 'scenario';
+    div.textContent = text;
+    div.onclick = () => {
+      document.querySelectorAll('.scenario').forEach(s => s.classList.remove('active'));
+      div.classList.add('active');
+      selectedScenario = text;
+    };
+    list.appendChild(div);
+  });
+
+  document.getElementById('modeSetup').classList.remove('hidden');
 }
 
-/* Profile Sidebar */
-#profileSidebar {
-  width:220px;
-  padding:1rem;
-  background:var(--bg-card);
-  border-radius:16px;
-  flex-shrink:0;
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
-  box-shadow:0 6px 16px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease;
-}
-#profileSidebar:hover { transform: translateY(-2px); }
+document.getElementById('startChat').onclick = () => {
+  if (!selectedScenario) return;
 
-/* Chat area */
-#chatArea { flex:1; display:flex; flex-direction:column; }
+  document.getElementById('modeSetup').classList.add('hidden');
+  document.getElementById('dailyChatHub').style.display = 'none';
+  document.getElementById('chatScreen').style.display = 'block';
 
-/* Messages */
-.message {
-  max-width:75%;
-  padding:0.8rem 1.2rem;
-  margin-bottom:0.7rem;
-  border-radius:20px;
-  line-height:1.5;
-  opacity:0;
-  animation: fadeInMessage 0.5s forwards;
-}
-.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
-.bot { background:var(--bg-card); align-self:flex-start; }
+  addBot(`Hi, I’m Whisp. Let’s practice "${selectedScenario}". You can start whenever you’re ready.`);
+};
 
-/* Animations */
-@keyframes fadeInMessage {
-  from { opacity:0; transform: translateY(10px);}
-  to { opacity:1; transform: translateY(0);}
+function addBot(text) {
+  const div = document.createElement('div');
+  div.className = 'message bot';
+  div.textContent = text;
+  document.getElementById('messages').appendChild(div);
 }
 
-@keyframes floatCompanion {
-  0%, 100% { transform: translateY(0);}
-  50% { transform: translateY(-6px);}
-}
+function sendMessage() {
+  const input = document.getElementById('userInput');
+  if (!input.value.trim()) return;
 
-/* Buttons */
-button {
-  padding:0.6rem 1rem;
-  border-radius:999px;
-  border:none;
-  background: var(--accent);
-  cursor:pointer;
-  transition: all 0.3s ease;
+  const div = document.createElement('div');
+  div.className = 'message user';
+  div.textContent = input.value;
+  document.getElementById('messages').appendChild(div);
+  input.value = '';
 }
-button:hover { transform: scale(1.05); background:#ff9f40; }
+</script>
 
-/* Gear */
-#gear { 
-  position:fixed; 
-  bottom:90px; right:20px; 
-  width:44px; height:44px; 
-  border-radius:50%; 
-  background:var(--bg-card); 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  cursor:pointer; 
-  font-size:20px; 
-  box-shadow:0 4px 12px rgba(0,0,0,0.3);
-  animation: floatCompanion 4s ease-in-out infinite;
-}
-</style>
+</body>
+</html>
