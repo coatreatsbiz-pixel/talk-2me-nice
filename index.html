@@ -22,18 +22,15 @@ button,input,select{font-family:'Montserrat',sans-serif;}
 header{text-align:center;font-size:2.5rem;color:var(--accent);text-shadow:0 4px 10px rgba(0,0,0,0.35);animation:floatLogo 3s ease-in-out infinite alternate;margin:1rem 0;}
 @keyframes floatLogo{0%{transform:translateY(0px);}100%{transform:translateY(-6px);}}
 
+/* Landing Page */
 #landingPage{max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem;}
 #nicknameInput{padding:0.6rem;border-radius:12px;border:none;background:#1f232d;color:var(--text-main);width:100%;max-width:300px;}
 #startBtn{padding:0.6rem 1rem;border-radius:999px;border:none;background:var(--accent);color:#1b1f27;cursor:pointer;transition:all 0.3s;width:100%;max-width:300px;}
 #startBtn:hover{transform:scale(1.05);background:#ff9f40;}
 #companionContainer{margin:2rem 0;display:flex;flex-direction:column;align-items:center;gap:1rem;}
-
-/* Whisp cloud */
 #whispContainer svg{width:200px;height:100px;cursor:pointer;}
 .whispBody{fill:var(--whispColor);filter:blur(3px);transition:fill 0.3s;}
 .whispEye{transition:transform 0.3s;}
-
-/* Star companion */
 #star{font-size:5rem;color:var(--starColor);text-shadow:0 3px 6px rgba(0,0,0,0.4),0 0 20px var(--starColor);transition:color 0.3s,text-shadow 0.3s;cursor:pointer;animation:twinkle 2s infinite alternate;}
 @keyframes twinkle{0%{transform:scale(1) rotate(0deg);}50%{transform:scale(1.1) rotate(5deg);}100%{transform:scale(1) rotate(0deg);}}
 
@@ -214,17 +211,6 @@ function startSpeechToSpeech(){
   recognition.start();
 }
 
-// Send message
-async function sendMessage(msg=null){
-  const input=document.getElementById("userInput");
-  const text=msg||input.value.trim();
-  if(!text) return;
-  addMessage(text,"user");
-  input.value="";
-  // Placeholder AI response
-  setTimeout(()=>{addMessage(`Echo: ${text}`,"bot"); speakBotText(`Echo: ${text}`);},500);
-}
-
 // Text-to-speech
 function speakBotText(text){
   const settings={output:true,speed:1};
@@ -233,6 +219,28 @@ function speakBotText(text){
   utter.lang=localStorage.getItem("language")||"en-US";
   utter.rate=settings.speed;
   speechSynthesis.speak(utter);
+}
+
+// AI integration stub
+async function getAIResponse(userText){
+  const companionId = "Whisp"; // replace with selected companion
+  const mode = document.getElementById("modeSelector").value||"friendly";
+  const language = localStorage.getItem("language")||"en-US";
+  const systemPrompt = `${companionId} companion, respond in a ${mode} tone. Speak in ${language}.`;
+  // Replace below with actual API call
+  return `AI(${companionId}, ${mode}): ${userText}`;
+}
+
+// Send message
+async function sendMessage(msg=null){
+  const input=document.getElementById("userInput");
+  const text=msg||input.value.trim();
+  if(!text) return;
+  addMessage(text,"user");
+  input.value="";
+  const aiText=await getAIResponse(text);
+  addMessage(aiText,"bot");
+  speakBotText(aiText);
 }
 </script>
 
