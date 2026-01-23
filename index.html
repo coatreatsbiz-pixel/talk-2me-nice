@@ -293,3 +293,43 @@ async function getAIResponse(userTextEnglish){ return `Echo: ${userTextEnglish}`
 async function sendMessage(msg=null){
   const input=document.getElementById("userInput");
   const
+async function sendMessage(msg=null){
+  const input=document.getElementById("userInput");
+  const text = msg || input.value.trim();
+  if(!text) return;
+  addMessage(text,"user");
+  input.value="";
+
+  // AI processing
+  const companionId = localStorage.getItem("companion") || "Whisp";
+  const companion = companions[companionId];
+
+  // Translate to English if needed
+  const englishText = await translateText(text,"en");
+
+  // AI response
+  const aiResponse = await getAIResponse(englishText, companion.systemPrompt);
+
+  // Translate back
+  const finalText = await translateText(aiResponse, localStorage.getItem("language") || "en-US");
+
+  // Show typing
+  showTyping(finalText);
+}
+async function getAIResponse(userText, companionPrompt){
+  const body = {
+    model: "gpt-4",
+    messages: [
+      { role: "system", content: companionPrompt },
+      { role: "user", content: userText }
+    ],
+    temperature: 0.7
+  };
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json", "Authorization":"Bearer YOUR_OPENAI_API_KEY" },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
