@@ -123,3 +123,36 @@ document.getElementById('companionSelect').value = selectedCompanion;
 
 </body>
 </html>
+<label for="language">Select Your Language (Free):</label>
+<select id="language">
+  <!-- Free languages -->
+  <option value="en-US">English ✔</option>
+  <option value="es-ES">Spanish ✔</option>
+  <option value="fr-FR">French ✔</option>
+  <option value="de-DE">German ✔</option>
+  <option value="zh-CN">Chinese ✔</option>
+
+  <!-- Nice+ locked languages -->
+  <option value="ja-JP" data-locked="true">Japanese 🔒</option>
+  <option value="ko-KR" data-locked="true">Korean 🔒</option>
+  <option value="it-IT" data-locked="true">Italian 🔒</option>
+</select>
+<select id="languageSelect" style="margin-bottom:0.5rem; width:100%; padding:0.3rem;">
+  <!-- Free languages -->
+  <option value="en-US" data-locked="false">English ✔</option>
+  <option value="es-ES" data-locked="false">Spanish ✔</option>
+  <option value="fr-FR" data-locked="false">French ✔</option>
+  <option value="de-DE" data-locked="false">German ✔</option>
+  <option value="zh-CN" data-locked="false">Chinese ✔</option>
+
+  <!-- Locked / Nice+ -->
+  <option value="ja-JP" data-locked="true">Japanese 🔒</option>
+  <option value="ko-KR" data-locked="true">Korean 🔒</option>
+  <option value="it-IT" data-locked="true">Italian 🔒</option>
+</select>
+const languageSelect = document.getElementById('languageSelect');
+[...languageSelect.options].forEach(opt => {
+  if(opt.dataset.locked === "true" && !NICE_PLUS) {
+    opt.style.display = "none"; // hide locked
+  }
+});
