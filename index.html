@@ -16,7 +16,7 @@
 
     body {
       margin: 0;
-      font-family: system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg-main);
       color: var(--text-main);
       display: flex;
@@ -30,30 +30,44 @@
       border-bottom: 1px solid #333;
     }
 
+    header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    header p {
+      margin: 0.3rem 0 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
     #chat {
       flex: 1;
       padding: 1rem;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .message {
-      max-width: 75%;
+      max-width: 80%;
       padding: 0.7rem 1rem;
       margin-bottom: 0.7rem;
-      border-radius: 14px;
+      border-radius: 16px;
       line-height: 1.4;
+      word-wrap: break-word;
     }
 
     .user {
       background: var(--accent);
       color: #1b1f27;
-      margin-left: auto;
+      align-self: flex-end;
     }
 
     .bot {
       background: var(--bg-card);
       color: var(--text-main);
-      margin-right: auto;
+      align-self: flex-start;
     }
 
     footer {
@@ -61,21 +75,26 @@
       padding: 0.8rem;
       border-top: 1px solid #333;
       gap: 0.5rem;
+      background: var(--bg-main);
     }
 
     input {
       flex: 1;
-      padding: 0.6rem;
-      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      border-radius: 12px;
       border: none;
       font-size: 1rem;
+      background: #1f232d;
+      color: var(--text-main);
     }
 
     button {
-      padding: 0.6rem 1rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 999px;
       border: none;
       background: var(--accent);
+      color: #1b1f27;
+      font-size: 1rem;
       cursor: pointer;
     }
   </style>
@@ -85,33 +104,34 @@
 
   <header>
     <h2 id="greeting">Welcome</h2>
-    <p id="languageInfo" style="font-size:0.85rem;color:var(--text-muted)"></p>
+    <p id="languageInfo"></p>
   </header>
 
   <div id="chat"></div>
 
   <footer>
-    <input id="userInput" placeholder="Say something…" />
+    <input id="userInput" placeholder="Type a word or phrase…" />
     <button onclick="sendMessage()">Send</button>
   </footer>
 
   <script>
-    // Load user settings
+    // Load saved user data
     const nickname = localStorage.getItem("nickname") || "Friend";
-    const language = localStorage.getItem("language") || "en-US";
-    const companion = localStorage.getItem("companion") || "whisp";
+    const language = localStorage.getItem("language") || "English";
+    const companion = localStorage.getItem("companion") || "Whisp";
 
+    // Set header text
     document.getElementById("greeting").textContent =
-      `Hi ${nickname} 🌱 I’m ${companion}.`;
+      `Hi ${nickname} 🌱 I'm ${companion}.`;
 
     document.getElementById("languageInfo").textContent =
       `Learning language: ${language}`;
 
     const chat = document.getElementById("chat");
 
-    function addMessage(text, type) {
+    function addMessage(text, sender) {
       const div = document.createElement("div");
-      div.className = `message ${type}`;
+      div.className = `message ${sender}`;
       div.textContent = text;
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
@@ -125,27 +145,20 @@
       addMessage(text, "user");
       input.value = "";
 
-      // Placeholder bot response
       setTimeout(() => {
-        addMessage("I hear you 💛 Say more when you’re ready.", "bot");
-      }, 600);
+        addMessage(
+          "I hear you 💛 You can keep going, or try another word.",
+          "bot"
+        );
+      }, 500);
     }
 
-    // First welcome message
+    // Initial welcome message
     addMessage(
-      "You can talk freely here. No pressure. No tests.",
+      "This is your calm space to practice. Say anything you like.",
       "bot"
     );
   </script>
 
 </body>
 </html>
-addMessage(
-  "You can talk freely here. No pressure. No tests.",
-  "bot"
-);
-addMessage(
-  `Hi ${nickname}. I'm here with you. 
-You can say a word, a sentence, or just hello.`,
-  "bot"
-);
