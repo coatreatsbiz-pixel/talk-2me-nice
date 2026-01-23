@@ -209,6 +209,210 @@ const voiceDefaults = {output:true,input:true,speed:1};
 const voiceOutputToggle = document.getElementById("voiceOutputToggle");
 const voiceInputToggle = document.getElementById("voiceInputToggle");
 const voiceSpeed = document.getElementById("voiceSpeed");
+
+function loadVoiceSettings(){
+  const saved = JSON.parse(localStorage.getItem("voiceSettings")) || voiceDefaults;
+  voiceOutputToggle.checked = saved.output;
+  voiceInputToggle.checked = saved.input;
+  voiceSpeed.value = saved.speed;
+}
+function saveVoiceSettings(){
+  localStorage.setItem("voiceSettings",JSON.stringify({output:voiceOutputToggle.checked,input:voiceInputToggle.checked,speed:voiceSpeed.value}));
+  applyVoiceRules();
+}
+voiceOutputToggle.onchange=voiceInputToggle.onchange=voiceSpeed.onchange=saveVoiceSettings;
+loadVoiceSettings();
+
+// ----------- Voice Rules & Mic -----------
+const micBtn = document.getElementById("micBtn");
+let windowVoiceOutputAllowed=true;
+let windowVoiceSpeed=1;
+
+function applyVoiceRules(){
+  const companionId = localStorage.getItem("companion") || "Whisp";
+  const companion = companions[companionId];
+  const settings = JSON.parse(localStorage.getItem("voiceSettings")) || voiceDefaults;
+  micBtn.disabled = !companion.voice.input || !settings.input;
+  windowVoiceOutputAllowed = companion.voice.output && settings.output;
+  windowVoiceSpeed = settings.speed;
+}
+
+function speakBotText(text){
+  if(!windowVoiceOutputAllowed) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = localStorage.getItem("language") || "en-US";
+  utter.rate = windowVoiceSpeed;
+  speechSynthesis.speak(utter);
+}
+
+// ----------- Speech-to-Speech Mode -----------
+let speechMode=true;
+const speechBtn = document.getElementById("speechToSpeechBtn");
+function toggleSpeechToSpeech(){
+  speechMode=!speechMode;
+  speechBtn.classList.toggle("active",speechMode);
+  speechBtn.textContent=`🗣️ Speech-to-Speech: ${speechMode ? 'ON':'OFF'}`;
+}
+
+function startSpeechToSpeech(){
+  if(!speechMode || micBtn.disabled) return;
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = localStorage.getItem("language") || "en-US";
+  recognition.interimResults=false; recognition.continuous=false;
+  micBtn.classList.add("listening");
+
+  recognition.onresult=async (event)=>{
+    const spoken = event.results[0][0].transcript;
+    sendMessage(spoken);
+  };
+  recognition.onend=()=>{ micBtn.classList.remove("listening"); if(speechMode) setTimeout(()=>recognition.start(),300);}
+  recognition.start();
+}
+
+// ----------- Chat Handling / Typing -----------
+const chat = document.getElementById("chat");
+
+function addMessage(text,sender){
+  const div=document.createElement("div");
+  div.className=`message ${sender}`;
+  div.textContent=text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function showTyping(text){
+  let i=0;
+  const div=document.createElement("div");
+  div.className="message bot";
+  chat.appendChild(div);
+  function type(){ 
+    if(i<text.length){ div.textContent+=text[i]; i++; setTimeout(type,20);} 
+    else {speakBotText(text); chat.scrollTop=chat.scrollHeight; } 
+  }
+  type();
+}
+
+// ----------- AI Call Placeholder -----------
+async function translateText(text,toLang){ 
+  // Replace with translation API if needed
+  return text; 
+} 
+
+async function getAIResponse(userText, companionPrompt){ 
+  // Replace with OpenAI API call
+  // Example:
+  /*
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json", "Authorization":"Bearer YOUR_KEY" },
+    body: JSON.stringify({ model:"gpt-4", messages:[{role:"system",content:companionPrompt},{role:"user",content:userText}], temperature:0.7 })
+  });
+  const data = await res.json();
+  return data.choices[0].message.content;
+  */
+  return `Echo (${companions[localStorage.getItem("companion")].name}): ${userText}`;
+}
+
+// ----------- Send Message -----------
+async function sendMessage(msg=null){
+  const input=document.getElementById("userInput");
+  const text = msg || input.value.trim();
+  if(!text) return;
+  addMessage(text,"user");
+  input.value="";
+
+  const companionId = localStorage.getItem("companion") || "Whisp";
+  const companion = companions[companionId];
+
+  // Translate to English if needed
+  const englishText = await translateText(text,"en");
+
+  // AI response
+  const aiResponse = await getAIResponse(englishText, companion.systemPrompt);
+
+  // Translate back to user language
+  const finalText = await translateText(aiResponse, localStorage.getItem("language") || "en-US");
+
+  showTyping(finalText);
+}
+
+// ----------- Onboarding -----------
+function checkOnboarding(){
+  if(!localStorage.getItem("onboardComplete")){
+    document.getElementById("onboarding").classList.remove("hidden");
+  }
+}
+function finishOnboarding(){
+  localStorage.setItem("onboardComplete",true);
+  document.getElementById("onboarding").classList.add("hidden");
+}
+
+// ----------- Optional: Press Enter to send message -----------
+document.getElementById("userInput").addEventListener("keypress",(e)=>{
+  if(e.key==="Enter") sendMessage();
+});
+</script>
+
+// ----------- Landing Page & Companion Selection -----------
+const companionCards = document.querySelectorAll(".companionCard");
+const nicknameInput = document.getElementById("nicknameInput");
+
+function loadCompanionSelection() {
+  const saved = localStorage.getItem("companion") || "Whisp";
+  setActiveCompanion(saved);
+}
+function setActiveCompanion(id){
+  companionCards.forEach(card=>card.classList.remove("active"));
+  document.querySelector(`.companionCard[data-companion='${id}']`)?.classList.add("active");
+  localStorage.setItem("companion",id);
+  applyVoiceRules();
+}
+companionCards.forEach(card=>card.addEventListener("click",()=>setActiveCompanion(card.dataset.companion)));
+loadCompanionSelection();
+
+function startChat(){
+  if(!nicknameInput.value.trim()) { alert("Enter a nickname"); return; }
+  localStorage.setItem("nickname",nicknameInput.value.trim());
+  document.getElementById("landingPage").classList.add("hidden");
+  document.getElementById("chatContainer").classList.remove("hidden");
+  document.querySelector("footer").classList.remove("hidden");
+  document.getElementById("profileName").textContent = nicknameInput.value.trim();
+  document.getElementById("profileLanguage").textContent = localStorage.getItem("language") || "en-US";
+  document.getElementById("profileCompanion").textContent = localStorage.getItem("companion") || "Whisp";
+  populateStarters();
+  applyVoiceRules();
+  checkOnboarding();
+}
+
+// ----------- Conversation Starters -----------
+const conversationStarters = {
+  "Workplace":[`Good morning! How's your day starting?`,`Hi! Did you catch the latest project update?`,`Evening! Ready to wrap things up?`],
+  "Dating & Social":[`Hi there! Would you like to grab coffee?`,`Hey! Want to take a walk this afternoon?`,`Hello! How was your day today?`],
+  "Travel":[`Hi! Where is the nearest train station?`],
+  "School":[`Hello! How was class today?`,`Do you need help with homework?`],
+  "Advanced Small Talk":[`Hello! Did you see the game yesterday?`]
+};
+function populateStarters(){
+  const dd = document.getElementById("starterDropdown");
+  dd.innerHTML = `<option value="">-- Select Starter --</option>`;
+  Object.keys(conversationStarters).forEach(cat=>{
+    conversationStarters[cat].forEach(phrase=>{
+      const opt = document.createElement("option");
+      opt.value = phrase; opt.textContent = `${cat}: ${phrase}`;
+      dd.appendChild(opt);
+    });
+  });
+}
+function startStarter(){
+  const val = document.getElementById("starterDropdown").value;
+  if(val) sendMessage(val);
+}
+
+// ----------- Voice Settings -----------
+const voiceDefaults = {output:true,input:true,speed:1};
+const voiceOutputToggle = document.getElementById("voiceOutputToggle");
+const voiceInputToggle = document.getElementById("voiceInputToggle");
+const voiceSpeed = document.getElementById("voiceSpeed");
 function loadVoiceSettings(){
   const saved = JSON.parse(localStorage.getItem("voiceSettings")) || voiceDefaults;
   voiceOutputToggle.checked = saved.output;
