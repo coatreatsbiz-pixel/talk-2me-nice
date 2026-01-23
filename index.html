@@ -6,250 +6,298 @@
 <title>Talk 2Me Nice</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg-main: linear-gradient(160deg,#1b1f27,#2a2f3b);
-  --bg-card:#2c313d;
-  --accent:#ffb86c;
-  --text:#e1e4ea;
-  --muted:#a1a6b0;
+:root {
+  --bg-main: linear-gradient(160deg, #1b1f27 0%, #2a2f3b 100%);
+  --bg-card: #2c313d;
+  --accent: #ffb86c;
+  --text-main: #e1e4ea;
+  --text-muted: #a1a6b0;
 }
 
-/* Global */
-*{box-sizing:border-box}
-body{margin:0;font-family:Montserrat,system-ui,sans-serif;background:var(--bg-main);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
-.brandWave{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 20% 30%,rgba(255,184,108,.08),transparent 40%),radial-gradient(circle at 80% 70%,rgba(255,184,108,.06),transparent 40%);animation:calmWave 12s ease-in-out infinite;}
-@keyframes calmWave{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+/* Basic Layout */
+body { margin:0; font-family:'Montserrat',system-ui,sans-serif; background: var(--bg-main); color: var(--text-main); display:flex; flex-direction:column; min-height:100vh; }
+h3,h4 { font-family:'Playfair Display', serif; }
+button { font-family:'Montserrat', sans-serif; cursor:pointer; }
+.hidden { display:none; }
 
-/* ---------- LOGIN ---------- */
-#loginOverlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:10;}
-.loginCard{background:var(--bg-card);padding:2rem;border-radius:18px;width:100%;max-width:360px;text-align:center;}
-.loginCard h1{font-family:'Playfair Display',serif;margin-top:0;color:var(--accent);}
-.loginCard input, .loginCard select{width:100%;padding:.7rem;border-radius:12px;border:none;background:#1f232d;color:var(--text);margin-bottom:1rem;}
-.loginCard button{width:100%;padding:.7rem;border-radius:999px;border:none;background:var(--accent);cursor:pointer;}
+/* Landing Page */
+#landingPage { max-width:500px; margin:4rem auto; display:flex; flex-direction:column; gap:1rem; text-align:center; }
+#landingPage input { padding:0.8rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); font-size:1rem; width:100%; }
+#landingPage button { padding:0.8rem 1.2rem; border-radius:999px; border:none; background: var(--accent); font-size:1rem; transition:0.3s all; }
+#landingPage button:hover { transform:scale(1.05); background:#ff9f40; }
 
-/* ---------- APP ---------- */
-#app{max-width:1000px;margin:2rem auto;display:flex;gap:1rem;}
-#sidebar{width:260px;background:var(--bg-card);border-radius:16px;padding:1rem;display:flex;flex-direction:column;gap:.8rem;position:relative;}
-#chatArea{flex:1;background:var(--bg-card);border-radius:16px;padding:1rem;display:flex;flex-direction:column;position:relative;}
-#chat{flex:1;overflow-y:auto;padding-bottom:1rem;}
+/* Companion Selector */
+#companionSelector h3 { color:var(--accent); margin-bottom:0.5rem; }
+.companionGrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:1rem; }
+.companionCard { background:var(--bg-card); border-radius:14px; padding:0.8rem; text-align:center; border:2px solid transparent; transition:0.25s all; }
+.companionCard.active { border-color:var(--accent); box-shadow:0 0 0 2px rgba(255,184,108,0.25);}
+.companionCard:hover { transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,0.35); }
+.companionCard h4 { margin:0; }
+.companionCard p { font-size:0.85rem; margin:0.2rem 0; color:var(--text-muted); }
+.companionCard small { display:block; font-size:0.75rem; color:var(--text-muted); font-style:italic; margin-top:0.3rem; }
 
-/* ---------- PROFILE / INFO ---------- */
-.profile p{margin:.2rem 0;font-size:.9rem;font-weight:500;}
+/* Chat Container */
+#chatContainer { display:flex; flex-direction:row; max-width:900px; margin:2rem auto; gap:1rem; animation:fadeIn 0.8s ease-out; }
+#profileSidebar { width:220px; padding:1rem; background: var(--bg-card); border-radius:16px; display:flex; flex-direction:column; gap:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+#chatArea { flex:1; display:flex; flex-direction:column; background: var(--bg-card); border-radius:16px; padding:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.25);}
+#chat { flex:1; overflow-y:auto; margin-bottom:0.5rem; }
+.message { max-width:75%; padding:0.8rem 1.2rem; margin-bottom:0.7rem; border-radius:20px; line-height:1.5; opacity:0; animation:fadeInMessage 0.5s forwards; }
+.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
+.bot { background:var(--bg-card); align-self:flex-start; }
 
-/* ---------- CHAT MESSAGES ---------- */
-.message{max-width:75%;padding:.8rem 1.1rem;border-radius:18px;margin-bottom:.6rem;line-height:1.4;animation:fadeIn .4s forwards;word-break:break-word;}
-.user{background:var(--accent);color:#1b1f27;align-self:flex-end;}
-.bot{background:#1f232d;align-self:flex-start;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* Starters & Gear */
+#starterTitle { font-weight:600; color:var(--accent); text-align:center; }
+#starterDropdown { width:100%; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); margin-bottom:1rem; }
+#gearBtn { font-size:1.2rem; background:none; border:none; color:var(--accent); cursor:pointer; align-self:flex-end; margin-bottom:0.5rem; }
+#settingsPanel { background:var(--bg-card); padding:0.8rem; border-radius:12px; display:none; flex-direction:column; gap:0.5rem; }
 
-/* ---------- FOOTER ---------- */
-footer{display:flex;gap:.5rem;padding:1rem;}
-footer input{flex:1;padding:.6rem;border-radius:12px;border:none;background:#1f232d;color:var(--text);}
-footer button{padding:.6rem 1rem;border-radius:999px;border:none;background:var(--accent);cursor:pointer;}
+/* Voice Settings */
+#voiceSettings label { display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; }
+#voiceSettings select, #voiceSettings input[type="checkbox"] { margin-left:0.5rem; }
 
-/* MIC */
-#mic.listening{animation:pulse 1.2s infinite;}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,184,108,.6)}70%{box-shadow:0 0 0 14px rgba(255,184,108,0)}100%{box-shadow:0 0 0 0 rgba(255,184,108,0)}}
+/* Footer Chat Input */
+footer { display:flex; padding:0.6rem; gap:0.5rem; background:transparent; }
+footer input { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main);}
+footer button { padding:0.6rem 1rem; border-radius:999px; border:none; background: var(--accent); transition:0.3s all; }
+footer button:hover { transform:scale(1.05); background:#ff9f40; }
 
-/* ---------- SETTINGS OVERLAY ---------- */
-#settingsOverlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:999;}
-.settingsCard{background:var(--bg-card);padding:2rem;border-radius:18px;width:90%;max-width:400px;color:var(--text);}
-.settingsCard h3{color:var(--accent);}
-.settingsCard label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
-.settingsCard button{margin-top:1rem;padding:.6rem 1.2rem;border-radius:999px;border:none;background:var(--accent);cursor:pointer;width:100%;}
-.settingsCard .links{display:flex;justify-content:space-between;margin-top:1rem;font-size:0.8rem;}
-.settingsCard .links a{color:var(--accent);text-decoration:none}
+/* Onboarding Overlay */
+#onboarding {position:fixed; inset:0; background:rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; z-index:999;}
+.onboardCard {background: var(--bg-card); padding:2rem; border-radius:18px; max-width:360px; text-align:center;}
+.onboardCard h3 {color:var(--accent);}
+.onboardCard button {margin-top:1rem; padding:0.6rem 1.4rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer;}
 
-/* ---------- STARTER & CHAT BOX ---------- */
-#starterSelect{margin-top:.3rem;}
-#chatInputContainer{display:flex;gap:.5rem;margin-top:1rem;}
-#companionCard{transition:all 0.3s ease;padding:1rem;border-radius:16px;background:var(--bg-card);border:2px solid var(--accent);display:inline-block;text-align:center;}
-.translationTip{font-size:0.75rem;color:#ffb86c;font-style:italic;margin-top:.2rem;display:none;}
+/* Footer links */
+#bottomLinks { text-align:center; margin:1rem 0; font-size:0.8rem; color:var(--text-muted); }
+#bottomLinks a { color:var(--accent); margin:0 0.5rem; text-decoration:none; }
+#bottomLinks a:hover { text-decoration:underline; }
+
+/* Animations */
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+@keyframes fadeInMessage { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 </style>
 </head>
 <body>
-<div class="brandWave"></div>
 
-<!-- LOGIN -->
-<div id="loginOverlay">
-  <div class="loginCard">
-    <h1>Talk 2Me Nice</h1>
-    <p>Nickname:</p>
-    <input id="nicknameInput" placeholder="Enter nickname"/>
-    <p>Choose Companion:</p>
-    <select id="companionSelect">
-      <option value="Whisp">Whisp (calm)</option>
-      <option value="Ace">Ace (playful)</option>
-      <option value="Sage">Sage (clear)</option>
-      <option value="School">School Mode</option>
-    </select>
-    <button onclick="enterApp()">Start Chat</button>
+<!-- Landing Page -->
+<div id="landingPage">
+  <h2>Welcome to Talk 2Me Nice</h2>
+  <input id="nicknameInput" placeholder="Enter your nickname" />
+  <div id="companionSelector">
+    <h3>Choose Your Companion</h3>
+    <div class="companionGrid">
+      <div class="companionCard" data-companion="Whisp"><h4>Whisp</h4><p>Gentle, supportive, calm</p><small>“I’m here with you. Take your time.”</small></div>
+      <div class="companionCard" data-companion="Ace"><h4>Ace</h4><p>Confident, playful, witty</p><small>“You’ve got my attention — what’s on your mind?”</small></div>
+      <div class="companionCard" data-companion="Sage"><h4>Sage</h4><p>Thoughtful, clear, insightful</p><small>“Let’s think this through carefully.”</small></div>
+      <div class="companionCard" data-companion="School"><h4>School Mode</h4><p>Polite, age-appropriate, educational</p><small>“How can I help you learn today?”</small></div>
+    </div>
   </div>
+  <button onclick="startChat()">Start Chat</button>
 </div>
 
-<!-- APP -->
-<div id="app" style="display:none">
-  <div id="sidebar">
-    <div class="profile">
-      <p>👤 <strong id="nameLabel"></strong></p>
-      <p>🧚 <span id="companionLabel"></span></p>
+<!-- Chat Page -->
+<div id="chatContainer" class="hidden">
+  <div id="profileSidebar">
+    <div class="profileInfo">
+      <p>👤 <strong id="profileName"></strong></p>
+      <p>🌍 <span id="profileLanguage"></span></p>
+      <p>🧚 <span id="profileCompanion"></span></p>
     </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div>Settings</div>
-      <button onclick="openSettings()">⚙️</button>
+    <hr>
+    <div id="gearControls">
+      <button id="gearBtn" onclick="toggleSettings()">⚙️ Settings</button>
+      <div id="settingsPanel">
+        <p id="starterTitle">Conversation Starters</p>
+        <select id="starterDropdown" onchange="startStarter()">
+          <option value="">-- Select Starter --</option>
+        </select>
+        <div id="voiceSettings">
+          <h4>Voice Options</h4>
+          <label><span>Voice Replies</span><input type="checkbox" id="voiceOutputToggle" checked></label>
+          <label><span>Voice Input</span><input type="checkbox" id="voiceInputToggle" checked></label>
+          <label>Speech Speed
+            <select id="voiceSpeed">
+              <option value="0.9">Slow</option>
+              <option value="1" selected>Normal</option>
+              <option value="1.1">Fast</option>
+            </select>
+          </label>
+        </div>
+      </div>
     </div>
-
-    <div>Conversation Starter</div>
-    <select id="starterCategorySelect" onchange="populateStarterCategory(this.value)">
-      <option value="">— select category —</option>
-      <option value="Workplace">Workplace</option>
-      <option value="School">School</option>
-      <option value="Social">Social</option>
-      <option value="Travel">Travel</option>
-      <option value="Advanced">Advanced</option>
-      <option value="DailyLesson">💡 Daily Lesson</option>
-    </select>
-    <select id="starterSelect">
-      <option value="">— select one —</option>
-    </select>
   </div>
 
   <div id="chatArea">
-    <!-- Companion Center -->
-    <div style="text-align:center;margin-bottom:1rem;">
-      <div id="companionCard"><strong id="companionName">Whisp</strong></div>
-      <div id="translationTip" class="translationTip"></div>
-    </div>
     <div id="chat"></div>
-    <div id="chatInputContainer">
-      <input id="input" placeholder="Type here…" onkeydown="if(event.key==='Enter')send()"/>
-      <button id="mic" onclick="voiceIn()">🎤</button>
-      <button onclick="send()">Send</button>
-    </div>
   </div>
 </div>
 
-<!-- SETTINGS -->
-<div id="settingsOverlay">
-  <div class="settingsCard">
-    <h3>Talk 2Me Nice Settings</h3>
-    <label>Companion
-      <select id="settingsCompanion">
-        <option value="Whisp">Whisp</option>
-        <option value="Ace">Ace</option>
-        <option value="Sage">Sage</option>
-        <option value="School">School</option>
-      </select>
-    </label>
-    <label>Language
-      <select id="settingsLanguage">
-        <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="pt">Português</option>
-      </select>
-    </label>
-    <label>Voice Speed
-      <select id="voiceSpeed">
-        <option value="0.9">Slow</option>
-        <option value="1" selected>Normal</option>
-        <option value="1.1">Fast</option>
-      </select>
-    </label>
-    <label><input type="checkbox" id="voiceOutputToggle" checked> Voice Replies</label>
-    <label><input type="checkbox" id="voiceInputToggle" checked> Voice Input</label>
-    <div class="links">
-      <a href="#" onclick="closeSettings();return false;">Close</a>
-      <a href="#" onclick="alert('Privacy Policy Placeholder');return false;">Privacy</a>
-      <a href="#" onclick="alert('Support Placeholder');return false;">Support</a>
-    </div>
+<footer class="hidden">
+  <input id="userInput" placeholder="Type your message…" />
+  <button id="micBtn" onclick="startSpeechToSpeech()">🎤</button>
+  <button onclick="sendMessage()">Send</button>
+</footer>
+
+<div id="bottomLinks">
+  <a href="#" onclick="alert('Privacy Policy'); return false;">Privacy</a> |
+  <a href="#" onclick="alert('Support'); return false;">Support</a>
+</div>
+
+<!-- Onboarding Overlay -->
+<div id="onboarding" class="hidden">
+  <div class="onboardCard">
+    <h3>Welcome to Talk 2Me Nice</h3>
+    <p>Your companion can speak and listen.</p>
+    <p>You can change companions or voice settings anytime.</p>
+    <button onclick="finishOnboarding()">Let’s go</button>
   </div>
 </div>
 
 <script>
-// ---------- STATE ----------
-const state={user:{name:""},companion:"Whisp",language:"en",voice:{input:true,output:true,speed:1},starterUsed:false,dailyLessonUsed:false};
-
-// ---------- STARTERS ----------
-const starterCategories={
-  "Workplace":["Good morning!","Project update?","Wrap up evening?"],
-  "School":["How was class?","Homework help?","Favorite subject?"],
-  "Social":["Grab coffee?","Walk this afternoon?","How was your day?"],
-  "Travel":["Nearest station?","Travel plans?","Favorite place?"],
-  "Advanced":["Did you see the game?","Thoughts on news?","Any weekend plans?"],
-  "DailyLesson":["Phrase: Hello / Hola / Bonjour / Olá","Mini-Exercise: Reply with your greeting"]
+// ---------------- Companion Definitions ----------------
+const companions = {
+  Whisp:{name:"Whisp", voice:{input:true,output:true,speed:1},systemPrompt:"Gentle, supportive, calm."},
+  Ace:{name:"Ace", voice:{input:true,output:true,speed:1},systemPrompt:"Confident, playful, witty."},
+  Sage:{name:"Sage", voice:{input:true,output:true,speed:1},systemPrompt:"Thoughtful, clear, insightful."},
+  School:{name:"School Mode", voice:{input:false,output:true,speed:1},systemPrompt:"Polite, age-appropriate, educational."}
 };
 
-// ---------- ELEMENTS ----------
-const loginOverlay=document.getElementById("loginOverlay");
+// ---------------- Landing & Companion ----------------
+const companionCards=document.querySelectorAll(".companionCard");
 const nicknameInput=document.getElementById("nicknameInput");
-const companionSelect=document.getElementById("companionSelect");
-const app=document.getElementById("app");
-const nameLabel=document.getElementById("nameLabel");
-const companionLabel=document.getElementById("companionLabel");
-const companionName=document.getElementById("companionName");
-const chat=document.getElementById("chat");
-const input=document.getElementById("input");
-const mic=document.getElementById("mic");
-const starterSelect=document.getElementById("starterSelect");
-const starterCategorySelect=document.getElementById("starterCategorySelect");
-const translationTip=document.getElementById("translationTip");
-
-// ---------- LOGIN ----------
-function enterApp(){
-  const name=nicknameInput.value.trim(); if(!name)return alert("Enter a nickname");
-  state.user.name=name;
-  state.companion=companionSelect.value;
-  loginOverlay.style.display="none"; app.style.display="flex";
-  nameLabel.textContent=name; companionLabel.textContent=state.companion;
-  companionName.textContent=state.companion;
-  greet();
+function setActiveCompanion(id){
+  companionCards.forEach(c=>c.classList.remove("active"));
+  document.querySelector(`.companionCard[data-companion='${id}']`)?.classList.add("active");
+  localStorage.setItem("companion",id);
+  applyVoiceRules();
+}
+companionCards.forEach(card=>card.addEventListener("click",()=>setActiveCompanion(card.dataset.companion)));
+function startChat(){
+  if(!nicknameInput.value.trim()){alert("Enter a nickname");return;}
+  localStorage.setItem("nickname",nicknameInput.value.trim());
+  document.getElementById("landingPage").classList.add("hidden");
+  document.getElementById("chatContainer").classList.remove("hidden");
+  document.querySelector("footer").classList.remove("hidden");
+  document.getElementById("profileName").textContent=nicknameInput.value.trim();
+  document.getElementById("profileLanguage").textContent=localStorage.getItem("language")||"en-US";
+  document.getElementById("profileCompanion").textContent=localStorage.getItem("companion")||"Whisp";
+  populateStarters();
+  applyVoiceRules();
+  checkOnboarding();
 }
 
-// ---------- SETTINGS ----------
-function openSettings(){document.getElementById("settingsOverlay").style.display="flex";}
-function closeSettings(){document.getElementById("settingsOverlay").style.display="none";}
-document.getElementById("settingsCompanion").onchange=()=>{state.companion=document.getElementById("settingsCompanion").value; companionLabel.textContent=state.companion; companionName.textContent=state.companion;}
-document.getElementById("settingsLanguage").onchange=()=>{state.language=document.getElementById("settingsLanguage").value;}
-document.getElementById("voiceSpeed").onchange=()=>{state.voice.speed=parseFloat(document.getElementById("voiceSpeed").value);}
-document.getElementById("voiceOutputToggle").onchange=()=>{state.voice.output=document.getElementById("voiceOutputToggle").checked;}
-document.getElementById("voiceInputToggle").onchange=()=>{state.voice.input=document.getElementById("voiceInputToggle").checked;}
-
-// ---------- STARTERS ----------
-function populateStarterCategory(category){
-  starterSelect.innerHTML="<option value=''>— select one —</option>";
-  if(!category)return;
-  starterCategories[category].forEach(opt=>{
-    const el=document.createElement("option"); el.value=opt; el.textContent=opt;
-    starterSelect.appendChild(el);
+// ---------------- Starters ----------------
+const conversationStarters={
+  "Workplace":["Good morning!","Project update?","Ready to wrap up?"],
+  "Dating":["Grab coffee?","Take a walk?","How was your day?"],
+  "Travel":["Where is the train station?"],
+  "School":["How was class today?","Need help with homework?"],
+  "Advanced":["Did you see the game yesterday?"]
+};
+function populateStarters(){
+  const dd=document.getElementById("starterDropdown");
+  dd.innerHTML=`<option value="">-- Select Starter --</option>`;
+  Object.keys(conversationStarters).forEach(cat=>{
+    conversationStarters[cat].forEach(phrase=>{
+      const opt=document.createElement("option");
+      opt.value=phrase; opt.textContent=`${cat}: ${phrase}`;
+      dd.appendChild(opt);
+    });
   });
-  state.starterUsed=false;
 }
-starterSelect.onchange=()=>{if(!state.starterUsed && starterSelect.value){state.starterUsed=true;send(starterSelect.value);}};
-
-// ---------- SIMPLE TRANSLATION (DEMO) ----------
-function translateText(text,lang){
-  const dict={Hello:{es:"Hola",fr:"Bonjour",pt:"Olá"}};
-  return dict[text]&&dict[text][lang]?dict[text][lang]:text;
+function startStarter(){
+  const val=document.getElementById("starterDropdown").value;
+  if(val) sendMessage(val);
 }
 
-// ---------- CHAT ----------
-function add(text,who){const div=document.createElement("div");div.className=`message ${who}`;div.textContent=text;chat.appendChild(div);chat.scrollTop=chat.scrollHeight;}
-function send(msg){
-  const text=msg||input.value.trim(); if(!text)return; add(text,"user"); input.value="";
-  // Show translation tip if Daily Lesson
-  if(starterCategorySelect.value==="DailyLesson"){translationTip.style.display="block"; translationTip.textContent="Translation: "+translateText(text,state.language);}else{translationTip.style.display="none";}
-  // Simple adaptive reply
-  setTimeout(()=>{const reply="Echo: "+text; add(reply,"bot"); speak(reply);},300);
+// ---------------- Settings Panel ----------------
+const gearBtn=document.getElementById("gearBtn");
+const settingsPanel=document.getElementById("settingsPanel");
+function toggleSettings(){settingsPanel.style.display=(settingsPanel.style.display==="flex"?"none":"flex");}
+
+// ---------------- Voice ----------------
+const voiceOutputToggle=document.getElementById("voiceOutputToggle");
+const voiceInputToggle=document.getElementById("voiceInputToggle");
+const voiceSpeed=document.getElementById("voiceSpeed");
+function loadVoiceSettings(){
+  const saved=JSON.parse(localStorage.getItem("voiceSettings"))||{output:true,input:true,speed:1};
+  voiceOutputToggle.checked=saved.output;
+  voiceInputToggle.checked=saved.input;
+  voiceSpeed.value=saved.speed;
+}
+function saveVoiceSettings(){
+  localStorage.setItem("voiceSettings",JSON.stringify({output:voiceOutputToggle.checked,input:voiceInputToggle.checked,speed:voiceSpeed.value}));
+  applyVoiceRules();
+}
+voiceOutputToggle.onchange=voiceInputToggle.onchange=voiceSpeed.onchange=saveVoiceSettings;
+loadVoiceSettings();
+
+const micBtn=document.getElementById("micBtn");
+let windowVoiceOutputAllowed=true;
+let windowVoiceSpeed=1;
+function applyVoiceRules(){
+  const companionId=localStorage.getItem("companion")||"Whisp";
+  const companion=companions[companionId];
+  const settings=JSON.parse(localStorage.getItem("voiceSettings"))||{output:true,input:true,speed:1};
+  micBtn.disabled=!companion.voice.input||!settings.input;
+  windowVoiceOutputAllowed=companion.voice.output&&settings.output;
+  windowVoiceSpeed=settings.speed;
+}
+function speakBotText(text){
+  if(!windowVoiceOutputAllowed)return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=localStorage.getItem("language")||"en-US";
+  u.rate=windowVoiceSpeed;
+  speechSynthesis.speak(u);
 }
 
-// ---------- SPEECH ----------
-function speak(text){if(!state.voice.output)return; const utter=new SpeechSynthesisUtterance(text); const voices={en:"en-US",es:"es-ES",fr:"fr-FR",pt:"pt-BR"}; utter.lang=voices[state.language]||"en-US"; utter.rate=state.voice.speed; speechSynthesis.speak(utter);}
-function voiceIn(){if(!state.voice.input)return; const R=window.SpeechRecognition||window.webkitSpeechRecognition; if(!R)return alert("Voice not supported"); const r=new R(); r.lang=state.language; r.onresult=e=>send(e.results[0][0].transcript); mic.classList.add("listening"); r.onend=()=>mic.classList.remove("listening"); r.start();}
+// ---------------- Speech-to-Speech ----------------
+let speechMode=true;
+function startSpeechToSpeech(){
+  if(!speechMode||micBtn.disabled)return;
+  const recognition=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+  recognition.lang=localStorage.getItem("language")||"en-US";
+  recognition.interimResults=false; recognition.continuous=false;
+  micBtn.classList.add("listening");
+  recognition.onresult=event=>{ const spoken=event.results[0][0].transcript; sendMessage(spoken); };
+  recognition.onend=()=>{ micBtn.classList.remove("listening"); if(speechMode)setTimeout(()=>recognition.start(),300); }
+  recognition.start();
+}
 
-// ---------- GREETING ----------
-function greet(){add("Welcome to Talk 2Me Nice. Your companion is ready to chat.","bot");}
+// ---------------- Chat Handling ----------------
+const chat=document.getElementById("chat");
+function addMessage(text,sender){
+  const div=document.createElement("div");
+  div.className=`message ${sender}`;
+  div.textContent=text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+function showTyping(text){
+  let i=0;
+  const div=document.createElement("div");
+  div.className="message bot";
+  chat.appendChild(div);
+  function type(){ if(i<text.length){ div.textContent+=text[i]; i++; setTimeout(type,20);} else {speakBotText(text); chat.scrollTop=chat.scrollHeight; } }
+  type();
+}
+
+// ---------------- AI Placeholder ----------------
+async function getAIResponse(userText){ return `Echo: ${userText}`; }
+
+async function sendMessage(msg=null){
+  const input=document.getElementById("userInput");
+  if(msg) input.value=msg;
+  const val=input.value.trim(); if(!val)return;
+  addMessage(val,"user");
+  input.value="";
+  const response=await getAIResponse(val);
+  showTyping(response);
+}
+
+// ---------------- Onboarding ----------------
+function checkOnboarding(){ if(!localStorage.getItem("onboarded")){document.getElementById("onboarding").classList.remove("hidden");} }
+function finishOnboarding(){ localStorage.setItem("onboarded","true"); document.getElementById("onboarding").classList.add("hidden"); }
 </script>
 </body>
 </html>
