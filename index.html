@@ -1,18 +1,10 @@
-const nickname = localStorage.getItem("nickname");
-const language = localStorage.getItem("language");
-const companion = localStorage.getItem("companion");
-
-if(!nickname || !language || !companion){
-  // redirect to Step 1
-  window.location.href = "step1.html";
-}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Talk 2Me Nice — Conversation</title>
+
 <style>
 :root {
   --bg-main:#1b1f27;
@@ -141,7 +133,7 @@ button {
 <body>
 
 <script>
-// Step 2 redirect if Step 1 not complete
+// Step 2 redirect if Step 1 not completed
 const nickname = localStorage.getItem("nickname");
 const language = localStorage.getItem("language");
 const companion = localStorage.getItem("companion");
@@ -185,25 +177,21 @@ document.getElementById("greeting").textContent =
 const chat = document.getElementById("chat");
 
 function speak(text){
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang=language;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = language;
   speechSynthesis.speak(u);
 }
 
-function simplePhonetic(word){
-  return word.replace(/th/g,"th").replace(/ph/g,"f").replace(/tion/g,"shun").replace(/ing/g,"ing");
-}
-
-function addMessage(text,sender){
-  const div=document.createElement("div");
-  div.className=`message ${sender}`;
+function addMessage(text, sender){
+  const div = document.createElement("div");
+  div.className = `message ${sender}`;
 
   if(sender==="bot" && document.getElementById("phoneticToggle").checked){
     text.split(" ").forEach(w=>{
-      const span=document.createElement("span");
+      const span = document.createElement("span");
       span.className="word";
       span.textContent=w+" ";
-      span.onclick=()=>{ speak(w); alert(simplePhonetic(w)); };
+      span.onclick=()=>speak(w);
       div.appendChild(span);
     });
   } else {
@@ -211,12 +199,12 @@ function addMessage(text,sender){
   }
 
   chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
+  chat.scrollTop = chat.scrollHeight;
 }
 
 function sendMessage(){
-  const i=document.getElementById("userInput");
-  if(!i.value.trim())return;
+  const i = document.getElementById("userInput");
+  if(!i.value.trim()) return;
   addMessage(i.value,"user");
   i.value="";
   setTimeout(()=>{ addMessage("Try tapping a word if pronunciation mode is on 💛","bot"); },500);
@@ -225,11 +213,11 @@ function sendMessage(){
 addMessage("This is your calm space. Use the gear ⚙️ for help.","bot");
 
 function toggleOptions(){
-  const o=document.getElementById("options");
-  o.style.display=o.style.display==="block"?"none":"block";
+  const o = document.getElementById("options");
+  o.style.display = o.style.display==="block"?"none":"block";
 }
 
-// Alphabet
+/* Alphabet */
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l=>{
   const d=document.createElement("div");
   d.className="tile";
@@ -238,7 +226,7 @@ function toggleOptions(){
   document.getElementById("alphabet").appendChild(d);
 });
 
-// Numbers
+/* Numbers */
 "0123456789".split("").forEach(n=>{
   const d=document.createElement("div");
   d.className="tile";
