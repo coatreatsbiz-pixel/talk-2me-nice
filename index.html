@@ -13,11 +13,10 @@
   --accent:#ffb86c;
 }
 body{margin:0;font-family:sans-serif;background:var(--bg-page);color:var(--text-color);}
-#landingPage, #chatContainer, #summaryModal, #welcomeBackModal, #reviewPromptModal {display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;width:100vw;}
 .hidden{display:none;}
-#companionDisplay{display:flex;flex-direction:column;align-items:center;margin-bottom:1rem;}
-#companionVisual{width:120px;height:120px;display:flex;align-items:center;justify-content:center;transition: transform 0.3s, box-shadow 0.3s;}
-#companionVisual.speaking{animation:bounce 0.6s infinite alternate;}
+#landingPage,#chatContainer,#summaryModal,#welcomeBackModal,#reviewPromptModal{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;width:100vw;}
+#landingCompanionVisual,#companionVisual{width:120px;height:120px;display:flex;align-items:center;justify-content:center;transition: transform 0.3s, box-shadow 0.3s;margin-bottom:1rem;}
+#companionVisual.speaking,#landingCompanionVisual.speaking{animation:bounce 0.6s infinite alternate;}
 @keyframes bounce{0%{transform:scale(1);}50%{transform:scale(1.05) translateY(-5px);}100%{transform:scale(1);}}
 .companionWhisp{background:#b3e5fc;border-radius:50%;}
 .companionStar{background:gold;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
@@ -45,12 +44,17 @@ button{padding:0.5rem 1rem;border:none;border-radius:8px;background:var(--accent
     <option>Robot</option>
     <option>Cloud</option>
   </select>
+  <div id="landingCompanionVisual" class="companionWhisp"></div>
   <select id="languageSelect">
     <option value="en-US">English</option>
     <option value="es-ES">Spanish</option>
     <option value="fr-FR">French</option>
     <option value="de-DE">German</option>
   </select>
+  <label>
+    <input type="checkbox" id="resumeToggle">
+    Resume last conversation
+  </label>
   <button onclick="startSession()">Start</button>
 </div>
 
@@ -64,7 +68,7 @@ button{padding:0.5rem 1rem;border:none;border-radius:8px;background:var(--accent
   <div id="chatControls">
     <input type="text" id="userInput" placeholder="Type here">
     <button onclick="sendMessage()">Send</button>
-    <button id="repeatLineBtn" onclick="repeatLastLine()">🔁 Repeat</button>
+    <button onclick="repeatLastLine()">🔁 Repeat</button>
     <button onclick="stopSpeaking()">⏹ Stop</button>
     <button onclick="rephraseLastLine()">💡 Another way</button>
   </div>
@@ -106,42 +110,67 @@ let windowVoiceSpeed = 1.0;
 
 // -------------------- Companion Reactions --------------------
 const companionReactions = {
-  Whisp: { happy:{scale:1.1,color:"#b3e5fc",boxShadow:"0 0 20px #81d4fa"}, neutral:{scale:1,color:"#b3e5fc",boxShadow:"none"}, thinking:{scale:0.95,color:"#90caf9",boxShadow:"0 0 10px #64b5f6"}, curious:{scale:1.05,color:"#82d0f4",boxShadow:"0 0 15px #64b5f6"} },
-  Star: { happy:{scale:1.2,color:"gold",boxShadow:"0 0 25px gold"}, neutral:{scale:1,color:"gold",boxShadow:"none"}, excited:{scale:1.3,color:"yellow",boxShadow:"0 0 30px yellow"}, curious:{scale:1.1,color:"#ffd700",boxShadow:"0 0 15px gold"} },
-  Robot: { happy:{scale:1.05,color:"silver",boxShadow:"0 0 15px #ccc"}, neutral:{scale:1,color:"silver",boxShadow:"none"}, curious:{scale:1.1,color:"#aaa",boxShadow:"0 0 10px #999"} },
-  Cloud: { happy:{scale:1.1,color:"#e0f7fa",boxShadow:"0 0 20px #b2ebf2"}, neutral:{scale:1,color:"#e0f7fa",boxShadow:"none"}, surprised:{scale:1.15,color:"#b2ebf2",boxShadow:"0 0 15px #81d4fa"}, curious:{scale:1.05,color:"#b2ebf2",boxShadow:"0 0 10px #81d4fa"} }
+  Whisp:{happy:{scale:1.1,color:"#b3e5fc",boxShadow:"0 0 20px #81d4fa"},neutral:{scale:1,color:"#b3e5fc",boxShadow:"none"},thinking:{scale:0.95,color:"#90caf9",boxShadow:"0 0 10px #64b5f6"},curious:{scale:1.05,color:"#82d0f4",boxShadow:"0 0 15px #64b5f6"}},
+  Star:{happy:{scale:1.2,color:"gold",boxShadow:"0 0 25px gold"},neutral:{scale:1,color:"gold",boxShadow:"none"},excited:{scale:1.3,color:"yellow",boxShadow:"0 0 30px yellow"},curious:{scale:1.1,color:"#ffd700",boxShadow:"0 0 15px gold"}},
+  Robot:{happy:{scale:1.05,color:"silver",boxShadow:"0 0 15px #ccc"},neutral:{scale:1,color:"silver",boxShadow:"none"},curious:{scale:1.1,color:"#aaa",boxShadow:"0 0 10px #999"}},
+  Cloud:{happy:{scale:1.1,color:"#e0f7fa",boxShadow:"0 0 20px #b2ebf2"},neutral:{scale:1,color:"#e0f7fa",boxShadow:"none"},surprised:{scale:1.15,color:"#b2ebf2",boxShadow:"0 0 15px #81d4fa"},curious:{scale:1.05,color:"#b2ebf2",boxShadow:"0 0 10px #81d4fa"}}
 };
 
 // -------------------- Conversation Starters --------------------
-const conversationStarters = {
+const conversationStarters={
   travel:["Hello! How was your trip?","Where would you like to travel today?"],
   food:["What's your favorite dish?","Have you tried something new lately?"],
   daily:["Good morning! Ready to chat?","Hi there! How’s your day going?"]
 };
 
+// -------------------- Companion Selection on Landing --------------------
+document.getElementById("companionSelect").addEventListener("change", e=>{
+  const visual=document.getElementById("landingCompanionVisual");
+  visual.className="";
+  switch(e.target.value){
+    case "Whisp": visual.classList.add("companionWhisp"); break;
+    case "Star": visual.classList.add("companionStar"); break;
+    case "Robot": visual.classList.add("companionRobot"); break;
+    case "Cloud": visual.classList.add("companionCloud"); break;
+  }
+});
+
 // -------------------- Start Session --------------------
 function startSession(){
-  const nickname = document.getElementById("nicknameInput").value.trim() || "Friend";
+  const nickname=document.getElementById("nicknameInput").value.trim()||"Friend";
   localStorage.setItem("nickname",nickname);
 
-  const companion = document.getElementById("companionSelect").value;
+  const companion=document.getElementById("companionSelect").value;
   localStorage.setItem("companion",companion);
   updateCompanionVisual(companion);
 
-  const lang = document.getElementById("languageSelect").value;
+  const lang=document.getElementById("languageSelect").value;
   localStorage.setItem("language",lang);
+
+  const resume=document.getElementById("resumeToggle").checked;
+  localStorage.setItem("resumeConversation",resume);
 
   document.getElementById("landingPage").classList.add("hidden");
   document.getElementById("chatContainer").classList.remove("hidden");
 
   showTyping(`Welcome ${nickname}! ${companion} is ready to chat.`);
-  const dailyStarter = getDailyStarter();
-  setTimeout(()=>sendMessage(dailyStarter),1200);
+
+  if(resume){
+    const messages=JSON.parse(localStorage.getItem("userMessages"))||[];
+    if(messages.length){
+      const lastMsg=messages[messages.length-1];
+      setTimeout(()=>showTyping(`Last time you said: "${lastMsg}". Want to continue from there?`),1200);
+      return;
+    }
+  }
+
+  const starter=getTimeAwareStarter();
+  setTimeout(()=>sendMessage(starter),1200);
 }
 
 // -------------------- Companion Visual --------------------
 function updateCompanionVisual(id){
-  const visual = document.getElementById("companionVisual");
+  const visual=document.getElementById("companionVisual");
   visual.className="";
   switch(id){
     case "Whisp": visual.classList.add("companionWhisp"); break;
@@ -149,7 +178,27 @@ function updateCompanionVisual(id){
     case "Robot": visual.classList.add("companionRobot"); break;
     case "Cloud": visual.classList.add("companionCloud"); break;
   }
-  document.getElementById("companionName").textContent = id;
+  document.getElementById("companionName").textContent=id;
+}
+
+// -------------------- Time-aware / Season-aware Starter --------------------
+function getTimeOfDay(){
+  const hour=new Date().getHours();
+  if(hour<12) return "morning";
+  if(hour<18) return "afternoon";
+  return "evening";
+}
+
+function getTimeAwareStarter(){
+  const timeOfDay=getTimeOfDay();
+  const startersByTime={
+    morning:["Good morning! Ready to chat?","Hi! How’s your morning so far?"],
+    afternoon:["Good afternoon! How’s your day going?","Hey! What have you done today?"],
+    evening:["Good evening! How was your day?","Hi! Relaxing tonight?"]
+  };
+  const starters=startersByTime[timeOfDay];
+  const todayIndex=new Date().getDay()%starters.length;
+  return starters[todayIndex];
 }
 
 // -------------------- Typing & Speech --------------------
@@ -163,9 +212,9 @@ function detectTone(text){
 }
 
 function triggerCompanionReaction(tone){
-  const visual = document.getElementById("companionVisual");
-  const companionId = localStorage.getItem("companion") || "Whisp";
-  const reaction = companionReactions[companionId][tone] || companionReactions[companionId].neutral;
+  const visual=document.getElementById("companionVisual");
+  const companionId=localStorage.getItem("companion")||"Whisp";
+  const reaction=companionReactions[companionId][tone]||companionReactions[companionId].neutral;
   visual.style.transform=`scale(${reaction.scale})`;
   visual.style.background=reaction.color;
   visual.style.boxShadow=reaction.boxShadow;
@@ -192,7 +241,7 @@ function showTyping(text){
   const div=document.createElement("div");
   div.className="message bot";
   document.getElementById("chatBox").appendChild(div);
-  const companionId = localStorage.getItem("companion") || "Whisp";
+  const companionId=localStorage.getItem("companion")||"Whisp";
   const tone=detectTone(text);
   const visual=document.getElementById("companionVisual");
   const reaction=companionReactions[companionId][tone];
@@ -201,10 +250,8 @@ function showTyping(text){
   visual.style.boxShadow=reaction.boxShadow;
 
   function type(){
-    if(i<text.length){
-      div.textContent+=text[i];i++;
-      setTimeout(type,20);
-    } else {
+    if(i<text.length){div.textContent+=text[i];i++;setTimeout(type,20);}
+    else{
       lastBotMessage=text;
       speakBotText(text);
       document.getElementById("chatBox").scrollTop=document.getElementById("chatBox").scrollHeight;
@@ -248,9 +295,6 @@ function sendMessage(msg=null){
 function repeatLastLine(){if(lastBotMessage)speakBotText(lastBotMessage);}
 function stopSpeaking(){if(speechSynthesis.speaking)speechSynthesis.cancel();document.getElementById("companionVisual").classList.remove("speaking");}
 function rephraseLastLine(){if(!lastBotMessage)return; const variations={"Hello!":["Hi there!","Hey!","Greetings!"],"How are you?":["How’s it going?","How’s your day?","What’s up?"],"Good morning!":["Morning!","Hi! Ready for today?","Hello, good morning!"]}; let newLine=lastBotMessage; if(variations[lastBotMessage]){const opts=variations[lastBotMessage]; newLine=opts[Math.floor(Math.random()*opts.length)];} showTyping(newLine);}
-
-// -------------------- Daily Starter --------------------
-function getDailyStarter(){const today=new Date().getDay(); const categories=Object.keys(conversationStarters); const cat=categories[today%categories.length]; const starters=conversationStarters[cat]; const index=today%starters.length; return starters[index];}
 
 // -------------------- Word Summary --------------------
 function getMostCommonWords(){
