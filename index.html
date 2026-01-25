@@ -6,8 +6,8 @@
 <title>Talk2MeNice</title>
 <style>
 :root { --bg:#0f1116; --fg:#f2f2f2; --soft:#9aa0aa; }
-body{margin:0;padding:0;font-family:system-ui, -apple-system, sans-serif; background:var(--bg); color:var(--fg); display:flex; flex-direction:column; height:100vh; transition: background 1s;}
-#companionSelect,#languageSelect,#chatWrap{margin:10px;}
+body{margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--fg); display:flex; flex-direction:column; height:100vh; transition: background 1s;}
+#companionSelect,#languageSelect,#pressChatWrapper,#chatInterface{margin:10px;}
 button{padding:6px 10px;border:none;border-radius:5px;background:#555;color:white;cursor:pointer;}
 button:hover{background:#777;}
 #messages{flex:1;overflow-y:auto;margin-top:10px;padding:5px;background:#1b1f2a;border-radius:6px;}
@@ -16,10 +16,10 @@ button:hover{background:#777;}
 .friend{color:#ffe3b8;}
 #inputRow{display:flex;gap:5px;margin-top:10px;}
 #input{flex:1;padding:8px;border-radius:5px;border:none;background:#222;color:white;}
-#companion{width:100px;height:100px;border-radius:50%;background:radial-gradient(circle at top, #fff, #888);margin-bottom:10px;animation:idleFloat 6s ease-in-out infinite;}
-@keyframes idleFloat{0%{transform:translateY(0);}50%{transform:translateY(-6px);}100%{transform:translateY(0);}}
+#companionImg{width:150px;height:150px;border-radius:50%;background:#888;margin-bottom:10px;animation:idleFloat 6s ease-in-out infinite;}
+@keyframes idleFloat{0%{transform:translateY(0);}50%{transform:translateY(-4px);}100%{transform:translateY(0);}}
 .listen{animation:nod 1s ease;}
-@keyframes nod{0%{transform:translateY(0);}50%{transform:translateY(4px);}100%{transform:translateY(0);}}
+@keyframes nod{0%{transform:translateY(0);}50%{transform:translateY(3px);}100%{transform:translateY(0);}}
 .thinking{animation:thinkPulse 1.5s ease-in-out infinite;}
 @keyframes thinkPulse{0%{opacity:0.7;}50%{opacity:1;}100%{opacity:0.7;}}
 .shiver{animation:shiver 0.3s linear 4;}
@@ -42,7 +42,7 @@ footer{text-align:center;color:var(--soft);font-size:12px;padding:8px;}
 </div>
 
 <!-- Language Selection -->
-<div id="languageSelect">
+<div id="languageSelect" style="display:none;">
   <label>Choose language:</label>
   <select id="lang">
     <option value="en">English (Free)</option>
@@ -53,9 +53,14 @@ footer{text-align:center;color:var(--soft);font-size:12px;padding:8px;}
   <button id="saveLang">Confirm</button>
 </div>
 
-<!-- Chat Wrapper -->
-<div id="chatWrap" style="display:none; flex:1; display:flex; flex-direction:column;">
-  <div id="companion"></div>
+<!-- Press to Chat -->
+<div id="pressChatWrapper" style="display:none;">
+  <img id="companionImg" src="https://via.placeholder.com/150" alt="Companion">
+  <button id="startChatBtn">Press to Chat</button>
+</div>
+
+<!-- Chat Interface -->
+<div id="chatInterface" style="display:none; flex:1; flex-direction:column;">
   <div id="messages"></div>
   <div id="inputRow">
     <input id="input" placeholder="Say something..." />
@@ -74,78 +79,93 @@ footer{text-align:center;color:var(--soft);font-size:12px;padding:8px;}
 
 <script>
 /* ---------------- STATE ---------------- */
-const state = { energy:0.4, lastMessageTime: Date.now(), companion:"whisp" };
-const settings = { listeningCues:true, expressive:"subtle" };
+const state={energy:0.4,lastMessageTime:Date.now(),companion:"whisp"};
+const settings={listeningCues:true,expressive:"subtle"};
 
 /* ---------------- ELEMENTS ---------------- */
-const companionDiv = document.getElementById("companion");
-const messages = document.getElementById("messages");
-const input = document.getElementById("input");
+const companionImg=document.getElementById("companionImg");
+const messages=document.getElementById("messages");
+const input=document.getElementById("input");
 
 /* ---------------- COMPANION SELECTION ---------------- */
-const compSelDiv = document.getElementById("companionSelect");
-const compChoice = document.getElementById("companionChoice");
+const compSelDiv=document.getElementById("companionSelect");
+const compChoice=document.getElementById("companionChoice");
+compChoice.addEventListener("change",()=>{ companionImg.src=`https://via.placeholder.com/150?text=${compChoice.value}`; });
 document.getElementById("saveCompanion").addEventListener("click",()=>{
-  const selected = compChoice.value;
-  localStorage.setItem("companion", selected);
-  state.companion = selected;
+  const selected=compChoice.value;
+  localStorage.setItem("companion",selected);
+  state.companion=selected;
   compSelDiv.style.display="none";
   document.getElementById("languageSelect").style.display="block";
 });
 
 /* ---------------- LANGUAGE SELECTION ---------------- */
-const langSelectDiv = document.getElementById("languageSelect");
-const langSelect = document.getElementById("lang");
-const saveLangBtn = document.getElementById("saveLang");
+const langSelectDiv=document.getElementById("languageSelect");
+const langSelect=document.getElementById("lang");
+const saveLangBtn=document.getElementById("saveLang");
 
-function unlockPassword() {
-  const pwd = prompt("Enter password to unlock premium languages and features:");
+function unlockPassword(){
+  const pwd=prompt("Enter password to unlock premium languages and features:");
   if(pwd==="ELYS2026"){ localStorage.setItem("premiumUnlocked","true"); alert("Premium features unlocked!"); return true; }
   else { alert("Incorrect password."); return false; }
 }
 
 saveLangBtn.addEventListener("click",()=>{
-  const selected = langSelect.value;
-  const isLocked = langSelect.selectedOptions[0].classList.contains("locked");
+  const selected=langSelect.value;
+  const isLocked=langSelect.selectedOptions[0].classList.contains("locked");
   if(isLocked && localStorage.getItem("premiumUnlocked")!=="true") if(!unlockPassword()) return;
   localStorage.setItem("lockedLanguage",selected);
   langSelectDiv.style.display="none";
-  document.getElementById("chatWrap").style.display="flex";
-  initChatLanguage(selected);
+  document.getElementById("pressChatWrapper").style.display="block";
+});
+
+/* ---------------- PRESS TO CHAT ---------------- */
+document.getElementById("startChatBtn").addEventListener("click",()=>{
+  document.getElementById("pressChatWrapper").style.display="none";
+  document.getElementById("chatInterface").style.display="flex";
+  initChatLanguage(localStorage.getItem("lockedLanguage")||"en");
   initGreeting();
   if(localStorage.getItem("dailySummaryOpt")==="true") dailySummary();
   applyTimeSeasonBackground();
 });
 
-/* Load previous selections */
-const lockedLang = localStorage.getItem("lockedLanguage");
-const prevComp = localStorage.getItem("companion");
-if(prevComp){ state.companion=prevComp; compSelDiv.style.display="none"; }
-if(lockedLang){ langSelectDiv.style.display="none"; document.getElementById("chatWrap").style.display="flex"; initChatLanguage(lockedLang); initGreeting(); if(localStorage.getItem("dailySummaryOpt")==="true") dailySummary(); applyTimeSeasonBackground(); }
-
 /* ---------------- PREMIUM OPTIONS ---------------- */
-const unlockBtn = document.getElementById("unlockBtn");
-const premiumDiv = document.getElementById("premiumOptions");
+const unlockBtn=document.getElementById("unlockBtn");
+const premiumDiv=document.getElementById("premiumOptions");
 unlockBtn.addEventListener("click",()=>{
   if(unlockPassword()){ premiumDiv.style.display="block"; unlockBtn.style.display="none"; loadPremiumToggles(); }
 });
 if(localStorage.getItem("premiumUnlocked")==="true"){ premiumDiv.style.display="block"; unlockBtn.style.display="none"; loadPremiumToggles(); }
 
-/* Load premium toggle states */
 function loadPremiumToggles(){
   ["voiceReactions","memoryQuirks","pauseComments","weatherReact","dailySummaryOpt"].forEach(id=>{
     const cb=document.getElementById(id);
-    cb.checked = localStorage.getItem(id) === "true";
+    cb.checked=localStorage.getItem(id)==="true";
     cb.addEventListener("change",()=>{ localStorage.setItem(id,cb.checked); });
   });
 }
 
-/* ---------------- CHAT HELPERS ---------------- */
-function addMessage(text,cls){ const div=document.createElement("div"); div.className="msg "+cls; div.textContent=text; messages.appendChild(div); messages.scrollTop=messages.scrollHeight; }
+/* ---------------- CHAT HELPERS & VOICE ---------------- */
+function speak(text){
+  if(localStorage.getItem("voiceReactions")!=="true") return;
+  if(!window.speechSynthesis) return;
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang = localStorage.getItem("lockedLanguage")||"en";
+  utterance.pitch=1.0; utterance.rate=1.0; utterance.volume=1.0;
+  window.speechSynthesis.speak(utterance);
+}
+function addMessage(text,cls){
+  const div=document.createElement("div");
+  div.className="msg "+cls;
+  div.textContent=text;
+  messages.appendChild(div);
+  messages.scrollTop=messages.scrollHeight;
+  if(cls==="friend") speak(text);
+}
 
 /* ---------------- GREETING ---------------- */
 function initGreeting(){
-  const hour = new Date().getHours();
+  const hour=new Date().getHours();
   let line="Hey. I’m here.";
   if(hour<11) line="Good morning. Take your time.";
   else if(hour<18) line="Hey. Want to talk?";
@@ -157,50 +177,46 @@ function initGreeting(){
 let typingTimer;
 input.addEventListener("input",()=>{
   clearTimeout(typingTimer);
-  if(settings.listeningCues){ companionDiv.classList.add("listen"); setTimeout(()=>companionDiv.classList.remove("listen"),1000); }
-  typingTimer=setTimeout(()=>{ companionDiv.classList.add("thinking"); },1500);
+  if(settings.listeningCues){ companionImg.classList.add("listen"); setTimeout(()=>companionImg.classList.remove("listen"),1000); }
+  typingTimer=setTimeout(()=>{ companionImg.classList.add("thinking"); setTimeout(()=>companionImg.classList.remove("thinking"),6000); },1500);
 });
-input.addEventListener("keydown", e=>{
+input.addEventListener("keydown",e=>{
   if(e.key==="Enter" && input.value.trim()){ send(input.value.trim()); input.value=""; }
 });
 
-/* ---------------- SEND ---------------- */
+/* ---------------- SEND & RESPONSE ---------------- */
 function send(text){
-  companionDiv.classList.remove("thinking");
+  companionImg.classList.remove("thinking");
   addMessage(text,"user");
   state.lastMessageTime=Date.now();
   trackWords(text);
   if(checkSensitive(text) || checkRestricted(text)) return;
   respond();
 }
-
-/* ---------------- RESPONSE ---------------- */
 function respond(){
-  companionDiv.classList.add("thinking");
+  companionImg.classList.add("thinking");
   setTimeout(()=>{
-    companionDiv.classList.remove("thinking");
+    companionImg.classList.remove("thinking");
     let msg="I’m listening. Tell me more.";
     if(localStorage.getItem("memoryQuirks")==="true"){
-      const helloCount = recall("helloCount") || 0;
-      msg = helloCount>3?"You've been saying hello a lot! Want to try a new greeting?":msg;
+      const helloCount=recall("helloCount")||0;
+      msg=helloCount>3?"You've been saying hello a lot! Want to try a new greeting?":msg;
     }
     addMessage(msg,"friend");
-    if(localStorage.getItem("voiceReactions")==="true"){ /* voice stub */ }
   },600);
 }
 
 /* ---------------- LONG PAUSE ---------------- */
 setInterval(()=>{
-  if(Date.now()-state.lastMessageTime>15000){ companionDiv.classList.add("shiver"); setTimeout(()=>companionDiv.classList.remove("shiver"),6000); }
+  if(Date.now()-state.lastMessageTime>15000){ companionImg.classList.add("shiver"); setTimeout(()=>companionImg.classList.remove("shiver"),6000); }
 },5000);
 
-/* ---------------- MEMORY QUIRKS ---------------- */
-const memory = JSON.parse(localStorage.getItem("memory") || "{}");
+/* ---------------- MEMORY & DAILY SUMMARY ---------------- */
+const memory=JSON.parse(localStorage.getItem("memory")||"{}");
 function remember(key,value){ memory[key]=value; localStorage.setItem("memory",JSON.stringify(memory)); }
 function recall(key){ return memory[key]; }
 
-/* ---------------- DAILY SUMMARY ---------------- */
-let wordCounts = JSON.parse(localStorage.getItem("wordCounts") || "{}");
+let wordCounts=JSON.parse(localStorage.getItem("wordCounts")||"{}");
 function trackWords(text){ const words=text.toLowerCase().match(/\b\w+\b/g)||[]; words.forEach(w=>{ wordCounts[w]=(wordCounts[w]||0)+1; }); localStorage.setItem("wordCounts",JSON.stringify(wordCounts)); }
 function dailySummary(){
   const sorted=Object.entries(wordCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
@@ -210,18 +226,21 @@ function dailySummary(){
   }
 }
 
-/* ---------------- WEATHER REACTIONS ---------------- */
+/* ---------------- WEATHER ---------------- */
 function weatherReaction(weather){
   if(localStorage.getItem("premiumUnlocked")!=="true") return;
   if(localStorage.getItem("weatherReact")!=="true") return;
-  switch(weather){
-    case "thunder": companionDiv.classList.add("shiver"); setTimeout(()=>companionDiv.classList.remove("shiver"),6000); break;
-    case "rain": addMessage("It’s raining outside! Stay cozy.","friend"); break;
-    case "sunny": addMessage("The sun is shining!","friend"); break;
+  if(weather === "thunder"){
+    companionImg.classList.add("shiver");
+    setTimeout(()=>companionImg.classList.remove("shiver"),6000);
+  } else if(weather==="rain"){
+    addMessage("It’s raining outside! Stay cozy.","friend");
+  } else if(weather==="sunny"){
+    addMessage("The sun is shining!","friend");
   }
 }
 
-/* ---------------- RESTRICTED CONTENT ---------------- */
+/* ---------------- SAFETY ---------------- */
 const sensitiveKeywords=["suicide","die","kill myself","hurt myself","self harm","harm myself"];
 const restrictedKeywords=["fuck","shit","bitch","slut","dick","asshole"]; 
 
@@ -233,7 +252,6 @@ function checkSensitive(text){
   }
   return false;
 }
-
 function checkRestricted(text){
   const t=text.toLowerCase();
   if(restrictedKeywords.some(k=>t.includes(k))){
@@ -243,28 +261,25 @@ function checkRestricted(text){
   return false;
 }
 
-/* ---------------- LANGUAGE INIT ---------------- */
+/* ---------------- LANGUAGE ---------------- */
 function initChatLanguage(lang){ addMessage(`Your chat is set to ${lang}.`,"friend"); }
 
 /* ---------------- TIME/SEASONAL BACKGROUND ---------------- */
 function applyTimeSeasonBackground(){
-  const hour = new Date().getHours();
-  const month = new Date().getMonth();
+  const hour=new Date().getHours();
+  const month=new Date().getMonth();
   let bg="";
   if(hour<6) bg="#0a0a1a";
-  else if(hour<12) bg="#ffe4b5"; // sunrise warm
-  else if(hour<18) bg="#87ceeb"; // afternoon blue
-  else bg="#4b0082"; // evening purple
-  // optional seasonal tints
-  if(month===11 || month===0 || month===1) bg="#003366"; // winter
-  else if(month>=2 && month<=4) bg="#99cc99"; // spring
-  else if(month>=5 && month<=7) bg="#ffcc66"; // summer
-  else if(month>=8 && month<=10) bg="#ff9966"; // fall
+  else if(hour<12) bg="#ffe4b5";
+  else if(hour<18) bg="#87ceeb";
+  else bg="#4b0082";
+  if(month===11||month===0||month===1) bg="#003366";
+  else if(month>=2&&month<=4) bg="#99cc99";
+  else if(month>=5&&month<=7) bg="#ffcc66";
+  else if(month>=8&&month<=10) bg="#ff9966";
   document.body.style.background=bg;
 }
-
 applyTimeSeasonBackground();
-
 </script>
 </body>
 </html>
