@@ -8,15 +8,15 @@
 :root { --bg:#0f1116; --fg:#f2f2f2; --soft:#9aa0aa; }
 body{margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--fg); display:flex; flex-direction:column; height:100vh; transition: background 1s;}
 #companionSelect,#languageSelect,#pressChatWrapper,#chatInterface{margin:10px;}
-button{padding:6px 10px;border:none;border-radius:5px;background:#555;color:white;cursor:pointer;}
+button{padding:10px;border:none;border-radius:5px;background:#555;color:white;cursor:pointer;font-size:16px;}
 button:hover{background:#777;}
-#messages{flex:1;overflow-y:auto;margin-top:10px;padding:5px;background:#1b1f2a;border-radius:6px;}
+#messages{flex:1;overflow-y:auto;margin-top:10px;padding:5px;background:#1b1f2a;border-radius:6px;font-size:16px;}
 .msg{margin-bottom:10px;}
 .user{color:#b8d7ff;}
 .friend{color:#ffe3b8;}
 #inputRow{display:flex;gap:5px;margin-top:10px;}
-#input{flex:1;padding:8px;border-radius:5px;border:none;background:#222;color:white;}
-#companionImg{width:150px;height:150px;border-radius:50%;background:#888;margin-bottom:10px;animation:idleFloat 6s ease-in-out infinite;}
+#input{flex:1;padding:10px;border-radius:5px;border:none;background:#222;color:white;font-size:16px;}
+#companionImg{width:30vw;height:auto;max-width:150px;border-radius:50%;background:#888;margin-bottom:10px;animation:idleFloat 6s ease-in-out infinite;}
 @keyframes idleFloat{0%{transform:translateY(0);}50%{transform:translateY(-4px);}100%{transform:translateY(0);}}
 .listen{animation:nod 1s ease;}
 @keyframes nod{0%{transform:translateY(0);}50%{transform:translateY(3px);}100%{transform:translateY(0);}}
@@ -25,6 +25,12 @@ button:hover{background:#777;}
 .shiver{animation:shiver 0.3s linear 4;}
 @keyframes shiver{0%{transform:translateX(0);}25%{transform:translateX(-3px);}50%{transform:translateX(3px);}75%{transform:translateX(-2px);}100%{transform:translateX(0);}}
 footer{text-align:center;color:var(--soft);font-size:12px;padding:8px;}
+@media (max-width:480px){
+  body{padding:5px;}
+  #inputRow{gap:3px;}
+  #messages{font-size:14px;}
+  #companionChoice,#lang{width:100%;}
+}
 </style>
 </head>
 <body>
@@ -163,17 +169,25 @@ function addMessage(text,cls){
   if(cls==="friend") speak(text);
 }
 
-/* ---------------- GREETING ---------------- */
+/* ---------------- DYNAMIC GREETING (Time + Season) ---------------- */
 function initGreeting(){
-  const hour=new Date().getHours();
-  let line="Hey. I’m here.";
-  if(hour<11) line="Good morning. Take your time.";
-  else if(hour<18) line="Hey. Want to talk?";
-  else line="Hi. I’m glad you’re here.";
-  addMessage(line,"friend");
+  const now=new Date();
+  const hour=now.getHours();
+  const month=now.getMonth();
+  let timeLine="";
+  if(hour<6) timeLine="Good early morning! Ready to start the day?";
+  else if(hour<12) timeLine="Good morning! How’s your day so far?";
+  else if(hour<18) timeLine="Good afternoon! Want to chat?";
+  else timeLine="Good evening! How was your day?";
+  let seasonLine="";
+  if(month===11||month===0||month===1) seasonLine="It’s winter outside. Stay warm!";
+  else if(month>=2&&month<=4) seasonLine="Spring is in the air!";
+  else if(month>=5&&month<=7) seasonLine="Summer vibes today!";
+  else if(month>=8&&month<=10) seasonLine="Autumn leaves are falling!";
+  addMessage(`${timeLine} ${seasonLine}`,"friend");
 }
 
-/* ---------------- CHAT INPUT ---------------- */
+/* ---------------- CHAT INPUT & ANIMATIONS ---------------- */
 let typingTimer;
 input.addEventListener("input",()=>{
   clearTimeout(typingTimer);
