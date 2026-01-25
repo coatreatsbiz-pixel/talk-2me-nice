@@ -4,62 +4,333 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Talk 2Me Nice</title>
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-main: linear-gradient(160deg, #1b1f27 0%, #2a2f3b 100%);
+  --bg-card: #2c313d;
+  --accent: #ffb86c;
+  --text-main: #e1e4ea;
+  --text-muted: #a1a6b0;
+}
+
+/* Basic layout */
+body { margin:0; font-family:'Montserrat',system-ui,sans-serif; background: var(--bg-main); color: var(--text-main); display:flex; flex-direction:column; min-height:100vh; }
+h3,h4 { font-family:'Playfair Display', serif; }
+button { font-family:'Montserrat', sans-serif; }
+.hidden { display:none; }
+
+/* Landing Page */
+#landingPage { max-width:900px; margin:2rem auto; display:flex; flex-direction:column; gap:1rem; }
+#landingPage input { padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); margin-bottom:1rem; width:100%; }
+#landingPage button { padding:0.6rem 1rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer; transition: all 0.3s ease; width:100%; }
+#landingPage button:hover { transform: scale(1.05); background:#ff9f40; }
+
+/* Companion selector */
+#companionSelector h3 { text-align:center; color:var(--accent); margin-bottom:1rem; }
+.companionGrid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:1rem; }
+.companionCard { background: var(--bg-card); border-radius: 14px; padding: 1rem; cursor:pointer; text-align:center; transition: all 0.25s ease; border: 2px solid transparent; }
+.companionCard h4 { margin:0; }
+.companionCard p { font-size:0.85rem; color:var(--text-muted); margin-top:0.4rem; }
+.companionCard small.preview { display:block; margin-top:0.5rem; font-size:0.75rem; color:var(--text-muted); font-style:italic; }
+.companionCard:hover { transform: translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,0.35);}
+.companionCard.active { border-color:var(--accent); box-shadow:0 0 0 2px rgba(255,184,108,0.25); }
+
+/* Chat container */
+#chatContainer { flex-direction:row; display:flex; gap:1rem; animation:fadeIn 0.8s ease-out; max-width:1200px; margin:0 auto; }
+#profileSidebar { width:240px; padding:1rem; background: var(--bg-card); border-radius:16px; flex-shrink:0; display:flex; flex-direction:column; gap:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+#starterBox { margin:1rem 0; padding:0.8rem; background:#1f232d; border-radius:12px; cursor:pointer; transition: transform 0.2s; text-align:center; font-weight:500; }
+#starterBox:hover { transform:scale(1.03); background: #2f3444; }
+#starterTitle { font-weight:600; margin:0.5rem 0; color:#ffb86c; text-align:center; }
+#chatArea { flex:1; display:flex; flex-direction:column; background: var(--bg-card); border-radius:16px; padding:1rem; box-shadow:0 6px 16px rgba(0,0,0,0.25); max-height:80vh; }
+.message { max-width:75%; padding:0.8rem 1.2rem; margin-bottom:0.7rem; border-radius:20px; line-height:1.5; opacity:0; animation:fadeInMessage 0.5s forwards; }
+.user { background:var(--accent); color:#1b1f27; align-self:flex-end; }
+.bot { background:var(--bg-card); align-self:flex-start; }
+
+/* Footer */
+footer { display:flex; padding:0.8rem; gap:0.5rem; max-width:1200px; margin:0 auto; }
+footer input { flex:1; padding:0.6rem; border-radius:12px; border:none; background:#1f232d; color:var(--text-main); }
+footer button { padding:0.6rem 1rem; border-radius:999px; border:none; background: var(--accent); cursor:pointer; transition: all 0.3s ease; }
+footer button:hover { transform: scale(1.05); background:#ff9f40; }
+
+#micBtn { border-radius:50%; width:42px; height:42px; font-size:1.2rem; background: var(--accent); border:none; cursor:pointer; }
+#micBtn.listening { animation:pulse 1.2s infinite; }
+#micBtn.disabled { opacity:0.4; cursor:not-allowed; }
+
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+@keyframes fadeInMessage { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+@keyframes pulse {0%{box-shadow:0 0 0 0 rgba(255,184,108,0.6);} 70%{box-shadow:0 0 0 12px rgba(255,184,108,0);} 100%{box-shadow:0 0 0 0 rgba(255,184,108,0);}}
+
+/* Modals */
+.modalContent { background: var(--bg-card); padding:1.5rem; border-radius:14px; max-width:400px; margin:auto; text-align:center;}
+.modalContent button { margin-top:1rem; padding:0.5rem 1rem; border-radius:999px; border:none; background:var(--accent); cursor:pointer; }
+
+</style>
 </head>
 <body>
 
 <!-- Landing Page -->
 <div id="landingPage">
-  <h1>🎉 Talk 2Me Nice</h1>
+  <h3 style="text-align:center;color:var(--accent);font-size:2rem;">Talk 2Me Nice</h3>
   <input id="nicknameInput" placeholder="Enter your nickname" />
   <div id="companionSelector">
     <h3>Choose Your Companion</h3>
     <div class="companionGrid">
-      <div class="companionCard" data-companion="Whisp">
-        <h4>Whisp</h4>
-        <p>Gentle, supportive, calm</p>
-      </div>
-      <div class="companionCard" data-companion="Robot">
-        <h4>Robot</h4>
-        <p>Logical, playful, witty</p>
-      </div>
-      <div class="companionCard" data-companion="Star">
-        <h4>Star</h4>
-        <p>Bright, confident, cheerful</p>
-      </div>
-      <div class="companionCard" data-companion="Cloud">
-        <h4>Cloud</h4>
-        <p>Fluffy, whimsical, soft</p>
-      </div>
+      <div class="companionCard" data-companion="Whisp"><h4>Whisp</h4><p>Gentle, supportive, calm</p></div>
+      <div class="companionCard" data-companion="Star"><h4>Star</h4><p>Confident, shining personality</p></div>
+      <div class="companionCard" data-companion="Robot"><h4>Robot</h4><p>Neutral, informative, logical</p></div>
+      <div class="companionCard" data-companion="Cloud"><h4>Cloud</h4><p>Playful, fluffy, fun</p></div>
     </div>
   </div>
-  <button id="startChatBtn">Start Chat</button>
+  <button onclick="startChat()">Start Chat</button>
 </div>
 
 <!-- Chat Container -->
-<div id="chatContainer">
+<div id="chatContainer" class="hidden">
   <div id="profileSidebar">
-    <h2>Talk 2Me Nice</h2>
     <div class="profileInfo">
       <p>👤 <strong id="profileName"></strong></p>
+      <p>🌍 <span id="profileLanguage"></span></p>
       <p>🧚 <span id="profileCompanion"></span></p>
     </div>
     <hr>
-    <p>Conversation Starters</p>
-    <select id="starterDropdown" onchange="startStarter()">
-      <option value="">-- Select Starter --</option>
-    </select>
+    <p id="starterBox">Daily starter will appear here</p>
+    <div id="voiceSettings">
+      <h4>Voice Settings</h4>
+      <label><input type="checkbox" id="voiceOutputToggle" checked> Voice replies</label>
+      <label><input type="checkbox" id="voiceInputToggle" checked> Voice input</label>
+      <label>Speed
+        <select id="voiceSpeed">
+          <option value="0.9">Slow</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.1">Fast</option>
+        </select>
+      </label>
+      <label>Tone:
+        <select id="toneSelect">
+          <option value="gentle">Gentle / Playful</option>
+          <option value="energetic">Energetic</option>
+          <option value="neutral">Neutral / Robot</option>
+        </select>
+      </label>
+    </div>
   </div>
-
   <div id="chatArea">
     <div id="chat"></div>
-    <footer>
-      <input id="userInput" placeholder="Type a message…" />
-      <button onclick="sendMessage()">Send</button>
-    </footer>
   </div>
 </div>
 
-<script src="script.js"></script>
+<footer class="hidden">
+  <input id="userInput" placeholder="Type a message…" />
+  <button id="micBtn" onclick="startSpeechToSpeech()">🎤</button>
+  <button onclick="sendMessage()">Send</button>
+  <button id="speechToSpeechBtn" class="active" onclick="toggleSpeechToSpeech()">🗣️ Speech-to-Speech: ON</button>
+</footer>
+
+<footer id="siteFooter">
+  <a href="#" onclick="showPrivacy()">Privacy</a> | 
+  <a href="#" onclick="showSupport()">Support</a>
+</footer>
+
+<!-- Privacy & Support Modals -->
+<div id="privacyModal" class="hidden">
+  <div class="modalContent">
+    <h3>Privacy Policy</h3>
+    <p>Your data is stored locally in your browser. Voice input and chat logs are not shared externally.</p>
+    <button onclick="closePrivacy()">Close</button>
+  </div>
+</div>
+
+<div id="supportModal" class="hidden">
+  <div class="modalContent">
+    <h3>Support</h3>
+    <p>Need help? Contact us at support@talk2menice.xyz</p>
+    <button onclick="closeSupport()">Close</button>
+  </div>
+</div>
+
+<script>
+// -------------------- Companion Definitions --------------------
+const companions = {
+  Whisp:{name:"Whisp",voice:{input:true,output:true,style:"gentle"}},
+  Star:{name:"Star",voice:{input:true,output:true,style:"energetic"}},
+  Robot:{name:"Robot",voice:{input:true,output:true,style:"neutral"}},
+  Cloud:{name:"Cloud",voice:{input:true,output:true,style:"playful"}}
+};
+
+// Preloaded conversations
+const preloadedConversations = {
+  Whisp:{ "en-US":["Hello! I’m so happy to see you today.","Take your time, I’m here with you.","Would you like to try a new phrase today?"] },
+  Star:{ "en-US":["Hey there! Ready to shine?","Let’s make today amazing!","What exciting thing happened today?"] },
+  Robot:{ "en-US":["Greetings. How can I assist you today?","Please provide input for analysis."] },
+  Cloud:{ "en-US":["Hey! Wanna float around with me today?","I’m feeling playful, are you?","Let’s make this conversation fun!"] }
+};
+
+// Conversation starters
+const conversationStarters = {
+  "Workplace":[`Good morning! How's your day starting?`,`Hi! Did you catch the latest project update?`],
+  "Dating & Social":[`Hi there! Would you like to grab coffee?`,`Hey! Want to take a walk?`],
+  "Travel":[`Hi! Where is the nearest train station?`],
+  "School":[`Hello! How was class today?`,`Do you need help with homework?`],
+  "Advanced Small Talk":[`Hello! Did you see the game yesterday?`]
+};
+
+// -------------------- Companion Selection --------------------
+const companionCards = document.querySelectorAll(".companionCard");
+const nicknameInput = document.getElementById("nicknameInput");
+function setActiveCompanion(id){
+  companionCards.forEach(card=>card.classList.remove("active"));
+  document.querySelector(`.companionCard[data-companion='${id}']`)?.classList.add("active");
+  localStorage.setItem("companion",id);
+}
+companionCards.forEach(card=>card.addEventListener("click",()=>setActiveCompanion(card.dataset.companion)));
+if(!localStorage.getItem("companion")) setActiveCompanion("Whisp");
+
+// -------------------- Chat Initialization --------------------
+function startChat(){
+  const nick = nicknameInput.value.trim();
+  if(!nick){ alert("Enter a nickname"); return; }
+  localStorage.setItem("nickname",nick);
+  document.getElementById("landingPage").classList.add("hidden");
+  document.getElementById("chatContainer").classList.remove("hidden");
+  document.querySelector("footer").classList.remove("hidden");
+  document.getElementById("profileName").textContent = nick;
+  document.getElementById("profileLanguage").textContent = "en-US";
+  document.getElementById("profileCompanion").textContent = localStorage.getItem("companion");
+  showDailyStarter();
+}
+
+// -------------------- Daily Starter --------------------
+function getTodayCategory(){
+  const categories=["Workplace","Dating & Social","Travel","School","Advanced Small Talk"];
+  const todayIndex = new Date().getDay();
+  return categories[todayIndex % categories.length];
+}
+function getDailyStarter(){
+  const category = getTodayCategory();
+  const starters = conversationStarters[category];
+  const today = new Date().getDate();
+  const starter = starters[today % starters.length];
+  return {category,starter};
+}
+function showDailyStarter(){
+  const {category,starter}=getDailyStarter();
+  const box = document.getElementById("starterBox");
+  box.textContent=`${category}: ${starter}`;
+  box.onclick=()=>sendMessage(starter);
+}
+
+// -------------------- Input & Adaptive --------------------
+function trackUserInput(userText){
+  const text = userText.toLowerCase().trim();
+  let history = JSON.parse(localStorage.getItem("inputHistory")||"{}");
+  if(!history[text]) history[text]=0;
+  history[text]++;
+  localStorage.setItem("inputHistory",JSON.stringify(history));
+  return history[text];
+}
+function getAdaptiveResponse(userText){
+  const count=trackUserInput(userText);
+  if(count===1) return null;
+  if(count===2) return `Hmm, you said that again. Let's try something new!`;
+  if(count===3) return `You're repeating yourself. Want a suggestion for something different?`;
+  return `Okay, we've seen this a lot. How about exploring a new phrase?`;
+}
+
+// -------------------- AI / Preloaded Response --------------------
+async function getStyledAIResponse(userText){
+  const companionId=localStorage.getItem("companion")||"Whisp";
+  const lang="en-US";
+  const preloaded=preloadedConversations[companionId]?.[lang];
+  if(preloaded && preloaded.length>0){
+    const index=Math.floor(Math.random()*preloaded.length);
+    return preloaded[index];
+  }
+  return `Echo: ${userText}`;
+}
+
+// -------------------- Chat Functions --------------------
+const chat=document.getElementById("chat");
+function addMessage(text,sender){
+  const div=document.createElement("div");
+  div.className=`message ${sender}`;
+  div.textContent=text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+function showTyping(text){
+  let i=0;
+  const div=document.createElement("div");
+  div.className="message bot";
+  chat.appendChild(div);
+  function type(){ if(i<text.length){ div.textContent+=text[i]; i++; setTimeout(type,20);} else {chat.scrollTop=chat.scrollHeight;} }
+  type();
+}
+async function sendMessage(msg=null){
+  const input=document.getElementById("userInput");
+  const userText=msg||input.value.trim();
+  if(!userText) return;
+  const forbidden=["badword1","badword2"];
+  if(forbidden.some(w=>userText.toLowerCase().includes(w))){
+    showTyping("⚠️ Please use appropriate language.");
+    input.value="";
+    return;
+  }
+  addMessage(userText,"user");
+  input.value="";
+  const adaptive=getAdaptiveResponse(userText);
+  if(adaptive){ showTyping(adaptive); return; }
+  const response=await getStyledAIResponse(userText);
+  showTyping(response);
+}
+
+// -------------------- Voice --------------------
+let windowVoiceOutputAllowed=true,windowVoiceSpeed=1;
+const voiceOutputToggle=document.getElementById("voiceOutputToggle");
+const voiceInputToggle=document.getElementById("voiceInputToggle");
+const voiceSpeed=document.getElementById("voiceSpeed");
+function applyVoiceRules(){
+  const companionId=localStorage.getItem("companion")||"Whisp";
+  const settings={output:voiceOutputToggle.checked,input:voiceInputToggle.checked,speed:voiceSpeed.value};
+  windowVoiceOutputAllowed=settings.output && companions[companionId].voice.output;
+  windowVoiceSpeed=settings.speed;
+}
+voiceOutputToggle.onchange=voiceInputToggle.onchange=voiceSpeed.onchange=applyVoiceRules;
+applyVoiceRules();
+function speakBotText(text){
+  if(!windowVoiceOutputAllowed) return;
+  const utter=new SpeechSynthesisUtterance(text);
+  utter.lang="en-US"; utter.rate=windowVoiceSpeed;
+  const companionId=localStorage.getItem("companion")||"Whisp";
+  const style=companions[companionId].voice.style;
+  utter.pitch=(style==="energetic")?1.2:(style==="gentle")?0.9:1;
+  speechSynthesis.speak(utter);
+}
+
+// -------------------- Speech-to-Speech --------------------
+let speechMode=true;
+const speechBtn=document.getElementById("speechToSpeechBtn");
+const micBtn=document.getElementById("micBtn");
+function toggleSpeechToSpeech(){speechMode=!speechMode;speechBtn.textContent=`🗣️ Speech-to-Speech: ${speechMode?'ON':'OFF'}`;}
+function startSpeechToSpeech(){
+  if(!speechMode||micBtn.disabled) return;
+  const recognition=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+  recognition.lang="en-US"; recognition.interimResults=false; recognition.continuous=false;
+  micBtn.classList.add("listening");
+  recognition.onresult=async (event)=>{ const spoken=event.results[0][0].transcript; sendMessage(spoken);}
+  recognition.onend=()=>{micBtn.classList.remove("listening"); if(speechMode) setTimeout(()=>recognition.start(),300);}
+  recognition.start();
+}
+
+// -------------------- Privacy & Support --------------------
+function showPrivacy(){document.getElementById("privacyModal").classList.remove("hidden");}
+function closePrivacy(){document.getElementById("privacyModal").classList.add("hidden");}
+function showSupport(){document.getElementById("supportModal").classList.remove("hidden");}
+function closeSupport(){document.getElementById("supportModal").classList.add("hidden");}
+
+// -------------------- Signature --------------------
+console.log("Signed, ELYS");
+
+</script>
 </body>
 </html>
